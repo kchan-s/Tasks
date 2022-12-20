@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="184dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30sp"
+        android:layout_marginTop="30sp"
+        android:layout_marginEnd="30sp"
+        android:text="通知の表示を開始する時刻"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/editTextTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="300sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="30sp"
+        android:gravity="center"
+        android:inputType="time"
+        android:text="08:00" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30sp"
+        android:layout_marginTop="30sp"
+        android:layout_marginEnd="30sp"
+        android:text="通知の表示を終了する時刻"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/editTextTime2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="300sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="30sp"
+        android:gravity="center"
+        android:inputType="time"
+        android:text="24:00" />
+
+</LinearLayout>

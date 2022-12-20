@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="app.sato.kchan.tasks">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TaSks">
+        <activity
+            android:name=".HomeActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DeleteActivity"
+            android:label="メモ削除画面" />
+        <activity
+            android:name=".EditActivity"
+            android:label="編集画面" />
+        <activity
+            android:name=".TimeActivity"
+            android:label="時間通知設定画面" />
+        <activity
+            android:name=".LocationActivity"
+            android:label="場所通知設定画面" />
+        <activity
+            android:name=".SettingActivity"
+            android:label="設定画面" />
+        <activity
+            android:name=".CustomActivity"
+            android:label="カスタマイズ画面" />
+        <activity
+            android:name=".AccountActivity"
+            android:label="アカウント画面" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="ログイン画面" />
+        <activity
+            android:name=".PasswordInitializeActivity"
+            android:label="パスワード初期設定画面" />
+        <activity
+            android:name=".PasswordChangeActivity"
+            android:label="パスワード変更画面" />
+        <activity
+            android:name=".PasswordResetActivity"
+            android:label="パスワード再設定画面" />
+        <activity
+            android:name=".DefaultNoticeActivity"
+            android:label="標準通知時間設定画面" />
+        <activity
+            android:name=".LocationStockActivity"
+            android:label="よく行く場所画面" />
+        <activity
+            android:name=".LocationStockRegisterActivity"
+            android:label="よく行く場所設定画面" />
+        <activity
+            android:name=".AutoDeletionActivity"
+            android:label="自動削除設定画面" />
+    </application>
+
+</manifest>

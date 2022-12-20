@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/menu_lock"
+        android:title="ロック" />
+    <item
+        android:id="@+id/menu_delete"
+        android:title="削除" />
+    <item
+        android:id="@+id/menu_time"
+        android:title="時間通知設定" />
+    <item
+        android:id="@+id/menu_spot"
+        android:title="場所通知設定" />
+</menu>
