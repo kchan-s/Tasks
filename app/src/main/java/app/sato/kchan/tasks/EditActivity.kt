@@ -45,6 +45,9 @@ class EditActivity : AppCompatActivity() {
                 startActivity(intent)
                 return true
             }
+            android.R.id.home -> {
+                finish()
+            }
         }
         return super.onOptionsItemSelected(item)
     }

@@ -3,6 +3,7 @@ package app.sato.kchan.tasks
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.DeleteActivityBinding
 
@@ -23,5 +24,14 @@ class DeleteActivity: AppCompatActivity() {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.delete_menu, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home->{
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
