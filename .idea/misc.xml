@@ -15,12 +15,15 @@
         <entry key="app/src/main/res/drawable/space.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/toolbar_option_button.xml" value="0.1" />
         <entry key="app/src/main/res/layout/aaa.xml" value="0.12132725430597771" />
+        <entry key="app/src/main/res/layout/account_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12132725430597771" />
         <entry key="app/src/main/res/layout/auto_delete.xml" value="0.18478260869565216" />
+        <entry key="app/src/main/res/layout/auto_deletion_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/coordinate_settings.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/custom_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/custom_tool_bar.xml" value="0.1" />
         <entry key="app/src/main/res/layout/customize.xml" value="0.10740740740740741" />
-        <entry key="app/src/main/res/layout/default_notice_activity.xml" value="0.1322463768115942" />
+        <entry key="app/src/main/res/layout/default_notice_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/delete_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/edit_activity.xml" value="0.1322463768115942" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.1" />
@@ -33,6 +36,8 @@
         <entry key="app/src/main/res/layout/home_delete.xml" value="0.18478260869565216" />
         <entry key="app/src/main/res/layout/list_view.xml" value="0.1322463768115942" />
         <entry key="app/src/main/res/layout/location_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/location_stock_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/location_stock_register_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/login_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/memo_datetime.xml" value="0.11944444444444445" />
         <entry key="app/src/main/res/layout/memo_detail.xml" value="0.1" />
