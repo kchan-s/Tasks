@@ -25,6 +25,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <Switch
+        android:id="@+id/switch3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="20sp"
+        android:layout_marginBottom="10sp"
+        android:text="初期通知時間"
+        android:textSize="24sp" />
+
     <TextView
         android:id="@+id/textView15"
         android:layout_width="match_parent"
