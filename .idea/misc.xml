@@ -23,7 +23,7 @@
         <entry key="app/src/main/res/layout/custom_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/custom_tool_bar.xml" value="0.1" />
         <entry key="app/src/main/res/layout/customize.xml" value="0.10740740740740741" />
-        <entry key="app/src/main/res/layout/default_notice_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/default_notice_activity.xml" value="0.36157226562499994" />
         <entry key="app/src/main/res/layout/delete_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/edit_activity.xml" value="0.1322463768115942" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.1" />
@@ -40,6 +40,7 @@
         <entry key="app/src/main/res/layout/location_stock_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/location_stock_register_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/login_activity.xml" value="0.12158054711246201" />
+        <entry key="app/src/main/res/layout/map_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/memo_datetime.xml" value="0.11944444444444445" />
         <entry key="app/src/main/res/layout/memo_detail.xml" value="0.1" />
         <entry key="app/src/main/res/layout/memo_new.xml" value="0.13858695652173914" />
@@ -75,6 +76,8 @@
         <entry key="app/src/main/res/layout/settings_password_re.xml" value="0.18478260869565216" />
         <entry key="app/src/main/res/layout/settings_password_resetting.xml" value="0.18478260869565216" />
         <entry key="app/src/main/res/layout/settings_taskmemo.xml" value="0.18478260869565216" />
+        <entry key="app/src/main/res/layout/spinner.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/spinner_dropdown.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/text_memo_view.xml" value="0.17370892018779344" />
         <entry key="app/src/main/res/layout/time_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/toolbar_option_menu.xml" value="0.1" />
