@@ -5,6 +5,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -17,14 +18,19 @@ class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.ViewHolder>() {
     val image = listOf(R.drawable.space, R.drawable.ic_baseline_lock_24, R.drawable.space, R.drawable.space, R.drawable.space,
         R.drawable.space, R.drawable.space, R.drawable.space, R.drawable.space, R.drawable.space, R.drawable.space, R.drawable.space, R.drawable.space, R.drawable.space, R.drawable.space)
 
+    var comp: Boolean = false // 完了・未完了
+    var lock: Boolean = false // ロック・未ロック
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val titleText: TextView
         val settingText: TextView
         val lockImageView: ImageView
+        val checkBox: CheckBox
         init {
             titleText = view.findViewById(R.id.title_text)
             settingText = view.findViewById(R.id.setting_text)
             lockImageView = view.findViewById(R.id.lock_image)
+            checkBox = view.findViewById(R.id.check_box)
         }
     }
 
@@ -47,6 +53,18 @@ class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.ViewHolder>() {
         viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
 
             override fun onClick(v: View) {
+                viewHolder.lockImageView.setOnClickListener {
+                    if (lock) {
+                        lock = false
+                        viewHolder.lockImageView.setImageResource(R.drawable.space)
+                    } else {
+                        lock = true
+                        viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
+                    }
+                }
+                viewHolder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    comp = isChecked
+                }
 
                 v.setOnClickListener { view ->
                     val context: Context = view.context
@@ -56,8 +74,6 @@ class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.ViewHolder>() {
             }
         })
     }
-
-
 
     override fun getItemCount() = data.size
 }

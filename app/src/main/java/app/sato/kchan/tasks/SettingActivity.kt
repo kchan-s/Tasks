@@ -3,7 +3,8 @@ package app.sato.kchan.tasks
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.AdapterView.OnItemClickListener
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.SettingActivityBinding
@@ -34,8 +35,17 @@ class SettingActivity : AppCompatActivity() {
                 2 -> intent.setClass(this, DefaultNoticeActivity::class.java)
                 3 -> intent.setClass(this, LocationStockActivity::class.java)
                 4 -> intent.setClass(this, AutoDeletionActivity::class.java)
+                0, 1, 2, 3, 4 -> startActivity(intent)
+                5 -> {
+                    // アプリ内にWebView埋め込み
+                    // 戻るボタン機能させたいならintentで遷移？
+                    val webView = WebView(this)
+                    webView.webViewClient = WebViewClient()
+                    webView.getSettings().setJavaScriptEnabled(true) // JavaScriptを有効にする
+                    webView.loadUrl("https://google.com") // URLを読み込む
+                    setContentView(webView)
+                }
             }
-            startActivity(intent)
         }
 
         val toolbar = binding.toolbar
