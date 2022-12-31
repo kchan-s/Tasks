@@ -13,6 +13,7 @@ import app.sato.kchan.tasks.databinding.MapActivityBinding
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    // マップ表示用のアクティビティ、現状触らなくていいです
     private lateinit var mMap: GoogleMap
     private lateinit var binding: MapActivityBinding
 

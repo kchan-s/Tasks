@@ -13,6 +13,7 @@ class PasswordChangeActivity: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         binding = PasswordChangeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        // パスワードを忘れた方はこちらボタンタップ処理
         binding.passReset.setOnClickListener {
             val reset = Intent(this, PasswordResetActivity::class.java)
             startActivity(reset)
@@ -24,6 +25,7 @@ class PasswordChangeActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{

@@ -8,7 +8,7 @@ import app.sato.kchan.tasks.databinding.CustomActivityBinding
 class CustomActivity: AppCompatActivity(){
     private lateinit var binding: CustomActivityBinding
 
-    //?
+    // 画面作成とか(現状は触らなくていいです)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = CustomActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
@@ -19,7 +19,7 @@ class CustomActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    //?
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{

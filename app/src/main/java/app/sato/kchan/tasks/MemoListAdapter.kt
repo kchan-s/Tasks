@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.ViewHolder>() {
 
+    // ホーム画面のメモ部分の実装
+
     val data = listOf("メモ1", "メモ2", "メモ3", "メモ4", "メモ5", "メモ6", "メモ7", "メモ8", "メモ9", "メモ10", "a", "b", "c", "d", "e")
     val setting_data = listOf("", "", "2022/11/8 13:20 〜 2022/11/9 15:08", "", "", "高知工科大学", "", "", "", "", "", "", "", "", "")
     val image = listOf(R.drawable.space, R.drawable.ic_baseline_lock_24, R.drawable.space, R.drawable.space, R.drawable.space,

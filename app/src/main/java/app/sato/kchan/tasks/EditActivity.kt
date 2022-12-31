@@ -21,7 +21,7 @@ class EditActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    //?
+    // オプションメニュー作成
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.edit_menu, menu)
@@ -33,12 +33,12 @@ class EditActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_lock -> {
                 //ロック押下
-                lockButton_onClick()
+                //lockButton_onClick()
                 return true
             }
             R.id.menu_delete -> {
                 //削除押下
-                deleteButton_onClick()
+                //deleteButton_onClick()
                 return true
             }
             R.id.menu_time -> {
@@ -52,7 +52,7 @@ class EditActivity : AppCompatActivity() {
                 return true
             }
             android.R.id.home -> {
-                //？
+                // 戻るボタン
                 //backButton_onClick()
                 finish()
             }
@@ -61,18 +61,18 @@ class EditActivity : AppCompatActivity() {
     }
 
     //ロック・未ロック
-    private fun lockButton_onClick() {
-        if(Note.isLock()){
-            Note.setUnlock()
-        }else{
-            Note.setLock()
-        }
-    }
-
-    //削除
-    private fun deleteButton_onClick() {
-        Note.delete()
-    }
+//    private fun lockButton_onClick() {
+//        if(Note.isLock()){
+//            Note.setUnlock()
+//        }else{
+//            Note.setLock()
+//        }
+//    }
+//
+//    //削除
+//    private fun deleteButton_onClick() {
+//        Note.delete()
+//    }
 
     //画面遷移　時間通知
     private fun noticeButton_onClick() {

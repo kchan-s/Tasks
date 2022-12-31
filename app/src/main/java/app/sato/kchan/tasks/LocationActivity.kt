@@ -20,11 +20,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 class LocationActivity: AppCompatActivity(){
     private lateinit var binding: LocationActivityBinding
 
-    //?
+    // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        // ドロップダウンリストの設定、場合分け
         var location_list = listOf("未選択", "Mapを表示") // 仮置き
         val adapter = ArrayAdapter(this, R.layout.spinner, location_list)
 
@@ -44,6 +45,7 @@ class LocationActivity: AppCompatActivity(){
             }
         }
 
+        // map表示ボタンクリック時の処理
         binding.mapButton.setOnClickListener {
             val map = Intent(this, MapsActivity::class.java)
             startActivity(map)
@@ -55,6 +57,7 @@ class LocationActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{

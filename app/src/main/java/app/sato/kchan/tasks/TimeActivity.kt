@@ -10,20 +10,21 @@ import java.util.*
 
 class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
-    var setting = true
+    var setting = true // 時間通知設定のトグル代わり
 
-    //?
+    // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        // トグルがオンになっているかどうか判定
         if (setting) {
-            //showButton_onClick()
+            // ↓showButton_onClick()
             binding.start.setOnClickListener {
                 showDatePickerDialog()
             }
 
-            //hideButton_onClick()
+            // ↓hideButton_onClick()
             binding.end.setOnClickListener {
                 showDatePickerDialog()
             }
@@ -31,14 +32,13 @@ class TimeActivity: AppCompatActivity(){
             //del (time and date)setting
         }
 
-        //?
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    //?
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
@@ -48,6 +48,7 @@ class TimeActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
+    // 日付選択のダイアログ生成
     fun showDatePickerDialog() {
         val calendar: Calendar = Calendar.getInstance()
 
@@ -68,6 +69,7 @@ class TimeActivity: AppCompatActivity(){
         }.show()
     }
 
+    // 時間選択のダイアログ生成
     fun showTimePickerDialog() {
         val calendar: Calendar = Calendar.getInstance()
 

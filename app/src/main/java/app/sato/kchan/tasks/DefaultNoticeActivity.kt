@@ -14,6 +14,7 @@ class DefaultNoticeActivity: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         binding = DefaultNoticeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        // 時間設定部分押した時の処理(中身は変更予定)
         binding.editTextTime.setOnClickListener {
             showTimePickerDialog()
         }
@@ -24,6 +25,7 @@ class DefaultNoticeActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
@@ -33,6 +35,7 @@ class DefaultNoticeActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
+    // TimePickerの生成処理(触らなくていい)
     fun showTimePickerDialog() {
         val calendar: Calendar = Calendar.getInstance()
 

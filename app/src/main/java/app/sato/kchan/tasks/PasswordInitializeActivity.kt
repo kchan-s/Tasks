@@ -18,6 +18,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{

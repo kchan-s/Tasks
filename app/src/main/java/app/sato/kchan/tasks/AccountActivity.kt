@@ -14,13 +14,16 @@ class AccountActivity: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         binding = AccountActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        // アカウント切り替えボタンを押した時の処理
         binding.accountSwitch.setOnClickListener {
             val login = Intent(this, LoginActivity::class.java)
             startActivity(login)
         }
 
+        // パスワード設定ボタンを押した時の処理
         binding.passwordSetting.setOnClickListener {
-            // initialize = false
+            initialize = false
+            // パスワードが初期設定か判定、遷移先を変える
             if (initialize) {
                 val passIni = Intent(this, PasswordInitializeActivity::class.java)
                 startActivity(passIni)
@@ -36,6 +39,7 @@ class AccountActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{

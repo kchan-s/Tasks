@@ -10,7 +10,7 @@ import app.sato.kchan.tasks.databinding.HomeActivityBinding
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomeActivityBinding
 
-    //?
+    // 画面作成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
@@ -53,8 +53,8 @@ class HomeActivity : AppCompatActivity() {
             deleteButton_onClick()
         }
         binding.floatingActionButton.setOnClickListener {
-            //わからん
-            ()
+            // 新規作成画面遷移（編集）
+            //()
         }
     }
 
@@ -70,39 +70,39 @@ class HomeActivity : AppCompatActivity() {
         startActivity(deleteIntent)
     }
 
-    //画面遷移　編集へ
-    private fun () {
-        val newIntent = Intent(this, EditActivity::class.java)
-        startActivity(newIntent)
-    }
-
-    //リスト更新モジュール
-    private fun searchBox_onEditorAction() {
-        listUpdate()
-    }
-
-    //完了・未完了切替モジュール
-    private fun completeButton_onClick() {
-        NoteManager.selectByTempId()
-        NoteManager.isNote()
-        NoteManager.getNote()
-        if(Note.isComplete()){
-            Note.setUnComplete()
-        }else{
-            Note.setComplete()
-        }
-    }
-
-    //ロック・未ロック切替モジュール
-    private fun lockButton_onClick() {
-        NoteManager.selectByTempId()
-        NoteManager.isNote()
-        NoteManager.getNote()
-        if(Note.isLock()){
-            Note.setUnlock()
-        }else{
-            Note.setLock()
-        }
-    }
+//    //画面遷移　編集へ
+//    private fun () {
+//        val newIntent = Intent(this, EditActivity::class.java)
+//        startActivity(newIntent)
+//    }
+//
+//    //リスト更新モジュール
+//    private fun searchBox_onEditorAction() {
+//        listUpdate()
+//    }
+//
+//    //完了・未完了切替モジュール
+//    private fun completeButton_onClick() {
+//        NoteManager.selectByTempId()
+//        NoteManager.isNote()
+//        NoteManager.getNote()
+//        if(Note.isComplete()){
+//            Note.setUnComplete()
+//        }else{
+//            Note.setComplete()
+//        }
+//    }
+//
+//    //ロック・未ロック切替モジュール
+//    private fun lockButton_onClick() {
+//        NoteManager.selectByTempId()
+//        NoteManager.isNote()
+//        NoteManager.getNote()
+//        if(Note.isLock()){
+//            Note.setUnlock()
+//        }else{
+//            Note.setLock()
+//        }
+//    }
 
 }

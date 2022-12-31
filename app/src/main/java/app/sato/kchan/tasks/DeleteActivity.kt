@@ -10,7 +10,7 @@ import app.sato.kchan.tasks.databinding.DeleteActivityBinding
 class DeleteActivity: AppCompatActivity() {
     private lateinit var binding: DeleteActivityBinding
 
-    //?
+    // 画面作成とか(現状は触らなくていいです)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DeleteActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
@@ -21,7 +21,7 @@ class DeleteActivity: AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    //?
+    // オプションメニューの作成、表示
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.delete_menu, menu)
@@ -29,7 +29,7 @@ class DeleteActivity: AppCompatActivity() {
     }
 
     //画面遷移　ホームへ
-    //?
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
@@ -39,12 +39,12 @@ class DeleteActivity: AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    //複数削除実行モジュール
-    private fun deleteButton_onClick() {
-        //while()?
-        NoteManager.selectByTempId()
-        NoteManager.isNote()
-        NoteManager.getNote()
-        NoteManager.delete()
-    }
+//    //複数削除実行モジュール
+//    private fun deleteButton_onClick() {
+//        //while()?
+//        NoteManager.selectByTempId()
+//        NoteManager.isNote()
+//        NoteManager.getNote()
+//        NoteManager.delete()
+//    }
 }
