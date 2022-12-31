@@ -12,26 +12,33 @@ class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
     var setting = true
 
+    //?
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         if (setting) {
+            //showButton_onClick()
             binding.start.setOnClickListener {
                 showDatePickerDialog()
             }
 
+            //hideButton_onClick()
             binding.end.setOnClickListener {
                 showDatePickerDialog()
             }
+        }else{
+            //del (time and date)setting
         }
 
+        //?
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    //?
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{

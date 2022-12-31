@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 class LocationActivity: AppCompatActivity(){
     private lateinit var binding: LocationActivityBinding
 
+    //?
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
