@@ -19,6 +19,13 @@ class PasswordChangeActivity: AppCompatActivity(){
             startActivity(reset)
         }
 
+        // 設定完了ボタンタップ処理
+        binding.passDone.setOnClickListener {
+            // 保存
+            val intent = Intent(this, AccountActivity::class.java)
+            startActivity(intent)
+        }
+
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)

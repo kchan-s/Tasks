@@ -1,5 +1,6 @@
 package app.sato.kchan.tasks
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,13 @@ class PasswordResetActivity: AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = PasswordResetActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+
+        // 設定完了ボタンタップ処理
+        binding.ResetDoneButton.setOnClickListener {
+            // 保存
+            val intent = Intent(this, AccountActivity::class.java)
+            startActivity(intent)
+        }
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)

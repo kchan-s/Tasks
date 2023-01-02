@@ -1,5 +1,6 @@
 package app.sato.kchan.tasks
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,18 @@ class LocationStockRegisterActivity: AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LocationStockRegisterActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+
+        binding.mapButton.setOnClickListener {
+            val map = Intent(this, MapsActivity::class.java)
+            startActivity(map)
+        }
+
+        binding.doneButton.setOnClickListener {
+            // 保存処理
+            // 埋まってるか判定する必要があるかも？
+            val intent = Intent(this, LocationStockActivity::class.java)
+            startActivity(intent)
+        }
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)

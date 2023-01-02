@@ -53,8 +53,7 @@ class HomeActivity : AppCompatActivity() {
             deleteButton_onClick()
         }
         binding.floatingActionButton.setOnClickListener {
-            // 新規作成画面遷移（編集）
-            //()
+            newButton_onClick()
         }
     }
 
@@ -70,11 +69,11 @@ class HomeActivity : AppCompatActivity() {
         startActivity(deleteIntent)
     }
 
-//    //画面遷移　編集へ
-//    private fun () {
-//        val newIntent = Intent(this, EditActivity::class.java)
-//        startActivity(newIntent)
-//    }
+    //画面遷移　編集へ
+    private fun newButton_onClick() {
+        val newIntent = Intent(this, EditActivity::class.java)
+        startActivity(newIntent)
+    }
 //
 //    //リスト更新モジュール
 //    private fun searchBox_onEditorAction() {

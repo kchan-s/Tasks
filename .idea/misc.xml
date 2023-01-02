@@ -48,8 +48,8 @@
         <entry key="app/src/main/res/layout/memo_time_setting.xml" value="0.1" />
         <entry key="app/src/main/res/layout/notification_settings.xml" value="0.24305555555555555" />
         <entry key="app/src/main/res/layout/password_change_activity.xml" value="0.12158054711246201" />
-        <entry key="app/src/main/res/layout/password_initialize_activity.xml" value="0.12158054711246201" />
-        <entry key="app/src/main/res/layout/password_reset_activity.xml" value="0.12158054711246201" />
+        <entry key="app/src/main/res/layout/password_initialize_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/password_reset_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/password_resetting.xml" value="0.18478260869565216" />
         <entry key="app/src/main/res/layout/reminder_setting.xml" value="0.1" />
         <entry key="app/src/main/res/layout/reminder_settings.xml" value="0.23178807947019867" />
