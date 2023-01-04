@@ -35,4 +35,9 @@ class PasswordResetActivity: AppCompatActivity(){
         }
         return super.onOptionsItemSelected(item)
     }
+
+//    //設定完了 画面遷移　アカウントへ
+//    private fun changeButton_onClick() {
+//
+//    }
 }

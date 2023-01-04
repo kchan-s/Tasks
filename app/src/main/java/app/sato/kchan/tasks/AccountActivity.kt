@@ -16,21 +16,12 @@ class AccountActivity: AppCompatActivity(){
 
         // アカウント切り替えボタンを押した時の処理
         binding.accountSwitch.setOnClickListener {
-            val login = Intent(this, LoginActivity::class.java)
-            startActivity(login)
+            accountChangeButton_onClick()
         }
 
         // パスワード設定ボタンを押した時の処理
         binding.passwordSetting.setOnClickListener {
-            initialize = false
-            // パスワードが初期設定か判定、遷移先を変える
-            if (initialize) {
-                val passIni = Intent(this, PasswordInitializeActivity::class.java)
-                startActivity(passIni)
-            } else {
-                val passCha = Intent(this, PasswordChangeActivity::class.java)
-                startActivity(passCha)
-            }
+            passwordButton_onClick()
         }
 
         val toolbar = binding.toolbar
@@ -47,5 +38,24 @@ class AccountActivity: AppCompatActivity(){
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    //画面遷移　ログインへ
+    private fun accountChangeButton_onClick() {
+        val login = Intent(this, LoginActivity::class.java)
+        startActivity(login)
+    }
+
+    //画面遷移　パスワード　設定OR初期設定
+    private fun passwordButton_onClick() {
+        initialize = false  //仮かこれでいいのか？
+        // パスワードが初期設定か判定し、遷移先を変える
+        if (initialize) {
+            val passIni = Intent(this, PasswordInitializeActivity::class.java)
+            startActivity(passIni)
+        } else {
+            val passCha = Intent(this, PasswordChangeActivity::class.java)
+            startActivity(passCha)
+        }
     }
 }

@@ -22,14 +22,16 @@ class TimeActivity: AppCompatActivity(){
             // ↓showButton_onClick()
             binding.start.setOnClickListener {
                 showDatePickerDialog()
+                //開始時刻に設定？
             }
 
             // ↓hideButton_onClick()
             binding.end.setOnClickListener {
                 showDatePickerDialog()
+                //終了時間に設定？
             }
         }else{
-            //del (time and date)setting
+            //del (time and date)settingが必要
         }
 
         val toolbar = binding.toolbar

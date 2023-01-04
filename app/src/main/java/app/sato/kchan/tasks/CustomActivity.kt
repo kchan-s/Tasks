@@ -28,4 +28,18 @@ class CustomActivity: AppCompatActivity(){
         }
         return super.onOptionsItemSelected(item)
     }
+
+//    //ダークモード切り替え
+//    private fun themeToggleSwitch_onClick() {
+//    if(Timeの// トグルがオンになっているかどうか判定){
+//            Info.setNormalTheme()
+//        }else{
+//            Info.setDarkTheme()
+//        }
+//    }
+
+//    //カラー選択
+//    private fun colorButton_onClick() {
+//    //ボタンによって分岐？
+//    }
 }

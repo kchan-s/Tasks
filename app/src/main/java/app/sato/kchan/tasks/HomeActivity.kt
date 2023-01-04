@@ -70,11 +70,17 @@ class HomeActivity : AppCompatActivity() {
     }
 
     //画面遷移　編集へ
+//    private fun （？）_onClick() {
+//        val newIntent = Intent(this, EditActivity::class.java)
+//        startActivity(newIntent)
+//    }
+
+    //新規作成
     private fun newButton_onClick() {
         val newIntent = Intent(this, EditActivity::class.java)
         startActivity(newIntent)
     }
-//
+
 //    //リスト更新モジュール
 //    private fun searchBox_onEditorAction() {
 //        listUpdate()

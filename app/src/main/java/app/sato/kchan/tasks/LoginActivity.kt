@@ -27,4 +27,7 @@ class LoginActivity: AppCompatActivity(){
         }
         return super.onOptionsItemSelected(item)
     }
+
+    //ログイン
+
 }

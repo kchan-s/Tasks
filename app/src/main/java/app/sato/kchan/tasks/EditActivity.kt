@@ -72,6 +72,7 @@ class EditActivity : AppCompatActivity() {
 //    //削除
 //    private fun deleteButton_onClick() {
 //        Note.delete()
+//        画面遷移？
 //    }
 
     //画面遷移　時間通知
