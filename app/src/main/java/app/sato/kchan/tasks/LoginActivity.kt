@@ -10,6 +10,7 @@ class LoginActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = LoginActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         val toolbar = binding.toolbar
@@ -30,4 +31,8 @@ class LoginActivity: AppCompatActivity(){
 
     //ログイン
 
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+    }
 }

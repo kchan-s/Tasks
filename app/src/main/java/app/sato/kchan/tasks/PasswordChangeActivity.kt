@@ -11,6 +11,7 @@ class PasswordChangeActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = PasswordChangeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // パスワードを忘れた方はこちらボタンタップ処理
@@ -46,4 +47,9 @@ class PasswordChangeActivity: AppCompatActivity(){
 //    private fun changeButton_onClick() {
 //
 //    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+    }
 }

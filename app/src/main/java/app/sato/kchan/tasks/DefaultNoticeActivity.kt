@@ -12,6 +12,7 @@ class DefaultNoticeActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = DefaultNoticeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // 時間設定部分押した時の処理(中身は変更予定)
@@ -47,5 +48,10 @@ class DefaultNoticeActivity: AppCompatActivity(){
 
         //タイムピッカーダイアログを生成および設定
         TimePickerDialog(this, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }

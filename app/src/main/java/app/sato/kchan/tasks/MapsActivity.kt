@@ -19,7 +19,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        loadTheme()
         binding = MapActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -45,5 +45,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val sydney = LatLng(-34.0, 151.0)
         mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }

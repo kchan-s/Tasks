@@ -26,7 +26,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <Switch
-        android:id="@+id/switch2"
+        android:id="@+id/time_setting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10sp"
@@ -53,9 +53,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15sp"
         android:gravity="center"
-        android:text="開始時刻：2022年11月17日14時20分"
         android:textSize="20sp"
-        android:visibility="invisible" />
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/end"
@@ -74,8 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15sp"
         android:gravity="center"
-        android:text="終了時刻：2022年11月18日10時40分"
         android:textSize="20sp"
-        android:visibility="invisible" />
+        android:visibility="visible" />
 
 </LinearLayout>

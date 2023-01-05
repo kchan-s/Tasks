@@ -11,6 +11,7 @@ class LocationStockActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = LocationStockActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // LocationStockRegisterActivityへの遷移
@@ -33,5 +34,10 @@ class LocationStockActivity: AppCompatActivity(){
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }

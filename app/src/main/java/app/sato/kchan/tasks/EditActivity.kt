@@ -13,7 +13,15 @@ class EditActivity : AppCompatActivity() {
     //?
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = EditActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+
+        // 呼び出された時にタイトルデータとメモのpositionを受け取る
+        val title = intent.getStringExtra("title")
+        val position = intent.getIntExtra("position", 0)
+
+        // タイトルをいれる
+        binding.titleEdit.setText(title)
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -34,22 +42,19 @@ class EditActivity : AppCompatActivity() {
             R.id.menu_lock -> {
                 //ロック押下
                 //lockButton_onClick()
-                return true
             }
             R.id.menu_delete -> {
                 //削除押下
                 //deleteButton_onClick()
-                return true
+                finish()
             }
             R.id.menu_time -> {
                 //時間通知押下
                 noticeButton_onClick()
-                return true
             }
             R.id.menu_spot -> {
                 //場所通知押下
                 locationButton_onClick()
-                return true
             }
             android.R.id.home -> {
                 // 戻るボタン
@@ -85,5 +90,10 @@ class EditActivity : AppCompatActivity() {
     private fun locationButton_onClick() {
         intent = Intent(this, LocationActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }

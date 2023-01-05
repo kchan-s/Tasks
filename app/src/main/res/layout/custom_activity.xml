@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -45,5 +46,23 @@
         android:gravity="center"
         android:text="カラー選択"
         android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/pinkButton"
+        android:layout_width="60sp"
+        android:layout_height="60sp"
+        android:layout_marginStart="20sp"
+        android:layout_marginTop="20sp"
+        android:background="@drawable/circle_button"
+        app:backgroundTint="#FFB9CF" />
+
+    <Button
+        android:id="@+id/turquoiseButton"
+        android:layout_width="60sp"
+        android:layout_height="60sp"
+        android:layout_marginStart="20sp"
+        android:layout_marginTop="20sp"
+        android:background="@drawable/circle_button"
+        app:backgroundTint="#97CFD6" />
 
 </LinearLayout>

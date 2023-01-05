@@ -16,8 +16,8 @@ class SettingActivity : AppCompatActivity() {
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = SettingActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
-
         val data = listOf("カスタマイズ", "アカウント","初期通知時間", "よく行く場所", "自動削除", "ヘルプ")
 
         // ListViewにデータをセットする
@@ -96,5 +96,10 @@ class SettingActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }

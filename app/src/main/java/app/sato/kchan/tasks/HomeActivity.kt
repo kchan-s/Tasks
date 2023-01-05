@@ -13,13 +13,14 @@ class HomeActivity : AppCompatActivity() {
     // 画面作成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         //RecyclerViewの取得
         val recyclerView = binding.memo
 
         //Adapterの設定
-        val adapter = MemoListAdapter()
+        val adapter = HomeMemoListAdapter()
         recyclerView.adapter = adapter
 
         //LayoutManagerの設定
@@ -110,4 +111,8 @@ class HomeActivity : AppCompatActivity() {
 //        }
 //    }
 
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+    }
 }

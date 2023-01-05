@@ -11,6 +11,7 @@ class PasswordResetActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = PasswordResetActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // 設定完了ボタンタップ処理
@@ -40,4 +41,9 @@ class PasswordResetActivity: AppCompatActivity(){
 //    private fun changeButton_onClick() {
 //
 //    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+    }
 }

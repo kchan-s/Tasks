@@ -2,12 +2,12 @@
     <!-- Base application theme. -->
     <style name="Theme.TaSks" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/blue_green</item>
-        <item name="colorPrimaryVariant">@color/blue_green_white</item>
+        <item name="colorPrimary">@color/turquoise</item>
+        <item name="colorPrimaryVariant">@color/light_turquoise</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorSecondary">@color/dark_turquoise2</item>
+        <item name="colorSecondaryVariant">@color/dark_turquoise</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>

@@ -5,6 +5,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.DeleteActivityBinding
 
 class DeleteActivity: AppCompatActivity() {
@@ -13,7 +15,23 @@ class DeleteActivity: AppCompatActivity() {
     // 画面作成とか(現状は触らなくていいです)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = DeleteActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+
+        //RecyclerViewの取得
+        val recyclerView = binding.memo
+
+        //Adapterの設定
+        val adapter = DeleteMemoListAdapter()
+        recyclerView.adapter = adapter
+
+        //LayoutManagerの設定
+        val layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = layoutManager
+
+        // 境界線の設定
+        val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        recyclerView.addItemDecoration(itemDecoration)
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -32,7 +50,11 @@ class DeleteActivity: AppCompatActivity() {
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            android.R.id.home->{
+            R.id.delete_button -> {
+                // 削除処理
+                finish()
+            }
+            android.R.id.home-> {
                 finish()
             }
         }
@@ -47,4 +69,9 @@ class DeleteActivity: AppCompatActivity() {
 //        NoteManager.getNote()
 //        NoteManager.delete()
 //    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+    }
 }

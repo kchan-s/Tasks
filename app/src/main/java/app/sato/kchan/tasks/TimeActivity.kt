@@ -1,37 +1,53 @@
 package app.sato.kchan.tasks
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.TimeActivityBinding
 import java.util.*
 
 class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
-    var setting = true // 時間通知設定のトグル代わり
+    var start = true // falseならend
+    var startTimeSetting = false // 開始時間が設定されているか
+    var dateText = ""
+    var startDateTimeList = mutableListOf<Int>()
 
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        // トグルがオンになっているかどうか判定
-        if (setting) {
-            // ↓showButton_onClick()
-            binding.start.setOnClickListener {
-                showDatePickerDialog()
-                //開始時刻に設定？
-            }
+        binding.timeSetting.setOnCheckedChangeListener { _, isChecked ->
+            // トグルがONの時の処理
+            if (isChecked) {
+                // ↓showButton_onClick()
+                binding.start.setOnClickListener {
+                    start = true
+                    startTimeSetting = true
+                    showDatePickerDialog()
+                    //開始時刻に設定？
+                }
 
-            // ↓hideButton_onClick()
-            binding.end.setOnClickListener {
-                showDatePickerDialog()
-                //終了時間に設定？
+                // ↓hideButton_onClick()
+                binding.end.setOnClickListener {
+                    if (!startTimeSetting) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
+                    else {
+                        start = false
+                        showDatePickerDialog()
+                    }
+                    //終了時間に設定？
+                }
             }
-        }else{
-            //del (time and date)settingが必要
+            // トグルがOFFの時の処理
+            else {
+                //del (time and date)settingが必要
+            }
         }
 
         val toolbar = binding.toolbar
@@ -52,18 +68,36 @@ class TimeActivity: AppCompatActivity(){
 
     // 日付選択のダイアログ生成
     fun showDatePickerDialog() {
-        val calendar: Calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance()
+
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, day)
+
+            // メモ：monthは0-11らしいので+1する必要がある
+            if (start) {
+                // 開始年月日保存処理
+                startDateTimeList.add(0, year)
+                startDateTimeList.add(1, month)
+                startDateTimeList.add(2, day)
+                dateText = "${year}年${month+1}月${day}日"
+            }
+            else {
+                // 終了年月日保存処理
+                if (startDateTimeList[0] <= year && startDateTimeList[1] <= month && startDateTimeList[2] <= day) {
+                    dateText = "${year}年${month+1}月${day}日"
+                } else {
+                    Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
+                }
+            }
+            showTimePickerDialog()
+        }
 
         //日付ピッカーダイアログを生成および設定
         DatePickerDialog(
             this,
-            //ダイアログのクリックイベント設定
-            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                val currentDate =
-                    Calendar.getInstance().apply { set(year, monthOfYear, dayOfMonth) }
-
-                showTimePickerDialog()
-            },
+            dateSetListener,
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
@@ -72,16 +106,41 @@ class TimeActivity: AppCompatActivity(){
     }
 
     // 時間選択のダイアログ生成
+    @SuppressLint("SetTextI18n")
     fun showTimePickerDialog() {
-        val calendar: Calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance()
 
-        val cal = Calendar.getInstance()
-        val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
-            cal.set(Calendar.HOUR_OF_DAY, hour)
-            cal.set(Calendar.MINUTE, minute)
+        val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+            calendar.set(Calendar.HOUR_OF_DAY, hour)
+            calendar.set(Calendar.MINUTE, minute)
+
+            if (start) {
+                // 開始時刻保存処理
+                startDateTimeList.add(3, hour)
+                startDateTimeList.add(4, minute)
+                binding.startText.text = "通知開始時間 : ${dateText}${hour}時${minute}分"
+            }
+            else {
+                if (startDateTimeList[3] <= hour && startDateTimeList[4] <= minute) {
+                    // 終了時刻保存処理
+                    binding.endText.text = "通知終了時間 : ${dateText}${hour}時${minute}分"
+                } else {
+                    Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
+                }
+            }
         }
-
         //タイムピッカーダイアログを生成および設定
-        TimePickerDialog(this, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
+        TimePickerDialog(
+            this,
+            timeSetListener,
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            true)
+            .show()
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }

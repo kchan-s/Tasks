@@ -11,6 +11,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = PasswordInitializeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // 設定完了ボタンタップ処理
@@ -34,5 +35,10 @@ class PasswordInitializeActivity: AppCompatActivity(){
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }

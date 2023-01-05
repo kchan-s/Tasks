@@ -12,6 +12,7 @@ class AccountActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadTheme()
         binding = AccountActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // アカウント切り替えボタンを押した時の処理
@@ -57,5 +58,10 @@ class AccountActivity: AppCompatActivity(){
             val passCha = Intent(this, PasswordChangeActivity::class.java)
             startActivity(passCha)
         }
+    }
+
+    private fun loadTheme() {
+        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
     }
 }
