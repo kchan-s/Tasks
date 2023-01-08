@@ -87,6 +87,18 @@ class DefaultNoticeActivity: AppCompatActivity(){
         TimePickerDialog(this, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(this)).show()
     }
 
+//    //デフォ開始
+//    private fun showButton_onClick() {
+//        //TimeActivityの時間とってくるやつ
+//        Info.setDefaultNoticeShow()
+//    }
+//
+//    //デフォ終了
+//    private fun hideButton_onClick() {
+//        //TimeActivityの時間とってくるやつ
+//        Info.setDefaultNoticeHide()
+//    }
+
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
         setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))

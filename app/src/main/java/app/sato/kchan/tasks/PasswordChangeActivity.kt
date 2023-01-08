@@ -110,9 +110,9 @@ class PasswordChangeActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-    //設定完了 画面遷移　アカウントへ
+//設定完了 画面遷移　アカウントへ
 //    private fun changeButton_onClick() {
-//
+//        Account.resetPassword()
 //    }
 
     private fun loadTheme() {
