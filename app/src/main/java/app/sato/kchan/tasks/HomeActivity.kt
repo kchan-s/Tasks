@@ -9,6 +9,11 @@ import app.sato.kchan.tasks.databinding.HomeActivityBinding
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomeActivityBinding
+    val adapter = HomeMemoListAdapter()
+
+    companion object {
+        var new = false
+    }
 
     // 画面作成
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +25,6 @@ class HomeActivity : AppCompatActivity() {
         val recyclerView = binding.memo
 
         //Adapterの設定
-        val adapter = HomeMemoListAdapter()
         recyclerView.adapter = adapter
 
         //LayoutManagerの設定
@@ -58,6 +62,11 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        adapter.notifyDataSetChanged()
+    }
+
     //画面遷移　設定へ
     private fun settingButton_onClick() {
         val settingIntent = Intent(this, SettingActivity::class.java)
@@ -78,6 +87,7 @@ class HomeActivity : AppCompatActivity() {
 
     //新規作成
     private fun newButton_onClick() {
+        new = true
         val newIntent = Intent(this, EditActivity::class.java)
         startActivity(newIntent)
     }

@@ -45,7 +45,8 @@
         android:layout_marginEnd="20sp"
         android:backgroundTint="#99B3D1"
         android:text="開始日時を設定"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/start_text"
@@ -54,7 +55,7 @@
         android:layout_marginTop="15sp"
         android:gravity="center"
         android:textSize="20sp"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
     <Button
         android:id="@+id/end"
@@ -65,7 +66,8 @@
         android:layout_marginEnd="20sp"
         android:backgroundTint="#99B3D1"
         android:text="終了日時を設定"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/end_text"
@@ -74,6 +76,6 @@
         android:layout_marginTop="15sp"
         android:gravity="center"
         android:textSize="20sp"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
 </LinearLayout>

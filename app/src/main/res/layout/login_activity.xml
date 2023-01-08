@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -35,15 +36,23 @@
         android:text="アカウントID"
         android:textSize="20sp" />
 
-    <EditText
-        android:id="@+id/account_id_edit"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/login_account_id_layout"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
-        android:layout_marginTop="10sp"
         android:layout_marginEnd="30sp"
-        android:ems="10"
-        android:inputType="textPersonName" />
+        app:boxBackgroundColor="#FFFFFF">
+
+        <EditText
+            android:id="@+id/account_id_login"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10sp"
+            android:inputType="textPersonName"
+            android:maxLength="6" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/password_text"
@@ -55,15 +64,24 @@
         android:text="パスワード"
         android:textSize="20sp" />
 
-    <EditText
-        android:id="@+id/password_edit"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/login_password_layout"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
-        android:layout_marginTop="10sp"
         android:layout_marginEnd="30sp"
-        android:ems="10"
-        android:inputType="textPassword" />
+        app:boxBackgroundColor="#FFFFFF"
+        app:passwordToggleEnabled="true">
+
+        <EditText
+            android:id="@+id/password_login"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10sp"
+            android:ems="10"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/account_login"

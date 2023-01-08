@@ -51,6 +51,15 @@ class DeleteActivity: AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.delete_button -> {
+                val deletePosition = DeleteMemoListAdapter.selectedItemPositions.sortedDescending()
+                DeleteMemoListAdapter.selectedItemPositions.clear()
+                for (i in deletePosition) {
+                    HomeMemoListAdapter.titleData.removeAt(i)
+                    HomeMemoListAdapter.detailData.removeAt(i)
+                    HomeMemoListAdapter.settingData.removeAt(i)
+                    HomeMemoListAdapter.lock.removeAt(i)
+                    HomeMemoListAdapter.comp.removeAt(i)
+                }
                 // 削除処理
                 finish()
             }

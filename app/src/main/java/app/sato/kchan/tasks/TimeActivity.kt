@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.TimeActivityBinding
 import java.util.*
 
@@ -14,18 +15,27 @@ class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
     var start = true // falseならend
     var startTimeSetting = false // 開始時間が設定されているか
-    var dateText = ""
+    var startText = ""
+    var endText = ""
     var startDateTimeList = mutableListOf<Int>()
+    var position = -1
 
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        position = intent.getIntExtra("position", -1)
 
+        // トグルの値読み込みが必要
         binding.timeSetting.setOnCheckedChangeListener { _, isChecked ->
             // トグルがONの時の処理
             if (isChecked) {
+                binding.start.isVisible = true
+                binding.startText.isVisible = true
+                binding.end.isVisible = true
+                binding.endText.isVisible = true
+
                 // ↓showButton_onClick()
                 binding.start.setOnClickListener {
                     start = true
@@ -46,6 +56,10 @@ class TimeActivity: AppCompatActivity(){
             }
             // トグルがOFFの時の処理
             else {
+                binding.start.isVisible = false
+                binding.startText.isVisible = false
+                binding.end.isVisible = false
+                binding.endText.isVisible = false
                 //del (time and date)settingが必要
             }
         }
@@ -60,6 +74,11 @@ class TimeActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
+                if (startText != "" && endText != "") {
+                    HomeMemoListAdapter.settingData[position] = "$startText 〜 $endText"
+                } else if (startText != "") {
+                    HomeMemoListAdapter.settingData[position] = "$startText 〜"
+                }
                 finish()
             }
         }
@@ -81,12 +100,12 @@ class TimeActivity: AppCompatActivity(){
                 startDateTimeList.add(0, year)
                 startDateTimeList.add(1, month)
                 startDateTimeList.add(2, day)
-                dateText = "${year}年${month+1}月${day}日"
+                startText = "${year}/${month+1}/${day}"
             }
             else {
                 // 終了年月日保存処理
                 if (startDateTimeList[0] <= year && startDateTimeList[1] <= month && startDateTimeList[2] <= day) {
-                    dateText = "${year}年${month+1}月${day}日"
+                    endText = "${year}/${month+1}/${day}"
                 } else {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 }
@@ -118,12 +137,14 @@ class TimeActivity: AppCompatActivity(){
                 // 開始時刻保存処理
                 startDateTimeList.add(3, hour)
                 startDateTimeList.add(4, minute)
-                binding.startText.text = "通知開始時間 : ${dateText}${hour}時${minute}分"
+                startText = "$startText $hour:$minute"
+                binding.startText.text = "通知開始時間 : ${startText}"
             }
             else {
                 if (startDateTimeList[3] <= hour && startDateTimeList[4] <= minute) {
                     // 終了時刻保存処理
-                    binding.endText.text = "通知終了時間 : ${dateText}${hour}時${minute}分"
+                    endText = "$endText $hour:${minute+1}"
+                    binding.endText.text = "通知終了時間 : ${endText}"
                 } else {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 }

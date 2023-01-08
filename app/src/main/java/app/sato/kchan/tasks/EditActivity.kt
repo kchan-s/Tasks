@@ -9,19 +9,23 @@ import app.sato.kchan.tasks.databinding.EditActivityBinding
 
 class EditActivity : AppCompatActivity() {
     private lateinit var binding: EditActivityBinding
+    var l = false // lock代わり
+    var position = -1 // 初期値
 
-    //?
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = EditActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        // 呼び出された時にタイトルデータとメモのpositionを受け取る
-        val title = intent.getStringExtra("title")
-        val position = intent.getIntExtra("position", 0)
-
-        // タイトルをいれる
-        binding.titleEdit.setText(title)
+        if (!HomeActivity.new) {
+            // 呼び出された時にタイトルデータとメモのpositionを受け取る
+            position = intent.getIntExtra("position", -1)
+            val title = HomeMemoListAdapter.titleData[position]
+            val detail = HomeMemoListAdapter.detailData[position]
+            // タイトルと詳細をいれる
+            binding.titleEdit.setText(title)
+            binding.memoEdit.setText(detail)
+        }
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -41,6 +45,7 @@ class EditActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_lock -> {
                 //ロック押下
+                l = !l
                 //lockButton_onClick()
             }
             R.id.menu_delete -> {
@@ -59,6 +64,14 @@ class EditActivity : AppCompatActivity() {
             android.R.id.home -> {
                 // 戻るボタン
                 //backButton_onClick()
+                if (HomeActivity.new) {
+                    HomeMemoListAdapter.titleData.add(binding.titleEdit.text.toString())
+                    HomeMemoListAdapter.detailData.add(binding.memoEdit.text.toString())
+                    HomeMemoListAdapter.settingData.add("")
+                    HomeMemoListAdapter.lock.add(l)
+                    HomeMemoListAdapter.comp.add(false) // 作成時点ではcheckはfalse
+                    HomeActivity.new = false
+                }
                 finish()
             }
         }
@@ -83,12 +96,14 @@ class EditActivity : AppCompatActivity() {
     //画面遷移　時間通知
     private fun noticeButton_onClick() {
         intent = Intent(this, TimeActivity::class.java)
+        intent.putExtra("position", position)
         startActivity(intent)
     }
 
     //画面遷移　場所通知
     private fun locationButton_onClick() {
         intent = Intent(this, LocationActivity::class.java)
+        intent.putExtra("position", position)
         startActivity(intent)
     }
 

@@ -8,7 +8,6 @@ import app.sato.kchan.tasks.databinding.AccountActivityBinding
 
 class AccountActivity: AppCompatActivity(){
     private lateinit var binding: AccountActivityBinding
-    private var initialize = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,9 +48,12 @@ class AccountActivity: AppCompatActivity(){
 
     //画面遷移　パスワード　設定OR初期設定
     private fun passwordButton_onClick() {
-        initialize = false  //仮かこれでいいのか？
+        val aPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
+        var passwordInitialize = aPreferences.getBoolean("passwordInitialize", true)
+        println(passwordInitialize)
+        //initialize = false  //仮かこれでいいのか？
         // パスワードが初期設定か判定し、遷移先を変える
-        if (initialize) {
+        if (passwordInitialize) {
             val passIni = Intent(this, PasswordInitializeActivity::class.java)
             startActivity(passIni)
         } else {

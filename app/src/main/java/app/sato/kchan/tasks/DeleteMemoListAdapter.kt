@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -12,16 +14,21 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
 
     val titleData = HomeMemoListAdapter.titleData
     val settingData = HomeMemoListAdapter.settingData
-    val selectedItemPositions = mutableSetOf<Int>()
+    val lock = HomeMemoListAdapter.lock
+    companion object {
+        val selectedItemPositions = mutableSetOf<Int>()
+    }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val titleText: TextView
         val settingText: TextView
         val memo: LinearLayout
+        val lockImage: ImageView
         init {
             titleText = view.findViewById(R.id.delete_title_text)
             settingText = view.findViewById(R.id.delete_setting_text)
             memo = view.findViewById(R.id.delete_memo)
+            lockImage = view.findViewById(R.id.lock)
         }
     }
 
@@ -37,18 +44,23 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
 
         val item2 = settingData[position]
         viewHolder.settingText.text = item2
+
+        if (lock[position]) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
+        else viewHolder.lockImage.setImageResource(R.drawable.space)
+
         viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
 
             override fun onClick(v: View) {
                 val touchPosition = viewHolder.adapterPosition
                 v.setOnClickListener {
-                    if (isSelectedItem(touchPosition)) {
-                        viewHolder.memo.setBackgroundColor(Color.WHITE)
-                        removeSelectedItem(touchPosition)
-                    }
-                    else {
-                        viewHolder.memo.setBackgroundColor(Color.LTGRAY)
-                        addSelectedItem(touchPosition)
+                    if (!lock[touchPosition]) {
+                        if (isSelectedItem(touchPosition)) {
+                            viewHolder.memo.setBackgroundColor(Color.WHITE)
+                            removeSelectedItem(touchPosition)
+                        } else {
+                            viewHolder.memo.setBackgroundColor(Color.LTGRAY)
+                            addSelectedItem(touchPosition)
+                        }
                     }
                 }
             }

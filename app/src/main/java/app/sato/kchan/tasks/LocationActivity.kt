@@ -26,6 +26,8 @@ class LocationActivity: AppCompatActivity(){
         loadTheme()
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        val position = intent.getIntExtra("position", -1)
+
         // ドロップダウンリストの設定、場合分け
         var location_list = listOf("未選択", "Mapを表示") // 仮置き
         val adapter = ArrayAdapter(this, R.layout.spinner, location_list)

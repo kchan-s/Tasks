@@ -6,6 +6,7 @@
         <entry key="app/src/main/res/drawable/border_style.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/button.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/circle_button.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/gray.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.1" />
@@ -24,9 +25,9 @@
         <entry key="app/src/main/res/layout/custom_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/custom_tool_bar.xml" value="0.1" />
         <entry key="app/src/main/res/layout/customize.xml" value="0.10740740740740741" />
-        <entry key="app/src/main/res/layout/default_notice_activity.xml" value="0.36157226562499994" />
+        <entry key="app/src/main/res/layout/default_notice_activity.xml" value="0.125" />
         <entry key="app/src/main/res/layout/delete_activity.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/delete_memo_list.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/delete_memo_list.xml" value="0.165" />
         <entry key="app/src/main/res/layout/edit_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_memo_detail.xml" value="0.1" />
@@ -41,9 +42,11 @@
         <entry key="app/src/main/res/layout/list_view.xml" value="0.1322463768115942" />
         <entry key="app/src/main/res/layout/location_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/location_stock_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/location_stock_list.xml" value="0.1175925925925926" />
         <entry key="app/src/main/res/layout/location_stock_register_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/login_activity.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/map_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/map_custom_info.xml" value="0.1" />
         <entry key="app/src/main/res/layout/memo_datetime.xml" value="0.11944444444444445" />
         <entry key="app/src/main/res/layout/memo_detail.xml" value="0.1" />
         <entry key="app/src/main/res/layout/memo_new.xml" value="0.13858695652173914" />
@@ -83,6 +86,7 @@
         <entry key="app/src/main/res/layout/spinner_dropdown.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/text_memo_view.xml" value="0.17370892018779344" />
         <entry key="app/src/main/res/layout/time_activity.xml" value="0.12158054711246201" />
+        <entry key="app/src/main/res/layout/time_number_picker.xml" value="0.1175925925925926" />
         <entry key="app/src/main/res/layout/toolbar_option_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/web_view.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />

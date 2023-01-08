@@ -3,6 +3,7 @@ package app.sato.kchan.tasks
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.LocationStockRegisterActivityBinding
 
@@ -21,9 +22,17 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
         binding.doneButton.setOnClickListener {
             // 保存処理
-            // 埋まってるか判定する必要があるかも？
-            val intent = Intent(this, LocationStockActivity::class.java)
-            startActivity(intent)
+
+            val locationName = binding.locationName.text.toString()
+            val location = binding.location.text.toString()
+
+            if (locationName != "" && location != "") {
+                // 保存処理
+                val intent = Intent(this, LocationStockActivity::class.java)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
+            }
         }
 
         val toolbar = binding.toolbar
