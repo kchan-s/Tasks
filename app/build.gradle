@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "app.sato.kchan.tasks"
-        minSdk 23
+        minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -50,4 +50,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+    def activity_version = "1.4.0"
+    implementation "androidx.activity:activity-ktx:$activity_version"
 }

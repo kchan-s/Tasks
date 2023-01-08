@@ -1,11 +1,14 @@
 package app.sato.kchan.tasks
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.LocationActivityBinding
@@ -27,6 +30,15 @@ class LocationActivity: AppCompatActivity(){
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         val position = intent.getIntExtra("position", -1)
+        val getResult =
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    val coordinate = it.data?.getDoubleExtra("coordinate", 0.0)
+                    println(coordinate)
+                }
+            }
 
         // ドロップダウンリストの設定、場合分け
         var location_list = listOf("未選択", "Mapを表示") // 仮置き
@@ -51,6 +63,7 @@ class LocationActivity: AppCompatActivity(){
         // map表示ボタンクリック時の処理
         binding.mapButton.setOnClickListener {
             val map = Intent(this, MapsActivity::class.java)
+            map.putExtra("position", position)
             startActivity(map)
         }
 

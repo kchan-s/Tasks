@@ -9,6 +9,9 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
@@ -18,7 +21,23 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     companion object {
         val titleData = mutableListOf("メモ1", "メモ2", "メモ3", "メモ4", "メモ5", "メモ6", "メモ7", "メモ8", "メモ9", "メモ10", "a", "b", "c", "d", "e")
         val detailData = mutableListOf("1", "", "あ", "", "", "", "う", "", "", "か", "", "", "お", "く", "")
-        val settingData = mutableListOf("", "", "2022/11/8 13:20 〜 2022/11/9 15:08", "", "", "高知工科大学", "", "", "", "", "", "", "", "", "")
+        val settingData = mutableListOf(
+            mutableListOf("0"),
+            mutableListOf("0"),
+            mutableListOf("2", "2022/11/8 13:20", "2022/11/9 15:08"),
+            mutableListOf("0"),
+            mutableListOf("0"),
+            mutableListOf("3", "高知工科大学", "33.620917", "133.719833"),
+            mutableListOf("0"),
+            mutableListOf("0"),
+            mutableListOf("0"),
+            mutableListOf("1", "2023/01/11 01:30"),
+            mutableListOf("0"),
+            mutableListOf("0"),
+            mutableListOf("0"),
+            mutableListOf("0"),
+            mutableListOf("0")
+        )
         var comp = mutableListOf(false, true, false, false, false, false, false, false, false, false, false, false, false, false, false) // 完了・未完了
         var lock = mutableListOf(true, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
     }
@@ -47,7 +66,11 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         viewHolder.titleText.text = item
 
         val item2 = settingData[position]
-        viewHolder.settingText.text = item2
+        when {
+            item2[0] == "1" -> viewHolder.settingText.text = item2[1]
+            item2[0] == "2" -> viewHolder.settingText.text = item2[1] + "〜" + item2[2]
+            item2[0] == "3" -> viewHolder.settingText.text = item2[1]
+        }
 
         if (lock[position]) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImageView.setImageResource(R.drawable.space)

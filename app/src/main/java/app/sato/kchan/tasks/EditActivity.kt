@@ -67,7 +67,6 @@ class EditActivity : AppCompatActivity() {
                 if (HomeActivity.new) {
                     HomeMemoListAdapter.titleData.add(binding.titleEdit.text.toString())
                     HomeMemoListAdapter.detailData.add(binding.memoEdit.text.toString())
-                    HomeMemoListAdapter.settingData.add("")
                     HomeMemoListAdapter.lock.add(l)
                     HomeMemoListAdapter.comp.add(false) // 作成時点ではcheckはfalse
                     HomeActivity.new = false

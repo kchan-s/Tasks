@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -43,7 +42,11 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         viewHolder.titleText.text = item
 
         val item2 = settingData[position]
-        viewHolder.settingText.text = item2
+        when {
+            item2[0] == "1" -> viewHolder.settingText.text = item2[1] + "〜"
+            item2[0] == "2" -> viewHolder.settingText.text = item2[1] + "〜" + item2[2]
+            item2[0] == "3" -> viewHolder.settingText.text = item2[1]
+        }
 
         if (lock[position]) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImage.setImageResource(R.drawable.space)
@@ -67,7 +70,7 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         })
     }
 
-    override fun getItemCount() = titleData.size
+    override fun getItemCount() = HomeMemoListAdapter.titleData.size
 
     //指定されたPositionのアイテムが選択済みか確認する
     private fun isSelectedItem(position: Int): Boolean = (selectedItemPositions.contains(position))

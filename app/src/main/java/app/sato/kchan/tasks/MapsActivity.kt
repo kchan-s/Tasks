@@ -3,6 +3,7 @@ package app.sato.kchan.tasks
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,6 +27,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var fusedLocationProviderClient : FusedLocationProviderClient
     var locationCallback: LocationCallback? = null
 
+    var position = -1
     var first = true
     var mFirst = true // marker が過去に生成されているか
     var newLocation = LatLng(0.0, 0.0) // 登録されているなら読み込み
@@ -36,6 +38,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         loadTheme()
         binding = MapActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        position = intent.getIntExtra("position", -1)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -43,6 +46,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        val toolbar = binding.toolbar
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    // 戻るボタン
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home->{
+                val setting = HomeMemoListAdapter.settingData[position]
+                setting.clear()
+                setting.addAll(listOf("3", newLocation.latitude.toString(), newLocation.longitude.toString()))
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     /**

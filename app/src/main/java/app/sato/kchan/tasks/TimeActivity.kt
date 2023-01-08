@@ -72,12 +72,14 @@ class TimeActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val setting = HomeMemoListAdapter.settingData[position]
+        setting.clear()
         when(item.itemId){
             android.R.id.home->{
                 if (startText != "" && endText != "") {
-                    HomeMemoListAdapter.settingData[position] = "$startText 〜 $endText"
+                    setting.addAll(listOf("2", startText, endText))
                 } else if (startText != "") {
-                    HomeMemoListAdapter.settingData[position] = "$startText 〜"
+                    setting.addAll(listOf("1", startText))
                 }
                 finish()
             }
@@ -137,13 +139,19 @@ class TimeActivity: AppCompatActivity(){
                 // 開始時刻保存処理
                 startDateTimeList.add(3, hour)
                 startDateTimeList.add(4, minute)
-                startText = "$startText $hour:$minute"
+                if (hour < 10 && minute < 10) startText = "$startText 0$hour:0$minute"
+                else if (hour < 10) startText = "$startText 0$hour:$minute"
+                else if (minute < 10) startText = "$startText $hour:0$minute"
+                else startText = "$startText $hour:$minute"
                 binding.startText.text = "通知開始時間 : ${startText}"
             }
             else {
                 if (startDateTimeList[3] <= hour && startDateTimeList[4] <= minute) {
                     // 終了時刻保存処理
-                    endText = "$endText $hour:${minute+1}"
+                    if (hour < 10 && minute < 10) endText = "$endText 0$hour:0$minute"
+                    else if (hour < 10) endText = "$endText 0$hour:$minute"
+                    else if (minute < 10) endText = "$endText $hour:0$minute"
+                    else endText = "$endText $hour:$minute"
                     binding.endText.text = "通知終了時間 : ${endText}"
                 } else {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
