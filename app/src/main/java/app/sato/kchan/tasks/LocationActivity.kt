@@ -41,7 +41,7 @@ class LocationActivity: AppCompatActivity(){
             }
 
         // ドロップダウンリストの設定、場合分け
-        var location_list = listOf("未選択", "Mapを表示") // 仮置き
+        val location_list = listOf("未選択", "Mapを表示") // 仮置き
         val adapter = ArrayAdapter(this, R.layout.spinner, location_list)
 
         adapter.setDropDownViewResource(R.layout.spinner_dropdown)

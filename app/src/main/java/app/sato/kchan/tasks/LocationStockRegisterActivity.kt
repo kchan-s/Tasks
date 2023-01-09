@@ -22,9 +22,10 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
         binding.doneButton.setOnClickListener {
             // 保存処理
-
             val locationName = binding.locationName.text.toString()
             val location = binding.location.text.toString()
+
+            LocationStockAdapter.locationData[LocationStockAdapter.locationData.lastIndex][0] = locationName
 
             if (locationName != "" && location != "") {
                 // 保存処理

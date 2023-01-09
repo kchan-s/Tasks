@@ -57,6 +57,7 @@
         <entry key="app/src/main/res/layout/password_initialize_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/password_reset_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/password_resetting.xml" value="0.18478260869565216" />
+        <entry key="app/src/main/res/layout/question_adapter.xml" value="0.1" />
         <entry key="app/src/main/res/layout/reminder_setting.xml" value="0.1" />
         <entry key="app/src/main/res/layout/reminder_settings.xml" value="0.23178807947019867" />
         <entry key="app/src/main/res/layout/setting_account.xml" value="0.12132725430597771" />

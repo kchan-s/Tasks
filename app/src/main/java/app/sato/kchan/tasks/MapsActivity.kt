@@ -57,9 +57,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                val setting = HomeMemoListAdapter.settingData[position]
-                setting.clear()
-                setting.addAll(listOf("3", newLocation.latitude.toString(), newLocation.longitude.toString()))
+                if (position != -1) {
+                    val setting = HomeMemoListAdapter.settingData[position]
+                    setting.clear()
+                    setting.addAll(
+                        listOf(
+                            "3",
+                            newLocation.latitude.toString(),
+                            newLocation.longitude.toString()
+                        )
+                    )
+                } else {
+                    LocationStockAdapter.locationData.add(mutableListOf("", newLocation.latitude.toString(), newLocation.longitude.toString()))
+                }
                 finish()
             }
         }
