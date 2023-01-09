@@ -10,6 +10,7 @@ import app.sato.kchan.tasks.databinding.LocationStockActivityBinding
 
 class LocationStockActivity: AppCompatActivity(){
     private lateinit var binding: LocationStockActivityBinding
+    var adapter = LocationStockAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +21,7 @@ class LocationStockActivity: AppCompatActivity(){
         val recyclerView = binding.locationList
 
         //Adapterの設定
-        val adapter = LocationStockAdapter()
+        adapter = LocationStockAdapter()
         recyclerView.adapter = adapter
 
         //LayoutManagerの設定
@@ -41,6 +42,11 @@ class LocationStockActivity: AppCompatActivity(){
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adapter.notifyDataSetChanged()
     }
 
     // 戻るボタン

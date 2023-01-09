@@ -1,11 +1,14 @@
 package app.sato.kchan.tasks
 
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.LocationStockRegisterActivityBinding
+import java.util.*
 
 class LocationStockRegisterActivity: AppCompatActivity(){
     private lateinit var binding: LocationStockRegisterActivityBinding
@@ -25,12 +28,10 @@ class LocationStockRegisterActivity: AppCompatActivity(){
             val locationName = binding.locationName.text.toString()
             val location = binding.location.text.toString()
 
-            LocationStockAdapter.locationData[LocationStockAdapter.locationData.lastIndex][0] = locationName
-
             if (locationName != "" && location != "") {
-                // 保存処理
-                val intent = Intent(this, LocationStockActivity::class.java)
-                startActivity(intent)
+                val addr = doGeoCoding(location)
+                LocationStockAdapter.locationData.add(mutableListOf(locationName, addr[0].latitude.toString(), addr[0].longitude.toString()))
+                finish()
             } else {
                 Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
             }
@@ -42,6 +43,16 @@ class LocationStockRegisterActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val lData = LocationStockAdapter.locationData[LocationStockAdapter.locationData.lastIndex]
+        val addressLine = doReverseGeoCoding(lData[1].toDouble(), lData[2].toDouble()).get(0).getAddressLine(0).toString()
+        val addr = addressLine.split(" ")
+        if (lData[0] == "") {
+            binding.location.setText(addr[1])
+        }
+    }
+
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -50,6 +61,16 @@ class LocationStockRegisterActivity: AppCompatActivity(){
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun doGeoCoding(query: String): MutableList<Address> {
+        val gcoder = Geocoder(this, Locale.getDefault())
+        return gcoder.getFromLocationName(query, 1)
+    }
+
+    private fun doReverseGeoCoding(lat: Double, lng: Double) : MutableList<Address>{
+        val gcoder = Geocoder(this, Locale.getDefault())
+        return gcoder.getFromLocation(lat, lng, 1)
     }
 
     private fun loadTheme() {
