@@ -18,7 +18,7 @@ private class DBHelper(context: Context, databaseName:String, factory: SQLiteDat
     }
     override fun onUpgrade(database: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if (oldVersion < newVersion) {
-            database?.execSQL("alter table SampleTable add coumn deleteFlag integer default 0")
+            database?.execSQL("alter table SampleTable add column deleteFlag integer default 0")
         }
     }
 }
