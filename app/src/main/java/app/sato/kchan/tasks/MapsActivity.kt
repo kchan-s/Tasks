@@ -32,7 +32,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     var position = -1
     var first = true
-    var mFirst = true // marker が過去に生成されているか
+    var mFirst = true // marker生成が初めてか
     var newLocation = LatLng(0.0, 0.0) // 登録されているなら読み込み
     lateinit var marker: Marker
 
@@ -60,26 +60,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                if (position != -1) {
+                if (position != -1 && mFirst == false) {
                     val setting = HomeMemoListAdapter.settingData[position]
                     setting.clear()
                     setting.addAll(
-                        listOf(
-                            "3",
+                        mutableListOf(
+                            "4",
+                            "",
                             newLocation.latitude.toString(),
                             newLocation.longitude.toString()
                         )
                     )
-                } else {
-                    LocationStockAdapter.locationData.add(mutableListOf("", newLocation.latitude.toString(), newLocation.longitude.toString()))
+                } else if (position != -1){
+                    LocationStockAdapter.locationCoordinateData.add(listOf(newLocation.latitude, newLocation.longitude))
                 }
                 finish()
             }
         }
         return super.onOptionsItemSelected(item)
     }
-
-
 
     /**
      * Manipulates the map once available.
@@ -98,6 +97,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
 
         checkPermission()
+
+        if (HomeMemoListAdapter.settingData[position][0] == "3") {
+            newLocation = LatLng(HomeMemoListAdapter.settingData[position][2].toDouble(), HomeMemoListAdapter.settingData[position][3].toDouble())
+            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(HomeMemoListAdapter.settingData[position][1]))!!
+            mFirst = false
+        }
 
         mMap.setOnMapLongClickListener { longpushLocation: LatLng ->
             if (!mFirst) marker.remove()

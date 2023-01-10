@@ -5,12 +5,13 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-
+import app.sato.kchan.tasks.HomeActivity
 
 
 class DataOperator {
     //<プロパティ>
-    val dbHelper = DBHelper(applicationContext, "DB", null, 1);
+    lateinit var context: Context // エラー出てるんで仮置き
+    val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase
     //<初期化処理>
     init {

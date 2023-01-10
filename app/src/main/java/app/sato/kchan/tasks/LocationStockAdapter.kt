@@ -8,9 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 
 class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder>(){
     companion object{
-        val locationData = mutableListOf(mutableListOf("土佐山田駅", "33.607133", "133.685047"),
-            mutableListOf("高知工科大学", "33.620917", "133.719833"),
-            mutableListOf("高知駅", "33.567153", "133.543661"))
+        val locationNameData = mutableListOf("未選択", "土佐山田駅", "高知工科大学", "高知駅", "Mapを表示")
+        val locationCoordinateData = mutableListOf(listOf(33.607133, 133.685047),
+            listOf(33.620917, 133.719833),
+            listOf(33.567153, 133.543661))
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -27,10 +28,9 @@ class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val item = locationData[position]
-        viewHolder.locationText.text = item[0]
+        if (position != 0 || position != locationNameData.lastIndex) viewHolder.locationText.text = locationNameData[position]
     }
 
-    override fun getItemCount() = locationData.size
+    override fun getItemCount() = locationNameData.size
 
 }

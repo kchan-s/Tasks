@@ -27,7 +27,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             mutableListOf("2", "2022/11/8 13:20", "2022/11/9 15:08"),
             mutableListOf("0"),
             mutableListOf("0"),
-            mutableListOf("3", "高知工科大学", "33.620917", "133.719833"),
+            mutableListOf("3", "高知工科大学", "2", "33.620917", "133.719833"),
             mutableListOf("0"),
             mutableListOf("0"),
             mutableListOf("0"),
@@ -67,9 +67,9 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
         val item2 = settingData[position]
         when {
-            item2[0] == "1" -> viewHolder.settingText.text = item2[1]
-            item2[0] == "2" -> viewHolder.settingText.text = item2[1] + "〜" + item2[2]
-            item2[0] == "3" -> viewHolder.settingText.text = item2[1]
+            item2[0] == "1" -> viewHolder.settingText.text = item2[1] + " 〜"
+            item2[0] == "2" -> viewHolder.settingText.text = item2[1] + " 〜 " + item2[2]
+            item2[0] == "3" || item2[0] == "4" -> viewHolder.settingText.text = item2[1]
         }
 
         if (lock[position]) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)

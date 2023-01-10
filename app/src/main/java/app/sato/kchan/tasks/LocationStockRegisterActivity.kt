@@ -30,7 +30,8 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
             if (locationName != "" && location != "") {
                 val addr = doGeoCoding(location)
-                LocationStockAdapter.locationData.add(mutableListOf(locationName, addr[0].latitude.toString(), addr[0].longitude.toString()))
+                LocationStockAdapter.locationNameData.add(locationName)
+                LocationStockAdapter.locationCoordinateData.add(listOf(addr[0].latitude, addr[0].longitude))
                 finish()
             } else {
                 Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
@@ -45,12 +46,10 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        val lData = LocationStockAdapter.locationData[LocationStockAdapter.locationData.lastIndex]
-        val addressLine = doReverseGeoCoding(lData[1].toDouble(), lData[2].toDouble()).get(0).getAddressLine(0).toString()
+        val lData = LocationStockAdapter.locationCoordinateData[LocationStockAdapter.locationCoordinateData.lastIndex]
+        val addressLine = doReverseGeoCoding(lData[0], lData[1]).get(0).getAddressLine(0).toString()
         val addr = addressLine.split(" ")
-        if (lData[0] == "") {
-            binding.location.setText(addr[1])
-        }
+        binding.location.setText(addr[1])
     }
 
     // 戻るボタン

@@ -64,7 +64,7 @@ class EditActivity : AppCompatActivity() {
             android.R.id.home -> {
                 // 戻るボタン
                 //backButton_onClick()
-                if (HomeActivity.new) {
+                if (HomeActivity.new && binding.titleEdit.text.toString() != "") {
                     HomeMemoListAdapter.titleData.add(binding.titleEdit.text.toString())
                     HomeMemoListAdapter.detailData.add(binding.memoEdit.text.toString())
                     HomeMemoListAdapter.lock.add(l)

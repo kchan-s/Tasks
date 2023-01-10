@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-private class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.CursorFactory?, version: Int) : SQLiteOpenHelper(context, databaseName, factory, version) {
+class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.CursorFactory?, version: Int) : SQLiteOpenHelper(context, databaseName, factory, version) {
 
     override fun onCreate(database: SQLiteDatabase?) {
         database?.execSQL("create table if not exists service (service_id INTEGER NOT NULL PRIMARY KEY, create_at TEXT NOT NULL, service_name TEXT NOT NULL, type INTEGER NOT NULL, version INTEGER NOT NULL DEFAULT 1, notification_token TEXT, connect_token TEXT NOT NULL, synchronize_at TEXT NOT NULL, status_flag INTEGER NOT NULL DEFAULT 0, name_update_at TEXT NOT NULL, others_update_at TEXT NOT NULL, status_update_at TEXT NOT NULL)"

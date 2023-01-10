@@ -44,12 +44,24 @@
         android:gravity="center"
         android:paddingLeft="20sp" />
 
+    <EditText
+        android:id="@+id/location_name_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="30sp"
+        android:ems="10"
+        android:hint="登録した場所の名前を入力してください"
+        android:inputType="text"
+        android:visibility="invisible" />
+
     <Button
         android:id="@+id/map_button"
         android:layout_width="match_parent"
         android:layout_height="80sp"
         android:layout_marginStart="30sp"
-        android:layout_marginTop="30sp"
+        android:layout_marginTop="20sp"
         android:layout_marginEnd="30sp"
         android:backgroundTint="#99B3D1"
         android:text="Mapを表示"
