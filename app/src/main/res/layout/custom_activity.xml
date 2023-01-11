@@ -7,12 +7,13 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/custom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ToolbarTheme">
 
         <TextView
+            android:id="@+id/custom_tool_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -27,7 +28,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <Switch
-        android:id="@+id/dark_switch"
+        android:id="@+id/custom_dark_switch"
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:layout_marginStart="20sp"
@@ -37,7 +38,7 @@
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/custom_color_change_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10sp"

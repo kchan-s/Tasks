@@ -18,16 +18,16 @@ class PasswordChangeActivity: AppCompatActivity(){
         binding = PasswordChangeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // パスワードを忘れた方はこちらボタンタップ処理
-        binding.passReset.setOnClickListener {
+        binding.passwordChangeResetButton.setOnClickListener {
             val reset = Intent(this, PasswordResetActivity::class.java)
             startActivity(reset)
         }
 
         // 設定完了ボタンタップ処理
-        binding.passDone.setOnClickListener {
-            val nowPassword = binding.changeNow.text.toString()
-            val newPassword = binding.changeNew.text.toString()
-            val verification = binding.changeVerification.text.toString()
+        binding.passwordChangeDoneButton.setOnClickListener {
+            val nowPassword = binding.passwordChangeNowEdit.text.toString()
+            val newPassword = binding.passwordChangeNewEdit.text.toString()
+            val verification = binding.passwordChangeVerificationEdit.text.toString()
             if (nowPassword.length >= 8 && newPassword.length >= 8 && verification.length >= 8) {
                 // 今のパスワードがあっているか判定が必要
                 when {
@@ -50,7 +50,7 @@ class PasswordChangeActivity: AppCompatActivity(){
 
         }
 
-        binding.changeNow.addTextChangedListener(object: TextWatcher {
+        binding.passwordChangeNowEdit.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -66,7 +66,7 @@ class PasswordChangeActivity: AppCompatActivity(){
             }
         })
 
-        binding.changeNew.addTextChangedListener(object: TextWatcher {
+        binding.passwordChangeNewEdit.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -80,7 +80,7 @@ class PasswordChangeActivity: AppCompatActivity(){
             }
         })
 
-        binding.changeVerification.addTextChangedListener(object: TextWatcher {
+        binding.passwordChangeVerificationEdit.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -94,7 +94,7 @@ class PasswordChangeActivity: AppCompatActivity(){
             }
         })
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.passwordChangeToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

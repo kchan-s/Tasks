@@ -6,12 +6,13 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/time_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ToolbarTheme">
 
         <TextView
+            android:id="@+id/time_tool_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -26,7 +27,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <Switch
-        android:id="@+id/time_setting"
+        android:id="@+id/time_setting_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10sp"
@@ -37,7 +38,7 @@
         android:textSize="20sp" />
 
     <Button
-        android:id="@+id/start"
+        android:id="@+id/time_start_setting_button"
         android:layout_width="match_parent"
         android:layout_height="80sp"
         android:layout_marginStart="20sp"
@@ -49,7 +50,7 @@
         android:visibility="invisible" />
 
     <TextView
-        android:id="@+id/start_text"
+        android:id="@+id/time_start_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15sp"
@@ -58,7 +59,7 @@
         android:visibility="invisible" />
 
     <Button
-        android:id="@+id/end"
+        android:id="@+id/time_end_setting_button"
         android:layout_width="match_parent"
         android:layout_height="80sp"
         android:layout_marginStart="20sp"
@@ -70,7 +71,7 @@
         android:visibility="invisible" />
 
     <TextView
-        android:id="@+id/end_text"
+        android:id="@+id/time_end_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15sp"

@@ -8,13 +8,13 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/edit_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ToolbarTheme">
 
         <EditText
-            android:id="@+id/titleEdit"
+            android:id="@+id/edit_title_edit"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_gravity="center"
@@ -26,7 +26,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <EditText
-        android:id="@+id/memoEdit"
+        android:id="@+id/edit_memo_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20sp"

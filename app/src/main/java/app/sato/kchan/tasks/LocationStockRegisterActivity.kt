@@ -12,33 +12,37 @@ import java.util.*
 
 class LocationStockRegisterActivity: AppCompatActivity(){
     private lateinit var binding: LocationStockRegisterActivityBinding
+    lateinit var locationNameList: MutableList<String>
+    lateinit var locationCoordinateList: MutableList<List<Double>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = LocationStockRegisterActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        locationNameList = LocationStockAdapter.locationNameData
+        locationCoordinateList = LocationStockAdapter.locationCoordinateData
 
-        binding.mapButton.setOnClickListener {
-            val map = Intent(this, MapsActivity::class.java)
+        binding.locationStockRegisterMapButton.setOnClickListener {
+            val map = Intent(this, MapActivity::class.java)
             startActivity(map)
         }
 
-        binding.doneButton.setOnClickListener {
+        binding.locationStockRegisterDoneButton.setOnClickListener {
             // 保存処理
-            val locationName = binding.locationName.text.toString()
-            val location = binding.location.text.toString()
+            val locationName = binding.locationStockRegisterNameEdit.text.toString()
+            val locationAddress = binding.locationStockRegisterAddressEdit.text.toString()
 
-            if (locationName != "" && location != "") {
-                val addr = doGeoCoding(location)
-                LocationStockAdapter.locationNameData.add(locationName)
-                LocationStockAdapter.locationCoordinateData.add(listOf(addr[0].latitude, addr[0].longitude))
+            if (locationName != "" && locationAddress != "") {
+                val addr = doGeoCoding(locationAddress)
+                locationNameList.add(locationName)
+                locationCoordinateList.add(listOf(addr[0].latitude, addr[0].longitude))
                 finish()
             } else {
                 Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
             }
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.locationStockRegisterToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -46,10 +50,10 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        val lData = LocationStockAdapter.locationCoordinateData[LocationStockAdapter.locationCoordinateData.lastIndex]
+        val lData = locationCoordinateList[locationCoordinateList.lastIndex]
         val addressLine = doReverseGeoCoding(lData[0], lData[1]).get(0).getAddressLine(0).toString()
         val addr = addressLine.split(" ")
-        binding.location.setText(addr[1])
+        binding.locationStockRegisterNameEdit.setText(addr[1])
     }
 
     // 戻るボタン

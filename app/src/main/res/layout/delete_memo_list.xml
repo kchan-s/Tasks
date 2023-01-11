@@ -15,14 +15,14 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/delete_title_text"
+            android:id="@+id/delete_list_title_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5sp"
             android:textSize="25sp" />
 
         <TextView
-            android:id="@+id/delete_setting_text"
+            android:id="@+id/delete_list_setting_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5sp"
@@ -31,7 +31,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/lock"
+        android:id="@+id/delete_list_lock_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"

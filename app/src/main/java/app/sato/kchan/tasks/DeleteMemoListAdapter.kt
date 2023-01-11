@@ -12,8 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHolder>() {
 
     val titleData = HomeMemoListAdapter.titleData
-    val settingData = HomeMemoListAdapter.settingData
-    val lock = HomeMemoListAdapter.lock
+    val notificationSettingData = HomeMemoListAdapter.notificationSettingData
+    val lockData = HomeMemoListAdapter.lockData
+    
     companion object {
         val selectedItemPositions = mutableSetOf<Int>()
     }
@@ -24,10 +25,10 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         val memo: LinearLayout
         val lockImage: ImageView
         init {
-            titleText = view.findViewById(R.id.delete_title_text)
-            settingText = view.findViewById(R.id.delete_setting_text)
+            titleText = view.findViewById(R.id.delete_list_title_text)
+            settingText = view.findViewById(R.id.delete_list_setting_text)
             memo = view.findViewById(R.id.delete_memo)
-            lockImage = view.findViewById(R.id.lock)
+            lockImage = view.findViewById(R.id.delete_list_lock_image)
         }
     }
 
@@ -38,17 +39,16 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val item = titleData[position]
-        viewHolder.titleText.text = item
-
-        val item2 = settingData[position]
+        viewHolder.titleText.text = titleData[position]
+        val notification = notificationSettingData[position]
+        
         when {
-            item2[0] == "1" -> viewHolder.settingText.text = item2[1] + "〜"
-            item2[0] == "2" -> viewHolder.settingText.text = item2[1] + "〜" + item2[2]
-            item2[0] == "3" -> viewHolder.settingText.text = item2[1]
+            notification[0] == "1" -> viewHolder.settingText.text = notification[1] + "〜"
+            notification[0] == "2" -> viewHolder.settingText.text = notification[1] + "〜" + notification[2]
+            notification[0] == "3" -> viewHolder.settingText.text = notification[1]
         }
 
-        if (lock[position]) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
+        if (lockData[position]) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImage.setImageResource(R.drawable.space)
 
         viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
@@ -56,7 +56,7 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
             override fun onClick(v: View) {
                 val touchPosition = viewHolder.adapterPosition
                 v.setOnClickListener {
-                    if (!lock[touchPosition]) {
+                    if (!lockData[touchPosition]) {
                         if (isSelectedItem(touchPosition)) {
                             viewHolder.memo.setBackgroundColor(Color.WHITE)
                             removeSelectedItem(touchPosition)

@@ -22,7 +22,7 @@ class CustomActivity: AppCompatActivity(){
         setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
         binding = CustomActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        binding.darkSwitch.setOnCheckedChangeListener { _, isChanged ->
+        binding.customDarkSwitch.setOnCheckedChangeListener { _, isChanged ->
             // データベースから現状の値を読み込んで入れる必要あり
             if (isChanged) {
                 // ダークモード
@@ -49,7 +49,7 @@ class CustomActivity: AppCompatActivity(){
             overridePendingTransition(0, 0)
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.customToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

@@ -21,9 +21,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    // マップ表示用のアクティビティ、現状触らなくていいです
     private lateinit var mMap: GoogleMap
     private lateinit var binding: MapActivityBinding
 
@@ -35,13 +34,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     var mFirst = true // marker生成が初めてか
     var newLocation = LatLng(0.0, 0.0) // 登録されているなら読み込み
     lateinit var marker: Marker
+    lateinit var notificationDataList: MutableList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = MapActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = MapActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+
         position = intent.getIntExtra("position", -1)
+        notificationDataList = HomeMemoListAdapter.notificationSettingData[position]
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -50,7 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.mapToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -61,9 +62,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         when(item.itemId){
             android.R.id.home->{
                 if (position != -1 && mFirst == false) {
-                    val setting = HomeMemoListAdapter.settingData[position]
-                    setting.clear()
-                    setting.addAll(
+                    notificationDataList.clear()
+                    notificationDataList.addAll(
                         mutableListOf(
                             "4",
                             "",
@@ -98,9 +98,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         checkPermission()
 
-        if (HomeMemoListAdapter.settingData[position][0] == "3") {
-            newLocation = LatLng(HomeMemoListAdapter.settingData[position][2].toDouble(), HomeMemoListAdapter.settingData[position][3].toDouble())
-            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(HomeMemoListAdapter.settingData[position][1]))!!
+        if (notificationDataList[0] == "3") {
+            newLocation = LatLng(notificationDataList[2].toDouble(), notificationDataList[3].toDouble())
+            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(notificationDataList[1]))!!
             mFirst = false
         }
 

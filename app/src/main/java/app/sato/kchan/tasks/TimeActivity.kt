@@ -28,16 +28,16 @@ class TimeActivity: AppCompatActivity(){
         position = intent.getIntExtra("position", -1)
 
         // トグルの値読み込みが必要
-        binding.timeSetting.setOnCheckedChangeListener { _, isChecked ->
+        binding.timeSettingSwitch.setOnCheckedChangeListener { _, isChecked ->
             // トグルがONの時の処理
             if (isChecked) {
-                binding.start.isVisible = true
-                binding.startText.isVisible = true
-                binding.end.isVisible = true
-                binding.endText.isVisible = true
+                binding.timeStartText.isVisible = true
+                binding.timeStartSettingButton.isVisible = true
+                binding.timeEndText.isVisible = true
+                binding.timeEndSettingButton.isVisible = true
 
                 // ↓showButton_onClick()
-                binding.start.setOnClickListener {
+                binding.timeStartSettingButton.setOnClickListener {
                     start = true
                     startTimeSetting = true
                     showDatePickerDialog()
@@ -45,7 +45,7 @@ class TimeActivity: AppCompatActivity(){
                 }
 
                 // ↓hideButton_onClick()
-                binding.end.setOnClickListener {
+                binding.timeEndSettingButton.setOnClickListener {
                     if (!startTimeSetting) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
                     else {
                         start = false
@@ -56,15 +56,15 @@ class TimeActivity: AppCompatActivity(){
             }
             // トグルがOFFの時の処理
             else {
-                binding.start.isVisible = false
-                binding.startText.isVisible = false
-                binding.end.isVisible = false
-                binding.endText.isVisible = false
+                binding.timeStartText.isVisible = false
+                binding.timeStartSettingButton.isVisible = false
+                binding.timeEndText.isVisible = false
+                binding.timeEndSettingButton.isVisible = false
                 //del (time and date)settingが必要
             }
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.timeToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -72,7 +72,7 @@ class TimeActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val setting = HomeMemoListAdapter.settingData[position]
+        val setting = HomeMemoListAdapter.notificationSettingData[position]
         setting.clear()
         when(item.itemId){
             android.R.id.home->{
@@ -143,7 +143,7 @@ class TimeActivity: AppCompatActivity(){
                 else if (hour < 10) startText = "$startText 0$hour:$minute"
                 else if (minute < 10) startText = "$startText $hour:0$minute"
                 else startText = "$startText $hour:$minute"
-                binding.startText.text = "通知開始時間 : ${startText}"
+                binding.timeStartText.text = "通知開始時間 : ${startText}"
             }
             else {
                 if (startDateTimeList[3] <= hour && startDateTimeList[4] <= minute) {
@@ -152,7 +152,7 @@ class TimeActivity: AppCompatActivity(){
                     else if (hour < 10) endText = "$endText 0$hour:$minute"
                     else if (minute < 10) endText = "$endText $hour:0$minute"
                     else endText = "$endText $hour:$minute"
-                    binding.endText.text = "通知終了時間 : ${endText}"
+                    binding.timeEndText.text = "通知終了時間 : ${endText}"
                 } else {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 }

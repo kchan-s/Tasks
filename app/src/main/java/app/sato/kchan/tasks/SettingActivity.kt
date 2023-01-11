@@ -21,7 +21,7 @@ class SettingActivity : AppCompatActivity() {
         val data = listOf("カスタマイズ", "アカウント","初期通知時間", "よく行く場所", "自動削除", "ヘルプ")
 
         // ListViewにデータをセットする
-        val list = binding.listview
+        val list = binding.settingList
         list.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
@@ -82,7 +82,7 @@ class SettingActivity : AppCompatActivity() {
         }
 
         // ツールバーの設定(触らなくていいです)
-        val toolbar = binding.toolbar
+        val toolbar = binding.settingToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

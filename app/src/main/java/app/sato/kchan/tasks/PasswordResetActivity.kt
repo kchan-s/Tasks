@@ -20,12 +20,12 @@ class PasswordResetActivity: AppCompatActivity(){
         // 質問を取得して表示する処理が必要
 
         // 設定完了ボタンタップ処理
-        binding.ResetDoneButton.setOnClickListener {
-            val answer1 = binding.answer1.text.toString()
-            val answer2 = binding.answer2.text.toString()
-            val answer3 = binding.answer3.text.toString()
-            val password = binding.resetNew.text.toString()
-            val verification = binding.resetVerification.text.toString()
+        binding.passwordResetDoneButton.setOnClickListener {
+            val answer1 = binding.passwordResetAnswer1Edit.text.toString()
+            val answer2 = binding.passwordResetAnswer2Edit.text.toString()
+            val answer3 = binding.passwordResetAnswer3Edit.text.toString()
+            val password = binding.passwordResetNewEdit.text.toString()
+            val verification = binding.passwordResetVerificationEdit.text.toString()
 
             // 質問が選択されていない場合の場合分けも行う
             when {
@@ -52,7 +52,7 @@ class PasswordResetActivity: AppCompatActivity(){
             }
         }
 
-        binding.resetNew.addTextChangedListener(object: TextWatcher {
+        binding.passwordResetNewEdit.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -66,7 +66,7 @@ class PasswordResetActivity: AppCompatActivity(){
             }
         })
 
-        binding.resetVerification.addTextChangedListener(object: TextWatcher {
+        binding.passwordResetVerificationEdit.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -80,7 +80,7 @@ class PasswordResetActivity: AppCompatActivity(){
             }
         })
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.passwordResetToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

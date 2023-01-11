@@ -19,7 +19,7 @@ class DeleteActivity: AppCompatActivity() {
         binding = DeleteActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         //RecyclerViewの取得
-        val recyclerView = binding.memo
+        val recyclerView = binding.deleteList
 
         //Adapterの設定
         val adapter = DeleteMemoListAdapter()
@@ -33,7 +33,7 @@ class DeleteActivity: AppCompatActivity() {
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(itemDecoration)
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.deleteToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -56,9 +56,9 @@ class DeleteActivity: AppCompatActivity() {
                 for (i in deletePosition) {
                     HomeMemoListAdapter.titleData.removeAt(i)
                     HomeMemoListAdapter.detailData.removeAt(i)
-                    HomeMemoListAdapter.settingData.removeAt(i)
-                    HomeMemoListAdapter.lock.removeAt(i)
-                    HomeMemoListAdapter.comp.removeAt(i)
+                    HomeMemoListAdapter.notificationSettingData.removeAt(i)
+                    HomeMemoListAdapter.lockData.removeAt(i)
+                    HomeMemoListAdapter.completeData.removeAt(i)
                 }
                 // 削除処理
                 finish()

@@ -23,32 +23,41 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class LocationActivity: AppCompatActivity(){
     private lateinit var binding: LocationActivityBinding
-    var position = -1 // 初期値
     val locationNameList = LocationStockAdapter.locationNameData
     val locationCoordinateList = LocationStockAdapter.locationCoordinateData
+    var position = -1 // 初期値
+    lateinit var notificationList: MutableList<String>
 
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
-
         position = intent.getIntExtra("position", -1)
+        notificationList = HomeMemoListAdapter.notificationSettingData[position]
 
         // ドロップダウンリストの設定、場合分け
 
-        val adapter = ArrayAdapter(this, R.layout.spinner, locationNameList)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, locationNameList)
 
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown)
-        binding.locationSpinner.adapter = adapter
-        binding.locationSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.locationSettingSpinner.adapter = adapter
+        binding.locationSettingSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
                 if (pos == locationNameList.lastIndex) {
-                    binding.mapButton.isVisible = true
+                    binding.locationMapButton.isVisible = true
                 } else if (pos != 0) {
                     // 場所設定
-                    HomeMemoListAdapter.settingData[position].clear()
-                    HomeMemoListAdapter.settingData[position].addAll(mutableListOf("3", locationNameList[pos], pos.toString(), locationCoordinateList[pos-1][0].toString(), locationCoordinateList[pos-1][1].toString()))
+                    notificationList.clear()
+                    notificationList.addAll(
+                        mutableListOf(
+                            "3",
+                            locationNameList[pos],
+                            pos.toString(),
+                            locationCoordinateList[pos-1][0].toString(),
+                            locationCoordinateList[pos-1][1].toString()
+                        )
+                    )
                 }
             }
 
@@ -56,17 +65,17 @@ class LocationActivity: AppCompatActivity(){
         }
 
         // map表示ボタンクリック時の処理
-        binding.mapButton.setOnClickListener {
-            val map = Intent(this, MapsActivity::class.java)
+        binding.locationMapButton.setOnClickListener {
+            val map = Intent(this, MapActivity::class.java)
             map.putExtra("position", position)
             startActivity(map)
         }
 
-        if (HomeMemoListAdapter.settingData[position][0] == "3") {
-            binding.locationSpinner.setSelection(HomeMemoListAdapter.settingData[position][2].toInt())
+        if (notificationList[0] == "3") {
+            binding.locationSettingSpinner.setSelection(notificationList[2].toInt())
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.locationToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -74,10 +83,10 @@ class LocationActivity: AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        if (HomeMemoListAdapter.settingData[position][0] == "4") {
+        if (notificationList[0] == "4") {
             binding.locationNameEdit.isVisible = true
-            binding.locationNameEdit.setText(HomeMemoListAdapter.settingData[position][1])
-            binding.locationSpinner.setSelection(locationNameList.lastIndex)
+            binding.locationNameEdit.setText(notificationList[1])
+            binding.locationSettingSpinner.setSelection(locationNameList.lastIndex)
         }
     }
 
@@ -85,8 +94,8 @@ class LocationActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                if (HomeMemoListAdapter.settingData[position][0] == "4") {
-                    HomeMemoListAdapter.settingData[position][1] = binding.locationNameEdit.text.toString()
+                if (notificationList[0] == "4") {
+                    notificationList[1] = binding.locationNameEdit.text.toString()
                 }
                 finish()
             }

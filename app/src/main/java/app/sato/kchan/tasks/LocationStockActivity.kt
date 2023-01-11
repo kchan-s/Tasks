@@ -18,7 +18,7 @@ class LocationStockActivity: AppCompatActivity(){
         binding = LocationStockActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         //RecyclerViewの取得
-        val recyclerView = binding.locationList
+        val recyclerView = binding.locationStockList
 
         //Adapterの設定
         adapter = LocationStockAdapter()
@@ -33,12 +33,12 @@ class LocationStockActivity: AppCompatActivity(){
         recyclerView.addItemDecoration(itemDecoration)
 
         // LocationStockRegisterActivityへの遷移
-        binding.registerButton.setOnClickListener {
+        binding.locationStockRegisterButton.setOnClickListener {
             val intent = Intent(this, LocationStockRegisterActivity::class.java)
             startActivity(intent)
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.locationStockToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

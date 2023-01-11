@@ -7,12 +7,13 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/login_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ToolbarTheme">
 
         <TextView
+            android:id="@+id/login_tool_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -27,7 +28,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
-        android:id="@+id/account_id_text"
+        android:id="@+id/login_id_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
@@ -36,8 +37,9 @@
         android:text="アカウントID"
         android:textSize="20sp" />
 
+
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/login_account_id_layout"
+        android:id="@+id/login_password_id_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
@@ -45,17 +47,17 @@
         app:boxBackgroundColor="#FFFFFF">
 
         <EditText
-            android:id="@+id/account_id_login"
+            android:id="@+id/login_id_edit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10sp"
-            android:inputType="textPersonName"
+            android:inputType="text|textEmailAddress"
             android:maxLength="6" />
-
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <TextView
-        android:id="@+id/password_text"
+        android:id="@+id/login_password_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
@@ -65,7 +67,7 @@
         android:textSize="20sp" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/login_password_layout"
+        android:id="@+id/login_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
@@ -74,7 +76,7 @@
         app:passwordToggleEnabled="true">
 
         <EditText
-            android:id="@+id/password_login"
+            android:id="@+id/login_password_edit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10sp"
@@ -84,7 +86,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/account_login"
+        android:id="@+id/login_done_button"
         android:layout_width="match_parent"
         android:layout_height="80sp"
         android:layout_marginStart="20sp"

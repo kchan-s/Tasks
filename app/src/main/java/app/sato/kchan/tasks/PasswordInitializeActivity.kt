@@ -22,21 +22,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
         loadTheme()
         binding = PasswordInitializeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        binding.initializeVerification.addTextChangedListener(object: TextWatcher{
-            override fun afterTextChanged(p0: Editable?) {}
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length!! < 8) {
-                    binding.passwordInitializeNewLayout.error = "8文字以上入力してください"
-                } else {
-                    binding.passwordInitializeNewLayout.error = null
-                }
-            }
-        })
-
-        binding.initializeNew.addTextChangedListener(object: TextWatcher{
+        binding.passwordInitializeSettingEdit.addTextChangedListener(object: TextWatcher{
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -51,15 +37,15 @@ class PasswordInitializeActivity: AppCompatActivity(){
         })
 
         // 設定完了ボタンタップ処理
-        binding.InitializeDoneButton.setOnClickListener {
-            val question1 = binding.question1.selectedItemPosition
-            val question2 = binding.question2.selectedItemPosition
-            val question3 = binding.question3.selectedItemPosition
-            val answer1 = binding.answer1.text.toString()
-            val answer2 = binding.answer2.text.toString()
-            val answer3 = binding.answer3.text.toString()
-            val password = binding.initializeNew.text.toString()
-            val verification = binding.initializeVerification.text.toString()
+        binding.passwordInitializeDoneButton.setOnClickListener {
+            val question1 = binding.passwordInitializeQuestion1Spinner.selectedItemPosition
+            val question2 = binding.passwordInitializeQuestion2Spinner.selectedItemPosition
+            val question3 = binding.passwordInitializeQuestion3Spinner.selectedItemPosition
+            val answer1 = binding.passwordInitializeAnswer1Edit.text.toString()
+            val answer2 = binding.passwordInitializeAnswer2Edit.text.toString()
+            val answer3 = binding.passwordInitializeAnswer3Edit.text.toString()
+            val password = binding.passwordInitializeSettingEdit.text.toString()
+            val verification = binding.passwordInitializeVerification.text.toString()
 
             // 質問が選択されていない場合の場合分けも行う
             when {
@@ -96,27 +82,27 @@ class PasswordInitializeActivity: AppCompatActivity(){
                 "卒業した小学校は？",
                 "初めて買ったCDは？",
                 "初めて買った車は？")
-        val adapter = ArrayAdapter(this, R.layout.spinner, question)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, question)
 
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown)
-        binding.question1.adapter = adapter
-        binding.question2.adapter = adapter
-        binding.question2.setSelection(1)
-        binding.question2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.passwordInitializeQuestion1Spinner.adapter = adapter
+        binding.passwordInitializeQuestion2Spinner.adapter = adapter
+        binding.passwordInitializeQuestion2Spinner.setSelection(1)
+        binding.passwordInitializeQuestion2Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (binding.question2.selectedItemPosition == binding.question1.selectedItemPosition) {
+                if (binding.passwordInitializeQuestion2Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
                     Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-        binding.question3.adapter = adapter
-        binding.question3.setSelection(2)
-        binding.question3.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.passwordInitializeQuestion3Spinner.adapter = adapter
+        binding.passwordInitializeQuestion3Spinner.setSelection(2)
+        binding.passwordInitializeQuestion3Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (binding.question3.selectedItemPosition == binding.question1.selectedItemPosition) {
+                if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
                     Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
-                } else if (binding.question3.selectedItemPosition == binding.question2.selectedItemPosition) {
+                } else if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion2Spinner.selectedItemPosition) {
                     Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
                 }
             }
@@ -124,7 +110,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
         }
 
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.passwordInitializeToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

@@ -15,16 +15,16 @@ class AccountActivity: AppCompatActivity(){
         binding = AccountActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // アカウント切り替えボタンを押した時の処理
-        binding.accountSwitch.setOnClickListener {
+        binding.accountChangeButton.setOnClickListener {
             accountChangeButton_onClick()
         }
 
         // パスワード設定ボタンを押した時の処理
-        binding.passwordSetting.setOnClickListener {
+        binding.accountPasswordSettingButton.setOnClickListener {
             passwordButton_onClick()
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.accountToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -49,10 +49,7 @@ class AccountActivity: AppCompatActivity(){
     //画面遷移　パスワード　設定OR初期設定
     private fun passwordButton_onClick() {
         val aPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
-        var passwordInitialize = aPreferences.getBoolean("passwordInitialize", true)
-        println(passwordInitialize)
-        //initialize = false  //仮かこれでいいのか？
-        // パスワードが初期設定か判定し、遷移先を変える
+        val passwordInitialize = aPreferences.getBoolean("passwordInitialize", true)
         if (passwordInitialize) {
             val passIni = Intent(this, PasswordInitializeActivity::class.java)
             startActivity(passIni)

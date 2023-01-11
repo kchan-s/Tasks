@@ -23,11 +23,11 @@ class EditActivity : AppCompatActivity() {
             val title = HomeMemoListAdapter.titleData[position]
             val detail = HomeMemoListAdapter.detailData[position]
             // タイトルと詳細をいれる
-            binding.titleEdit.setText(title)
-            binding.memoEdit.setText(detail)
+            binding.editTitleEdit.setText(title)
+            binding.editMemoEdit.setText(detail)
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.editToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -64,11 +64,11 @@ class EditActivity : AppCompatActivity() {
             android.R.id.home -> {
                 // 戻るボタン
                 //backButton_onClick()
-                if (HomeActivity.new && binding.titleEdit.text.toString() != "") {
-                    HomeMemoListAdapter.titleData.add(binding.titleEdit.text.toString())
-                    HomeMemoListAdapter.detailData.add(binding.memoEdit.text.toString())
-                    HomeMemoListAdapter.lock.add(l)
-                    HomeMemoListAdapter.comp.add(false) // 作成時点ではcheckはfalse
+                if (HomeActivity.new && binding.editTitleEdit.text.toString() != "") {
+                    HomeMemoListAdapter.titleData.add(binding.editTitleEdit.text.toString())
+                    HomeMemoListAdapter.detailData.add(binding.editMemoEdit.text.toString())
+                    HomeMemoListAdapter.lockData.add(l)
+                    HomeMemoListAdapter.completeData.add(false) // 作成時点ではcheckはfalse
                     HomeActivity.new = false
                 }
                 finish()

@@ -22,7 +22,7 @@ class HomeActivity : AppCompatActivity() {
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         //RecyclerViewの取得
-        val recyclerView = binding.memo
+        val recyclerView = binding.homeList
 
         //Adapterの設定
         recyclerView.adapter = adapter
@@ -34,30 +34,15 @@ class HomeActivity : AppCompatActivity() {
         // 境界線の設定
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(itemDecoration)
-/*
-        binding.homeSetting.setOnClickListener {
-            val settingIntent = Intent(this, SettingActivity::class.java)
-            startActivity(settingIntent)
-        }
 
-        binding.homeTrash.setOnClickListener {
-            val deleteIntent = Intent(this, DeleteActivity::class.java)
-            startActivity(deleteIntent)
-        }
-
-        binding.floatingActionButton.setOnClickListener {
-            val newIntent = Intent(this, EditActivity::class.java)
-            startActivity(newIntent)
-        }
- */
-        binding.homeSetting.setOnClickListener {
+        binding.homeSettingButton.setOnClickListener {
             settingButton_onClick()
         }
 
-        binding.homeTrash.setOnClickListener {
+        binding.homeTrashButton.setOnClickListener {
             deleteButton_onClick()
         }
-        binding.floatingActionButton.setOnClickListener {
+        binding.homeCreateMemoButton.setOnClickListener {
             newButton_onClick()
         }
     }

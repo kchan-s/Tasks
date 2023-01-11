@@ -9,9 +9,6 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 
 class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
@@ -21,7 +18,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     companion object {
         val titleData = mutableListOf("メモ1", "メモ2", "メモ3", "メモ4", "メモ5", "メモ6", "メモ7", "メモ8", "メモ9", "メモ10", "a", "b", "c", "d", "e")
         val detailData = mutableListOf("1", "", "あ", "", "", "", "う", "", "", "か", "", "", "お", "く", "")
-        val settingData = mutableListOf(
+        val notificationSettingData = mutableListOf(
             mutableListOf("0"),
             mutableListOf("0"),
             mutableListOf("2", "2022/11/8 13:20", "2022/11/9 15:08"),
@@ -38,21 +35,16 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             mutableListOf("0"),
             mutableListOf("0")
         )
-        var comp = mutableListOf(false, true, false, false, false, false, false, false, false, false, false, false, false, false, false) // 完了・未完了
-        var lock = mutableListOf(true, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
+        var completeData = mutableListOf(false, true, false, false, false, false, false, false, false, false, false, false, false, false, false) // 完了・未完了
+        var lockData = mutableListOf(true, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val titleText: TextView
-        val settingText: TextView
-        val lockImageView: ImageView
-        val checkBox: CheckBox
-        init {
-            titleText = view.findViewById(R.id.title_text)
-            settingText = view.findViewById(R.id.setting_text)
-            lockImageView = view.findViewById(R.id.lock_image)
-            checkBox = view.findViewById(R.id.check_box)
-        }
+        val titleText = view.findViewById<TextView>(R.id.home_list_title_text)
+        val settingText = view.findViewById<TextView>(R.id.home_list_notification_text)
+        val lockImageView = view.findViewById<ImageView>(R.id.home_list_lock_image)
+        val checkBox = view.findViewById<CheckBox>(R.id.home_list_check_box)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -65,32 +57,32 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val item = titleData[position]
         viewHolder.titleText.text = item
 
-        val item2 = settingData[position]
+        val item2 = notificationSettingData[position]
         when {
             item2[0] == "1" -> viewHolder.settingText.text = item2[1] + " 〜"
             item2[0] == "2" -> viewHolder.settingText.text = item2[1] + " 〜 " + item2[2]
             item2[0] == "3" || item2[0] == "4" -> viewHolder.settingText.text = item2[1]
         }
 
-        if (lock[position]) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
+        if (lockData[position]) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImageView.setImageResource(R.drawable.space)
-        if (comp[position]) viewHolder.checkBox.isChecked = true
+        if (completeData[position]) viewHolder.checkBox.isChecked = true
 
         viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
                 val aPosition = viewHolder.adapterPosition
 
                 viewHolder.lockImageView.setOnClickListener {
-                    if (lock[aPosition]) {
-                        lock[aPosition] = false
+                    if (lockData[aPosition]) {
+                        lockData[aPosition] = false
                         viewHolder.lockImageView.setImageResource(R.drawable.space)
                     } else {
-                        lock[aPosition] = true
+                        lockData[aPosition] = true
                         viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
                     }
                 }
                 viewHolder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    comp[aPosition] = isChecked
+                    completeData[aPosition] = isChecked
                 }
 
                 v.setOnClickListener { view ->

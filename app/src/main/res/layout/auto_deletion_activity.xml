@@ -6,12 +6,13 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/auto_deletion_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/ToolbarTheme">
 
         <TextView
+            android:id="@+id/auto_deletion_tool_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -36,7 +37,7 @@
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/explanation_text"
+        android:id="@+id/auto_deletion_explanation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
@@ -46,7 +47,7 @@
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/timing_text"
+        android:id="@+id/auto_deletion_timing_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30sp"
@@ -58,7 +59,7 @@
         android:visibility="invisible" />
 
     <Spinner
-        android:id="@+id/timing_setting_spinner"
+        android:id="@+id/auto_deletion_timing_spinner"
         android:layout_width="match_parent"
         android:layout_height="40sp"
         android:layout_marginStart="30sp"

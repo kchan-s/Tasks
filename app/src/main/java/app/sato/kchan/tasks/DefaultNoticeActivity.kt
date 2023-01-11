@@ -24,34 +24,34 @@ class DefaultNoticeActivity: AppCompatActivity(){
                 // 変更を保存
                 val calender = Calendar.getInstance()
                 val m = calender.get(Calendar.MINUTE)+1
-                binding.defaultStartTime.text = calender.get(Calendar.HOUR_OF_DAY).toString() + ":" + calender.get(Calendar.MINUTE)
-                binding.defaultEndTime.text = calender.get(Calendar.HOUR_OF_DAY).toString() + ":" + m
+                binding.defaultNoticeStartText.text = calender.get(Calendar.HOUR_OF_DAY).toString() + ":" + calender.get(Calendar.MINUTE)
+                binding.defaultNoticeEndText.text = calender.get(Calendar.HOUR_OF_DAY).toString() + ":" + m
 
                 binding.defaultNoticeStartText.isVisible = true
-                binding.defaultStartTime.isVisible = true
+                binding.defaultNoticeStartTime.isVisible = true
                 binding.defaultNoticeEndText.isVisible = true
-                binding.defaultEndTime.isVisible = true
+                binding.defaultNoticeEndTime.isVisible = true
             } else {
                 // 変更を保存
                 binding.defaultNoticeStartText.isVisible = false
-                binding.defaultStartTime.isVisible = false
+                binding.defaultNoticeStartTime.isVisible = false
                 binding.defaultNoticeEndText.isVisible = false
-                binding.defaultEndTime.isVisible = false
+                binding.defaultNoticeEndTime.isVisible = false
             }
         }
 
         // 時間設定部分押した時の処理
-        binding.defaultStartTime.setOnClickListener {
+        binding.defaultNoticeStartTime.setOnClickListener {
             start = true
             showTimePickerDialog()
         }
 
-        binding.defaultEndTime.setOnClickListener {
+        binding.defaultNoticeEndTime.setOnClickListener {
             start = false
             showTimePickerDialog()
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.defaultNoticeToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -75,10 +75,10 @@ class DefaultNoticeActivity: AppCompatActivity(){
             cal.set(Calendar.MINUTE, minute)
 
             if (start) {
-                binding.defaultStartTime.text = "$hour:$minute"
+                binding.defaultNoticeStartTime.text = "$hour:$minute"
                 // 開始時間の保存処理
             } else {
-                binding.defaultEndTime.text = "$hour:$minute"
+                binding.defaultNoticeEndTime.text = "$hour:$minute"
                 // 終了時間の保存処理
             }
         }

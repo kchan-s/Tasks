@@ -18,15 +18,15 @@ class AutoDeletionActivity: AppCompatActivity(){
         binding.autoDeletionSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // 変更を保存
-                binding.timingText.isVisible = true
-                binding.timingSettingSpinner.isVisible = true
+                binding.autoDeletionTimingText.isVisible = true
+                binding.autoDeletionTimingSpinner.isVisible = true
             } else {
-                binding.timingText.isVisible = false
-                binding.timingSettingSpinner.isVisible = false
+                binding.autoDeletionTimingText.isVisible = false
+                binding.autoDeletionTimingSpinner.isVisible = false
             }
         }
 
-        val toolbar = binding.toolbar
+        val toolbar = binding.autoDeletionToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
