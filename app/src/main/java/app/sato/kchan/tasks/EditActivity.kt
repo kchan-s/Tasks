@@ -10,19 +10,18 @@ import app.sato.kchan.tasks.databinding.EditActivityBinding
 class EditActivity : AppCompatActivity() {
     private lateinit var binding: EditActivityBinding
     var l = false // lock代わり
-    var position = -1 // 初期値
+    var position = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = EditActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        if (!HomeActivity.new) {
-            // 呼び出された時にタイトルデータとメモのpositionを受け取る
-            position = intent.getIntExtra("position", -1)
+        position = intent.getIntExtra("position", -1)
+
+        if (position != -1) {
             val title = HomeMemoListAdapter.titleData[position]
             val detail = HomeMemoListAdapter.detailData[position]
-            // タイトルと詳細をいれる
             binding.editTitleEdit.setText(title)
             binding.editMemoEdit.setText(detail)
         }
@@ -64,12 +63,18 @@ class EditActivity : AppCompatActivity() {
             android.R.id.home -> {
                 // 戻るボタン
                 //backButton_onClick()
-                if (HomeActivity.new && binding.editTitleEdit.text.toString() != "") {
+                val notification = HomeMemoListAdapter.notificationSettingData
+                if (position == -1 && binding.editTitleEdit.text.toString() != "") {
                     HomeMemoListAdapter.titleData.add(binding.editTitleEdit.text.toString())
                     HomeMemoListAdapter.detailData.add(binding.editMemoEdit.text.toString())
                     HomeMemoListAdapter.lockData.add(l)
                     HomeMemoListAdapter.completeData.add(false) // 作成時点ではcheckはfalse
-                    HomeActivity.new = false
+                } else if (HomeMemoListAdapter.titleData.size != notification.size) {
+                    notification.removeAt(notification.lastIndex)
+                } else if (notification.size == 0) {
+                    println(notification)
+                    notification.add(mutableListOf("0"))
+                    println(notification)
                 }
                 finish()
             }

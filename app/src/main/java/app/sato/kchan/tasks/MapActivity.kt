@@ -71,7 +71,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             newLocation.longitude.toString()
                         )
                     )
-                } else if (position != -1){
+                } else if (position == -1){
                     LocationStockAdapter.locationCoordinateData.add(listOf(newLocation.latitude, newLocation.longitude))
                 }
                 finish()

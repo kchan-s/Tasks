@@ -2,6 +2,8 @@ package app.sato.kchan.tasks
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,10 +12,6 @@ import app.sato.kchan.tasks.databinding.HomeActivityBinding
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomeActivityBinding
     val adapter = HomeMemoListAdapter()
-
-    companion object {
-        var new = false
-    }
 
     // 画面作成
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +33,19 @@ class HomeActivity : AppCompatActivity() {
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(itemDecoration)
 
+        binding.homeSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String): Boolean {
+                HomeMemoListAdapter.searchIndex.clear()
+                HomeMemoListAdapter().searchRequest(newText)
+                adapter.notifyDataSetChanged()
+                return false
+            }
+            override fun onQueryTextSubmit(query: String): Boolean {
+                // submit button pressed
+                return false
+            }
+        })
+
         binding.homeSettingButton.setOnClickListener {
             settingButton_onClick()
         }
@@ -49,6 +60,8 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        binding.homeSearch.clearFocus()
+        binding.homeSearch.setQuery("", false)
         adapter.notifyDataSetChanged()
     }
 
@@ -72,7 +85,6 @@ class HomeActivity : AppCompatActivity() {
 
     //新規作成
     private fun newButton_onClick() {
-        new = true
         val newIntent = Intent(this, EditActivity::class.java)
         startActivity(newIntent)
     }

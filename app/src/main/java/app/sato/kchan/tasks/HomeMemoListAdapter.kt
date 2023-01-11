@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
 
-    // ホーム画面のメモ部分の実装
-
     companion object {
         val titleData = mutableListOf("メモ1", "メモ2", "メモ3", "メモ4", "メモ5", "メモ6", "メモ7", "メモ8", "メモ9", "メモ10", "a", "b", "c", "d", "e")
         val detailData = mutableListOf("1", "", "あ", "", "", "", "う", "", "", "か", "", "", "お", "く", "")
@@ -35,8 +33,10 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             mutableListOf("0"),
             mutableListOf("0")
         )
-        var completeData = mutableListOf(false, true, false, false, false, false, false, false, false, false, false, false, false, false, false) // 完了・未完了
-        var lockData = mutableListOf(true, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
+        val completeData = mutableListOf(false, true, false, false, false, false, false, false, false, false, false, false, false, false, false) // 完了・未完了
+        val lockData = mutableListOf(true, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
+        var searchIndex = mutableListOf<Int>()
+        var search = false
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -44,7 +44,6 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val settingText = view.findViewById<TextView>(R.id.home_list_notification_text)
         val lockImageView = view.findViewById<ImageView>(R.id.home_list_lock_image)
         val checkBox = view.findViewById<CheckBox>(R.id.home_list_check_box)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -54,19 +53,10 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val item = titleData[position]
-        viewHolder.titleText.text = item
-
-        val item2 = notificationSettingData[position]
-        when {
-            item2[0] == "1" -> viewHolder.settingText.text = item2[1] + " 〜"
-            item2[0] == "2" -> viewHolder.settingText.text = item2[1] + " 〜 " + item2[2]
-            item2[0] == "3" || item2[0] == "4" -> viewHolder.settingText.text = item2[1]
-        }
-
-        if (lockData[position]) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
-        else viewHolder.lockImageView.setImageResource(R.drawable.space)
-        if (completeData[position]) viewHolder.checkBox.isChecked = true
+        if (search) {
+            DataSet(viewHolder, searchIndex[position])
+            search = false
+        } else DataSet(viewHolder, position)
 
         viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
@@ -89,12 +79,43 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                     val context: Context = view.context
                     val intent = Intent(context, EditActivity::class.java)
                     // 現状はid代わり
-                    intent.putExtra("position", aPosition)
+                    if (searchIndex.size == 0) intent.putExtra("position", aPosition)
+                    else intent.putExtra("position", searchIndex[aPosition])
                     context.startActivity(intent)
                 }
             }
         })
     }
 
-    override fun getItemCount() = titleData.size
+    private fun DataSet(viewHolder: ViewHolder, position: Int) {
+
+        val item = titleData[position]
+        viewHolder.titleText.text = item
+
+        val item2 = notificationSettingData[position]
+        when {
+            item2[0] == "0" -> viewHolder.settingText.text = ""
+            item2[0] == "1" -> viewHolder.settingText.text = item2[1] + " 〜"
+            item2[0] == "2" -> viewHolder.settingText.text = item2[1] + " 〜 " + item2[2]
+            item2[0] == "3" || item2[0] == "4" -> viewHolder.settingText.text = item2[1]
+        }
+
+        if (lockData[position]) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
+        else viewHolder.lockImageView.setImageResource(R.drawable.space)
+        if (completeData[position]) viewHolder.checkBox.isChecked = true
+    }
+
+    fun searchRequest(text:String) {
+        search = true
+        for (i in 0..titleData.lastIndex) {
+            if (titleData[i].contains(text)) {
+                searchIndex.add(i)
+            }
+        }
+    }
+
+    override fun getItemCount(): Int {
+       if (search) return searchIndex.size
+       else return titleData.size
+    }
 }
