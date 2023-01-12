@@ -108,17 +108,11 @@ class DataOperator {
             if(no == null) return null
             return getInt(no)
         }
-        //        fun getBlob(no:Int):Int?{
-//            return cursor.getBlob(no)
-//        }
+
         fun getBlob(no:Int): ByteArray? {
             return cursor.getBlob(no)
         }
-        //        fun getBlob(column:String):Int?{
-//            val no:Int = getNumber(column)
-//            if(no == null) return null
-//            return getBlob(no)
-//        }
+
         fun getBlob(column:String): ByteArray? {
             val no:Int = getNumber(column)
             if(no == null) return null

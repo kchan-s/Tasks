@@ -25,15 +25,15 @@ class LocationManager public constructor(il : MutableList<String>, tl : MutableM
     fun search(word : String){
         idList.clear()
         tempList = mutableMapOf()
-//        val res = do.selectQuery(table = "place", column = arrayOf("place_id", "sevice_id") , filter = arrayOf(mutableMapOf("name" to "column", word to "value", "Equal" to "compare")))
-//        if(res.isResult()){
-//            for(d in res.getMapArray()){
-//                var key = "location_" + nextTempId
-//                tempList.put(key, d)
-//                idList.add(key)
-//                nextTempId++
-//            }
-//        }
+        val res = DataOperator.selectQuery(table = "place", column = arrayOf("place_id", "sevice_id") , filter = arrayOf(mutableMapOf("name" to "column", word to "value", "Equal" to "compare")))
+        if(res.isResult()){
+            for(d in res.getMapArray()){
+                var key = "location_" + nextTempId
+                tempList.put(key, d)
+                idList.add(key)
+                nextTempId++
+            }
+        }
     }
     fun selectByTempId(tempId:String){
         idList.add(tempId)
@@ -41,9 +41,7 @@ class LocationManager public constructor(il : MutableList<String>, tl : MutableM
     fun deselection(){
         idList.clear()
     }
-    //    fun getLocationNumber(){
-//        return idList.size
-//    }
+
     fun getLocationNumber(): Int {
         return idList.size
     }
@@ -57,13 +55,7 @@ class LocationManager public constructor(il : MutableList<String>, tl : MutableM
         point++
         return isLocation()
     }
-    //    fun getLocation():String{
-//        val tempId = idList[point]
-//        val pick = tempList[tempId]
-//        if(pick == null)
-//            return Location(mutableMapOf())
-//        return Location(pick)
-//    }
+
     fun getLocation():Location{
         val tempId = idList[point]
         val pick = tempList[tempId]
@@ -74,31 +66,29 @@ class LocationManager public constructor(il : MutableList<String>, tl : MutableM
     fun getTempId():String{
         return idList[point]
     }
-    //    fun delete(){
-//        getLocation().delete()
-//    }
-//    fun delete(){
-//        getLocation().delete()
-//    }
-//    fun deleteAll(){
-//        if(isLocation()){
-//            do{
-//                getLocation().delete()
-//            } while(next())
-//        }
-//    }
-//    fun create():MutableMap<String,String>{
-//        val res = do.selectQuery(table = "place", column = arrayOf("place_id"), pick = mutableMapOf("123" to "service_id"))
-//        var max:Int = 0
-//        if(res.isResult()){
-//            for(d in res.getArray()){
-//                if(max < d.toInt()){
-//                    max = d.toInt()
-//                }
-//            }
-//        }
-//        val dt = LocalDateTime.now().toString()
-//        do.insertQuery(table = "place", value = mutableMapOf(max.toString() to "place_id", "123" to "service_id", dt to "create_at", "Kari" to "title", "" to "content", "0" to "status_flag", dt to "title_update_at", dt to "content_update_at", dt to "completion_update_at", dt to "lock_update_at", dt to "status_update_at"))
-//        return mutableMapOf(max.toString() to "place_id", "123" to "service_id")
-//    }
+
+    fun delete(){
+        getLocation().delete()
+    }
+    fun deleteAll(){
+        if(isLocation()){
+            do{
+                getLocation().delete()
+            } while(next())
+        }
+    }
+    fun create():MutableMap<String,String>{
+        val res = DataOperator.selectQuery(table = "place", column = arrayOf("place_id"), pick = mutableMapOf("123" to "service_id"))
+        var max:Int = 0
+        if(res.isResult()){
+            for(d in res.getArray()){
+                if(max < d.toInt()){
+                    max = d.toInt()
+                }
+            }
+        }
+        val dt = LocalDateTime.now().toString()
+        DataOperator.insertQuery(table = "place", value = mutableMapOf(max.toString() to "place_id", "123" to "service_id", dt to "create_at", "Kari" to "title", "" to "content", "0" to "status_flag", dt to "title_update_at", dt to "content_update_at", dt to "completion_update_at", dt to "lock_update_at", dt to "status_update_at"))
+        return mutableMapOf(max.toString() to "place_id", "123" to "service_id")
+    }
 }
