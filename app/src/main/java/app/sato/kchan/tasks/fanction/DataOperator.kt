@@ -30,41 +30,41 @@ class DataOperator {
         }
         database.insert(table, null, values)
     }
-    fun selectQuery(table:String, column:String, pick:Map<String,String>, filter:Array<Map<String,String>>):Res {
+    fun selectQuery(table:String, column:String, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String>> = arrayOf()):Res {
         return selectQuery(table = table, column = arrayOf(column), pick = pick, filter = filter)
     }
-    fun selectQuery(table:String, column:Array<String>, pick:Map<String,String>, filter:Array<Map<String,String>>):Res {
+    fun selectQuery(table:String, column:Array<String>, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String>> = arrayOf()):Res {
         var sql = ""
-        sql = sql + "SELECT "
+        sql += "SELECT "
         //var sql = "SELECT "
         var c = 0
         for(col in column){
             if(c > 0)
-                sql = sql + ", "
-            sql = sql + col + ""
+                sql += ", "
+            sql += col + ""
             c++
         }
-        sql = sql + " FROM  " + table + " "
+        sql += " FROM  " + table + " "
         var values = arrayOf<String>()
         c = 0
         for ((k, v) in pick) {
             if(c > 0)
-                sql = sql + " AND "
-            sql = sql + k + " = ?"
+                sql += " AND "
+            sql += k + " = ?"
             values += v
             c++
         }
         for (fil in filter) {
             if(c > 0)
-                sql = sql + " AND "
-            sql = sql + fil["column"]
+                sql += " AND "
+            sql += fil["column"]
             if(fil["compare"] == "Big")
-                sql = sql + " > "
+                sql += " > "
             if(fil["compare"] == "Small")
-                sql = sql + " < "
+                sql += " < "
             if(fil["compare"] == "Equal")
-                sql = sql + " = "
-            sql = sql + "?"
+                sql += " = "
+            sql += "?"
             values += fil["value"].toString()
             c++
         }
@@ -75,8 +75,8 @@ class DataOperator {
         private var cursor:Cursor
         private var columns:Array<String>
         init {
-            this.cursor = cursor
             this.columns = columns
+            this.cursor = cursor
         }
         private fun getNumber(column:String):Int{
             return columns.indexOf(column)
@@ -92,69 +92,75 @@ class DataOperator {
             cursor.moveToNext()
             return !cursor.isAfterLast
         }
-        fun getString(no:Int):String?{
+        fun getString(no:Int):String{
             return cursor.getString(no)
         }
-        fun getString(column:String):String?{
-            val no:Int = getNumber(column)
-            if(no == null) return null
+        fun getString(column:String):String{
+            val no: Int = getNumber(column)
             return getString(no)
         }
-        fun getInt(no:Int):Int?{
+        fun getInt(no:Int):Int{
             return cursor.getInt(no)
         }
-        fun getInt(column:String):Int?{
-            val no:Int = getNumber(column)
-            if(no == null) return null
+        fun getInt(column:String):Int{
+            val no: Int = getNumber(column)
             return getInt(no)
         }
 
-        fun getBlob(no:Int): ByteArray? {
+        fun getBlob(no:Int): ByteArray {
             return cursor.getBlob(no)
         }
 
-        fun getBlob(column:String): ByteArray? {
-            val no:Int = getNumber(column)
-            if(no == null) return null
+        fun getBlob(column:String): ByteArray {
+            val no: Int = getNumber(column)
             return getBlob(no)
         }
-        fun getArray(no:Int):Array<String>?{
+        fun getStringArray(no:Int):Array<String> {
             var array = emptyArray<String>()
-            if(setResultTop()){
+            if (setResultTop()) {
                 do {
                     array += cursor.getString(no)
-                } while(next())
+                } while (next())
             }
             return array
         }
-        fun getArray():Array<String>?{
-            return getArray(0)
+        fun getStringArray(column:String):Array<String>{
+            val no: Int = getNumber(column)
+            return getStringArray(no)
         }
-        fun getArray(column:String):Array<String>?{
-            val no:Int = getNumber(column)
-            if(no == null) return null
-            return getArray(no)
+        fun getIntArray(no:Int):Array<Int> {
+            var array = emptyArray<Int>()
+            if (setResultTop()) {
+                do {
+                    array += cursor.getInt(no)
+                } while (next())
+            }
+            return array
         }
-        fun getMap():Map<String,String>{
-            var map = mutableMapOf<String, String>()
+        fun getIntArray(column:String):Array<Int>{
+            val no: Int = getNumber(column)
+            return getIntArray(no)
+        }
+        fun getStringMap():Map<String,String>{
+            val map = mutableMapOf<String, String>()
             var i = 0
             for(col in columns){
-                map.put(col,cursor.getString(i))
+                map[col] = cursor.getString(i)
                 i++
             }
             return map.toMap()
         }
-        fun getMapArray():Array<Map<String,String>>{
-            var array = emptyArray<Map<String,String>>()
+        fun getMapStringArray():Array<Map<String,String>>{
+            var array: Array<Map<String, String>> = emptyArray<Map<String,String>>()
             if(setResultTop()){
                 do {
-                    array += getMap()
+                    array += getStringMap()
                 } while(next())
             }
             return array
         }
     }
-    fun updateQuery(table:String, value:Map<String,String>, pick:Map<String,String>, filter:Array<Map<String,String>>) {
+    fun updateQuery(table:String, value:Map<String,String>, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String>> = arrayOf()):Int {
 
         val values = ContentValues()
         for ((k,v) in value){
@@ -167,28 +173,28 @@ class DataOperator {
 
         for (fil in filter) {
             if(c > 0)
-                sql = sql + " AND "
-            sql = sql + fil["column"]
+                sql += " AND "
+            sql += fil["column"]
             if(fil["compare"] == "Big")
-                sql = sql + " > "
+                sql += " > "
             if(fil["compare"] == "Small")
-                sql = sql + " < "
+                sql += " < "
             if(fil["compare"] == "Equal")
-                sql = sql + " = "
-            sql = sql + "?"
+                sql += " = "
+            sql += "?"
             vl += fil["value"].toString()
             c++
         }
 
         for ((k, v) in pick) {
             if(c > 0)
-                sql = sql + " AND "
-            sql = sql + k + " = ?"
+                sql += " AND "
+            sql += k + " = ?"
             vl += v
             c++
         }
 
-        database.update(table, values, sql, vl)
+        return database.update(table, values, sql, vl)
     }
     fun sync() {
 
