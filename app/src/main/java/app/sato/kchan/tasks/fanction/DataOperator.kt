@@ -3,9 +3,8 @@ package app.sato.kchan.tasks.fanction
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
-import app.sato.kchan.tasks.HomeActivity
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class DataOperator {
@@ -23,17 +22,17 @@ class DataOperator {
 //    fun setData(path:String, value:String):Unit{
 //
 //    }
-    fun insertQuery(table:String, value:Map<String,String>) {
+    fun insertQuery(table:String, value:Map<String,String?>) {
         val values = ContentValues()
         for ((k, v) in value) {
             values.put(k, v)
         }
         database.insert(table, null, values)
     }
-    fun selectQuery(table:String, column:String, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String>> = arrayOf()):Res {
+    fun selectQuery(table:String, column:String, pick:Map<String,String?> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf(), sort:Array<Map<String,String?>> = arrayOf()):Res {
         return selectQuery(table = table, column = arrayOf(column), pick = pick, filter = filter)
     }
-    fun selectQuery(table:String, column:Array<String>, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String>> = arrayOf()):Res {
+    fun selectQuery(table:String, column:Array<String>, pick:Map<String,String?> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf(), sort:Array<Map<String,String?>> = arrayOf()):Res {
         var sql = ""
         sql += "SELECT "
         //var sql = "SELECT "
@@ -45,7 +44,7 @@ class DataOperator {
             c++
         }
         sql += " FROM  " + table + " "
-        var values = arrayOf<String>()
+        var values = arrayOf<String?>()
         c = 0
         for ((k, v) in pick) {
             if(c > 0)
@@ -77,6 +76,7 @@ class DataOperator {
         init {
             this.columns = columns
             this.cursor = cursor
+            setResultTop()
         }
         private fun getNumber(column:String):Int{
             return columns.indexOf(column)
@@ -92,30 +92,49 @@ class DataOperator {
             cursor.moveToNext()
             return !cursor.isAfterLast
         }
-        fun getString(no:Int):String{
+        fun isNull(no:Int = 0):Boolean{
+            return cursor.getString(no) == null
+        }
+        fun isNull(column:String):Boolean{
+            val no: Int = getNumber(column)
+            return isNull(no)
+        }
+        fun getString(no:Int = 0):String{
             return cursor.getString(no)
         }
         fun getString(column:String):String{
             val no: Int = getNumber(column)
             return getString(no)
         }
-        fun getInt(no:Int):Int{
+        fun getInt(no:Int = 0):Int{
             return cursor.getInt(no)
         }
         fun getInt(column:String):Int{
             val no: Int = getNumber(column)
             return getInt(no)
         }
-
-        fun getBlob(no:Int): ByteArray {
+        fun getBoolean(no:Int = 0):Boolean{
+            return cursor.getInt(no) != 0
+        }
+        fun getBoolean(column:String):Boolean{
+            val no: Int = getNumber(column)
+            return getBoolean(no)
+        }
+        fun getBlob(no:Int = 0): ByteArray {
             return cursor.getBlob(no)
         }
-
         fun getBlob(column:String): ByteArray {
             val no: Int = getNumber(column)
             return getBlob(no)
         }
-        fun getStringArray(no:Int):Array<String> {
+        fun getDateTime(no:Int = 0): LocalDateTime {
+            return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss"))
+        }
+        fun getDateTime(column:String): LocalDateTime {
+            val no: Int = getNumber(column)
+            return getDateTime(no)
+        }
+        fun getStringArray(no:Int = 0):Array<String> {
             var array = emptyArray<String>()
             if (setResultTop()) {
                 do {
@@ -128,7 +147,7 @@ class DataOperator {
             val no: Int = getNumber(column)
             return getStringArray(no)
         }
-        fun getIntArray(no:Int):Array<Int> {
+        fun getIntArray(no:Int = 0):Array<Int> {
             var array = emptyArray<Int>()
             if (setResultTop()) {
                 do {
@@ -160,14 +179,14 @@ class DataOperator {
             return array
         }
     }
-    fun updateQuery(table:String, value:Map<String,String>, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String>> = arrayOf()):Int {
+    fun updateQuery(table:String, value: MutableList<Pair<String, String?>>, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf()):Int {
 
         val values = ContentValues()
         for ((k,v) in value){
             values.put(k, v)
         }
 
-        var vl = arrayOf<String>()
+        var vl = arrayOf<String?>()
         var sql = ""
         var c = 0
 

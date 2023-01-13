@@ -3,13 +3,12 @@ package app.sato.kchan.tasks.fanction
 import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 
-
 /********************
  * 複数のノートにかかわる処理を担当する
  *
  * クラス名 :  NoteManager
  ********************/
-class NoteManager public constructor(il : MutableList<String>, tl : MutableMap<String, MutableMap<String, String> >) {
+class NoteManager public constructor(il : MutableList<String> = mutableListOf(), tl : MutableMap<String, MutableMap<String, String>> = mutableMapOf()) {
     //<プロパティ>
     private var idList : MutableList<String>
     private var point : Int = 0
@@ -18,8 +17,8 @@ class NoteManager public constructor(il : MutableList<String>, tl : MutableMap<S
 
     //<初期化処理>
     init {
-        idList = il ?: mutableListOf()
-        tempList = tl ?: mutableMapOf()
+        idList = il
+        tempList = tl
     }
 
     //<メソッド>
@@ -29,7 +28,15 @@ class NoteManager public constructor(il : MutableList<String>, tl : MutableMap<S
         val res = DataOperator().selectQuery(
             table = "note",
             column = arrayOf("note_id", "service_id"),
-            filter = arrayOf(mutableMapOf("column" to "title", "value" to word, "compare" to "Equal"))
+            filter = arrayOf(mutableMapOf(
+                "column" to "title",
+                "value" to word,
+                "compare" to "Equal"
+            )),
+            sort = arrayOf(mutableMapOf(
+                "column" to "title",
+                "type" to "ASC"
+            ))
         )
         if(res.isResult()){
             do{
@@ -83,7 +90,7 @@ class NoteManager public constructor(il : MutableList<String>, tl : MutableMap<S
         val res = DataOperator().selectQuery(
             table = "note",
             column = "note_id",
-            pick = mutableMapOf("service_id" to "123")
+            pick = mutableMapOf("service_id" to "0")
         )
         var max:Int = 0
         if(res.isResult()){
@@ -98,7 +105,7 @@ class NoteManager public constructor(il : MutableList<String>, tl : MutableMap<S
             table = "note",
             value = mutableMapOf(
                 "note_id" to max.toString(),
-                "service_id" to "123",
+                "service_id" to "0",
                 "create_at" to dt,
                 "title" to "Kari",
                 "content" to "",

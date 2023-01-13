@@ -1,5 +1,6 @@
 package app.sato.kchan.tasks.fanction
 
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 
@@ -8,7 +9,7 @@ import java.time.LocalDateTime
  *
  * クラス名 :  LocationManager
  ********************/
-class LocationManager public constructor(il : MutableList<String>, tl : MutableMap<String, MutableMap<String, String> >) {
+class LocationManager public constructor(il : MutableList<String> = mutableListOf(), tl : MutableMap<String,MutableMap<String, String>> = mutableMapOf()) {
     //<プロパティ>
     private var idList : MutableList<String>
     private var point : Int = 0
@@ -17,19 +18,31 @@ class LocationManager public constructor(il : MutableList<String>, tl : MutableM
 
     //<初期化処理>
     init {
-        idList = il ?: mutableListOf()
-        tempList = tl ?: mutableMapOf<String, MutableMap<String, String>>()
+        idList = il
+        tempList = tl
     }
 
     //<メソッド>
     fun search(word : String){
         idList.clear()
         tempList = mutableMapOf()
-        val res = DataOperator().selectQuery(table = "place", column = arrayOf("place_id", "sevice_id") , filter = arrayOf(mutableMapOf("name" to "column", word to "value", "Equal" to "compare")))
+        val res = DataOperator().selectQuery(
+            table = "place",
+            column = arrayOf("place_id", "service_id"),
+            filter = arrayOf(mutableMapOf(
+                "column" to "name",
+                "value" to word,
+                "compare" to "Equal"
+            )),
+            sort = arrayOf(mutableMapOf(
+                "column" to "priority",
+                "type" to "DESC"
+            ))
+        )
         if(res.isResult()){
             do{
-                val key = "location_" + nextTempId
-                tempList[key] = res.getMapString()
+                val key = "location_" + nextTempId.toString()
+                tempList[key] = res.getStringMap().toMutableMap()
                 idList.add(key)
                 nextTempId++
             } while(res.next())
@@ -42,7 +55,7 @@ class LocationManager public constructor(il : MutableList<String>, tl : MutableM
         idList.clear()
     }
 
-    fun getLocationNumber(): Int {
+    fun getLocationNumber():Int {
         return idList.size
     }
 
@@ -77,18 +90,52 @@ class LocationManager public constructor(il : MutableList<String>, tl : MutableM
             } while(next())
         }
     }
-    fun create():MutableMap<String,String>{
-        val res = DataOperator().selectQuery(table = "place", column = arrayOf("place_id"), pick = mutableMapOf("123" to "service_id"))
-        var max:Int = 0
+    fun create():Location{
+        var res = DataOperator().selectQuery(
+            table = "place",
+            column = "place_id",
+            pick = mutableMapOf("service_id" to "0"),
+            sort = arrayOf(mutableMapOf(
+                "column" to "place_id",
+                "type" to "DESC"
+            ))
+        )
+        var placeId:Int = 0
         if(res.isResult()){
-            for(d in res.getArray()){
-                if(max < d.toInt()){
-                    max = d.toInt()
+            for(v in res.getIntArray("place_id")){
+                if(placeId < v){
+                    placeId = v
                 }
             }
         }
-        val dt = LocalDateTime.now().toString()
-        DataOperator().insertQuery(table = "place", value = mutableMapOf(max.toString() to "place_id", "123" to "service_id", dt to "create_at", "Kari" to "title", "" to "content", "0" to "status_flag", dt to "title_update_at", dt to "content_update_at", dt to "completion_update_at", dt to "lock_update_at", dt to "status_update_at"))
-        return mutableMapOf(max.toString() to "place_id", "123" to "service_id")
+        res = DataOperator().selectQuery(
+            table = "place",
+            column = "priority",
+            sort = arrayOf(mutableMapOf(
+                "column" to "priority",
+                "type" to "DESC"
+            ))
+        )
+        var priority:Int = 0
+        if(res.isResult()){
+            for(v in res.getIntArray("priority")){
+                if(priority < v){
+                    priority = v
+                }
+            }
+        }
+        val dt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+        DataOperator().insertQuery(
+            table = "place",
+            value = mutableMapOf(
+                "place_id" to placeId.toString(),
+                "service_id" to "0",
+                "create_at" to dt,
+                "name" to "",
+                "address" to "",
+                "priority" to priority.toString(),
+            )
+        )
+        return Location(mutableMapOf("place_id" to placeId.toString(), "service_id" to "0"))
     }
 }
