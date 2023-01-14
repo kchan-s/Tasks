@@ -90,4 +90,3 @@ class Location public constructor(pick:MutableMap<String, String>) {
         return this.pick
     }
 }
-
