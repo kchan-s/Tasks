@@ -20,8 +20,8 @@ class LoginActivity: AppCompatActivity(){
         binding.loginIdEdit.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length!! < 6) {
+            override fun beforeTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
+                if (p0.length < 6) {
                     binding.loginPasswordIdLayout.error = "アカウントIDは6文字です"
                 } else {
                     binding.loginPasswordIdLayout.error = null
@@ -34,9 +34,11 @@ class LoginActivity: AppCompatActivity(){
         binding.loginPasswordEdit.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length!! < 6) {
+            override fun beforeTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
+                if (p0.length < 6) {
                     binding.loginPassword.error = "8文字以上入力してください"
+                } else if (p0.length > 50) {
+                    binding.loginPassword.error = "50文字以下で設定してください"
                 } else {
                     binding.loginPassword.error = null
                 }

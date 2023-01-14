@@ -27,9 +27,27 @@ class PasswordInitializeActivity: AppCompatActivity(){
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length!! < 8) {
+            override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
+                if (p0.length < 8) {
+                    binding.passwordInitializeSettingLayout.error = "8文字以上入力してください"
+                } else if (p0.length >= 50) {
+                    binding.passwordInitializeSettingLayout.error = "50文字以下で設定してください"
+                } else {
+                    binding.passwordInitializeSettingLayout.error = null
+                }
+            }
+        })
+
+        binding.passwordInitializeVerificationEdit.addTextChangedListener(object: TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {}
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
+                if (p0.length < 8) {
                     binding.passwordInitializeVerificationLayout.error = "8文字以上入力してください"
+                } else if (p0.length > 50) {
+                    binding.passwordInitializeVerificationLayout.error = "50文字以下で設定してください"
                 } else {
                     binding.passwordInitializeVerificationLayout.error = null
                 }
@@ -45,7 +63,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
             val answer2 = binding.passwordInitializeAnswer2Edit.text.toString()
             val answer3 = binding.passwordInitializeAnswer3Edit.text.toString()
             val password = binding.passwordInitializeSettingEdit.text.toString()
-            val verification = binding.passwordInitializeVerification.text.toString()
+            val verification = binding.passwordInitializeVerificationEdit.text.toString()
 
             // 質問が選択されていない場合の場合分けも行う
             when {
@@ -69,6 +87,9 @@ class PasswordInitializeActivity: AppCompatActivity(){
                         Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
                     }
                 }
+                password.length > 50 || verification.length > 50 -> {
+                    Toast.makeText(this, "パスワードは50文字以下で設定してください", Toast.LENGTH_LONG).show()
+                }
                 else -> {
                     Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
                 }
@@ -86,6 +107,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.passwordInitializeQuestion1Spinner.adapter = adapter
+
         binding.passwordInitializeQuestion2Spinner.adapter = adapter
         binding.passwordInitializeQuestion2Spinner.setSelection(1)
         binding.passwordInitializeQuestion2Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -96,6 +118,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+
         binding.passwordInitializeQuestion3Spinner.adapter = adapter
         binding.passwordInitializeQuestion3Spinner.setSelection(2)
         binding.passwordInitializeQuestion3Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -108,7 +131,6 @@ class PasswordInitializeActivity: AppCompatActivity(){
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-
 
         val toolbar = binding.passwordInitializeToolbar
         setSupportActionBar(toolbar)

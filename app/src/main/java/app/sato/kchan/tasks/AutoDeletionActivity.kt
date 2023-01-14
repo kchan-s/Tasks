@@ -2,6 +2,7 @@ package app.sato.kchan.tasks
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.AutoDeletionActivityBinding
@@ -25,6 +26,9 @@ class AutoDeletionActivity: AppCompatActivity(){
                 binding.autoDeletionTimingSpinner.isVisible = false
             }
         }
+
+        val data = listOf("1日後", "1週間後", "1ヶ月後")
+        binding.autoDeletionTimingSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, data)
 
         val toolbar = binding.autoDeletionToolbar
         setSupportActionBar(toolbar)

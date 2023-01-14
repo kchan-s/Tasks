@@ -28,9 +28,12 @@ class PasswordResetActivity: AppCompatActivity(){
             val verification = binding.passwordResetVerificationEdit.text.toString()
 
             // 質問が選択されていない場合の場合分けも行う
-            when {
-                answer1 != "" && answer2 != "" && answer3 != "" && password.length >= 8 && verification.length >= 8 -> {
-                    if (password == verification) {
+            if (answer1 != "" && answer2 != "" && answer3 != "" && password.length >= 8 && verification.length >= 8) {
+                when {
+                    password.length > 50 || verification.length > 50 -> {
+                        Toast.makeText(this, "パスワードは50文字以下で設定してください", Toast.LENGTH_LONG).show()
+                    }
+                    password == verification -> {
                         // 保存
 
                         // パスワードが登録完了したことを保存
@@ -42,13 +45,13 @@ class PasswordResetActivity: AppCompatActivity(){
                         val intent = Intent(this, AccountActivity::class.java)
                         startActivity(intent)
                     }
-                    else {
+                    else -> {
                         Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
                     }
                 }
-                else -> {
-                    Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
-                }
+            }
+            else {
+                Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -57,9 +60,11 @@ class PasswordResetActivity: AppCompatActivity(){
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length!! < 8) {
+            override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
+                if (p0.length < 8) {
                     binding.passwordResetNewLayout.error = "8文字以上入力してください"
+                } else if (p0.length >= 50) {
+                    binding.passwordResetNewLayout.error = "50文字以下で設定してください"
                 } else {
                     binding.passwordResetNewLayout.error = null
                 }
@@ -71,9 +76,11 @@ class PasswordResetActivity: AppCompatActivity(){
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length!! < 8) {
+            override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
+                if (p0.length < 8) {
                     binding.passwordResetVerificationLayout.error = "8文字以上入力してください"
+                } else if (p0.length >= 50) {
+                    binding.passwordResetVerificationLayout.error = "50文字以下で設定してください"
                 } else {
                     binding.passwordResetVerificationLayout.error = null
                 }

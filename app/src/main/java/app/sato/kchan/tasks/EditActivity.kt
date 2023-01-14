@@ -9,8 +9,8 @@ import app.sato.kchan.tasks.databinding.EditActivityBinding
 
 class EditActivity : AppCompatActivity() {
     private lateinit var binding: EditActivityBinding
-    var l = false // lock代わり
     var position = -1
+    var l = false // 新規作成時に使用
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +44,19 @@ class EditActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_lock -> {
                 //ロック押下
-                l = !l
+                if (position != -1) HomeMemoListAdapter.lockData[position] = !HomeMemoListAdapter.lockData[position]
                 //lockButton_onClick()
             }
             R.id.menu_delete -> {
                 //削除押下
                 //deleteButton_onClick()
+                if (position != -1) {
+                    HomeMemoListAdapter.titleData.removeAt(position)
+                    HomeMemoListAdapter.detailData.removeAt(position)
+                    HomeMemoListAdapter.notificationSettingData.removeAt(position)
+                    HomeMemoListAdapter.lockData.removeAt(position)
+                    HomeMemoListAdapter.completeData.removeAt(position)
+                }
                 finish()
             }
             R.id.menu_time -> {
