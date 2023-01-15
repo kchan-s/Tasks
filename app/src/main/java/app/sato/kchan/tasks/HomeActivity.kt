@@ -2,13 +2,11 @@ package app.sato.kchan.tasks
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.HomeActivityBinding
-import app.sato.kchan.tasks.fanction.NoteManager
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomeActivityBinding
@@ -95,31 +93,6 @@ class HomeActivity : AppCompatActivity() {
 //    private fun searchBox_onEditorAction() {
 //        listUpdate()
 //    }
-
-    private var nm = NoteManager()
-    //完了・未完了切替モジュール
-    private fun completeButton_onClick() {
-        nm.selectByTempId()
-        nm.isNote()
-        var note = nm.getNote()
-        if(note.isComplete()){
-            note.setUncomplete()
-        }else{
-            note.setComplete()
-        }
-    }
-
-    //ロック・未ロック切替モジュール
-    private fun lockButton_onClick() {
-        nm.selectByTempId()
-        nm.isNote()
-        var note = nm.getNote()
-        if(note.isLock()){
-            note.setUnlock()
-        }else{
-            note.setLock()
-        }
-    }
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
