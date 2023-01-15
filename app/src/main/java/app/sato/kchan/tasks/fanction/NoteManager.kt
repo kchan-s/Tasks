@@ -48,6 +48,9 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
         }
     }
     fun selectByTempId(tempId:String){
+        idList = mutableListOf(tempId)
+    }
+    fun addSelectByTempId(tempId:String){
         idList.add(tempId)
     }
     fun deselection(){
