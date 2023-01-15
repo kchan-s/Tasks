@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.HomeActivityBinding
+import app.sato.kchan.tasks.fanction.NoteManager
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomeActivityBinding
@@ -89,34 +90,36 @@ class HomeActivity : AppCompatActivity() {
         startActivity(newIntent)
     }
 
+
 //    //リスト更新モジュール
 //    private fun searchBox_onEditorAction() {
 //        listUpdate()
 //    }
-//
-//    //完了・未完了切替モジュール
-//    private fun completeButton_onClick() {
-//        NoteManager.selectByTempId()
-//        NoteManager.isNote()
-//        NoteManager.getNote()
-//        if(Note.isComplete()){
-//            Note.setUnComplete()
-//        }else{
-//            Note.setComplete()
-//        }
-//    }
-//
-//    //ロック・未ロック切替モジュール
-//    private fun lockButton_onClick() {
-//        NoteManager.selectByTempId()
-//        NoteManager.isNote()
-//        NoteManager.getNote()
-//        if(Note.isLock()){
-//            Note.setUnlock()
-//        }else{
-//            Note.setLock()
-//        }
-//    }
+
+    private var nm = NoteManager()
+    //完了・未完了切替モジュール
+    private fun completeButton_onClick() {
+        nm.selectByTempId()
+        nm.isNote()
+        var note = nm.getNote()
+        if(note.isComplete()){
+            note.setUncomplete()
+        }else{
+            note.setComplete()
+        }
+    }
+
+    //ロック・未ロック切替モジュール
+    private fun lockButton_onClick() {
+        nm.selectByTempId()
+        nm.isNote()
+        var note = nm.getNote()
+        if(note.isLock()){
+            note.setUnlock()
+        }else{
+            note.setLock()
+        }
+    }
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
