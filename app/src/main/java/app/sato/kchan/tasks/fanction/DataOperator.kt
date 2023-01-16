@@ -1,15 +1,13 @@
 package app.sato.kchan.tasks.fanction
 
 import android.content.ContentValues
-import android.content.Context
 import android.database.Cursor
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-class DataOperator {
+class DataOperator(){
     //<プロパティ>
-    lateinit var context: Context // エラー出てるんで仮置き
     val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase
     //<初期化処理>

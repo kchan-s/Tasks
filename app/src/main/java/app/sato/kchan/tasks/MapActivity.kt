@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import app.sato.kchan.tasks.databinding.MapActivityBinding
+import app.sato.kchan.tasks.fanction.Location
+import app.sato.kchan.tasks.fanction.NoteManager
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -34,7 +36,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     var mFirst = true // marker生成が初めてか
     var newLocation = LatLng(0.0, 0.0) // 登録されているなら読み込み
     lateinit var marker: Marker
-    lateinit var notificationDataList: MutableList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +43,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = MapActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         position = intent.getIntExtra("position", -1)
-        notificationDataList = HomeMemoListAdapter.notificationSettingData[position]
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -60,20 +60,29 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            android.R.id.home->{
-                if (position != -1 && mFirst == false) {
-                    notificationDataList.clear()
-                    notificationDataList.addAll(
-                        mutableListOf(
-                            "4",
-                            "",
-                            newLocation.latitude.toString(),
-                            newLocation.longitude.toString()
-                        )
+            android.R.id.home-> {
+                val nm = NoteManager()
+                nm.selectByTempId(position.toString())
+                val n = nm.getNote()
+                n.setNoticeLocation(Location(
+                    mutableMapOf(
+                        "latitude" to newLocation.latitude.toString(),
+                        "longitude" to newLocation.longitude.toString()
                     )
-                } else if (position == -1){
-                    LocationStockAdapter.locationCoordinateData.add(listOf(newLocation.latitude, newLocation.longitude))
-                }
+                ))
+//                if (position != -1 && mFirst == false) {
+//                    notificationDataList.clear()
+//                    notificationDataList.addAll(
+//                        mutableListOf(
+//                            "4",
+//                            "",
+//                            newLocation.latitude.toString(),
+//                            newLocation.longitude.toString()
+//                        )
+//                    )
+//                } else if (position == -1){
+//                    LocationStockAdapter.locationCoordinateData.add(listOf(newLocation.latitude, newLocation.longitude))
+//                }
                 finish()
             }
         }
@@ -98,11 +107,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         checkPermission()
 
-        if (notificationDataList[0] == "3") {
-            newLocation = LatLng(notificationDataList[2].toDouble(), notificationDataList[3].toDouble())
-            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(notificationDataList[1]))!!
-            mFirst = false
-        }
+        val nm = NoteManager()
+        nm.selectByTempId(position.toString())
+        val n = nm.getNote()
+        val noteLocation = n.getNoticeLocation()
+
+//      既に場所設定がされてたらmarkerを立てたい
+//        if (noteLocation != null) {
+//            newLocation = LatLng(notificationDataList[2].toDouble(), notificationDataList[3].toDouble())
+//            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(notificationDataList[1]))!!
+//            mFirst = false
+//        }
 
         mMap.setOnMapLongClickListener { longpushLocation: LatLng ->
             if (!mFirst) marker.remove()

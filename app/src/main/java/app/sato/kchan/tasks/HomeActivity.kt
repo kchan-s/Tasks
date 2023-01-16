@@ -34,7 +34,7 @@ class HomeActivity : AppCompatActivity() {
 
         binding.homeSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                HomeMemoListAdapter.searchIndex.clear()
+//                HomeMemoListAdapter.searchIndex.clear()
                 HomeMemoListAdapter().searchRequest(newText)
                 adapter.notifyDataSetChanged()
                 return false

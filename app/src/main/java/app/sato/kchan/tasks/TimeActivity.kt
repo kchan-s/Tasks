@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.TimeActivityBinding
+import app.sato.kchan.tasks.fanction.NoteManager
 import java.util.*
 
 class TimeActivity: AppCompatActivity(){
@@ -19,7 +20,6 @@ class TimeActivity: AppCompatActivity(){
     var endText = ""
     var startDateTimeList = mutableListOf<Int>()
     var position = -1
-    lateinit var notification: MutableList<String>
 
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,22 +28,19 @@ class TimeActivity: AppCompatActivity(){
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
         position = intent.getIntExtra("position", -1)
 
-        if (position == -1) {
-            HomeMemoListAdapter.notificationSettingData.add(mutableListOf(""))
-            position = HomeMemoListAdapter.notificationSettingData.lastIndex
-        }
+        val nm = NoteManager()
+        nm.selectByTempId(position.toString())
+        val n = nm.getNote()
 
-        notification = HomeMemoListAdapter.notificationSettingData[position]
-
-        if (notification[0] == "1" || notification[0] == "2") {
+        if (n.getNoticeShow() != null) {
             binding.timeSettingSwitch.isChecked = true
             binding.timeStartText.isVisible = true
             binding.timeStartSettingButton.isVisible = true
             binding.timeEndText.isVisible = true
             binding.timeEndSettingButton.isVisible = true
-            binding.timeStartText.text = "通知開始時間 : ${notification[1]}"
+            binding.timeStartText.text = "通知開始時間 : " // 設定した時間の取り方がわからん
         }
-        if (notification[0] == "2") binding.timeEndText.text = "通知終了時間 : ${notification[2]}"
+        if (n.getNoticeHide() != null) binding.timeEndText.text = "通知終了時間 : "
 
         // トグルの値読み込みが必要
         binding.timeSettingSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -155,9 +152,6 @@ class TimeActivity: AppCompatActivity(){
                 else if (minute < 10) startText = "$startText $hour:0$minute"
                 else startText = "$startText $hour:$minute"
                 binding.timeStartText.text = "通知開始時間 : ${startText}"
-                notification.clear()
-                notification.addAll(mutableListOf("1", startText))
-                println(notification)
             }
             else {
                 if (startDateTimeList[3] <= hour && startDateTimeList[4] <= minute) {
@@ -167,8 +161,6 @@ class TimeActivity: AppCompatActivity(){
                     else if (minute < 10) endText = "$endText $hour:0$minute"
                     else endText = "$endText $hour:$minute"
                     binding.timeEndText.text = "通知終了時間 : ${endText}"
-                    notification.clear()
-                    notification.addAll(mutableListOf("2", startText, endText))
                 } else {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 }

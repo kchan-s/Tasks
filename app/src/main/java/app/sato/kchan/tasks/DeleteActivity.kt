@@ -8,9 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.DeleteActivityBinding
+import app.sato.kchan.tasks.fanction.NoteManager
 
 class DeleteActivity: AppCompatActivity() {
     private lateinit var binding: DeleteActivityBinding
+    val nm = NoteManager()
 
     // 画面作成とか(現状は触らなくていいです)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,13 +55,16 @@ class DeleteActivity: AppCompatActivity() {
             R.id.delete_button -> {
                 val deletePosition = DeleteMemoListAdapter.selectedItemPositions.sortedDescending()
                 DeleteMemoListAdapter.selectedItemPositions.clear()
-                for (i in deletePosition) {
-                    HomeMemoListAdapter.titleData.removeAt(i)
-                    HomeMemoListAdapter.detailData.removeAt(i)
-                    HomeMemoListAdapter.notificationSettingData.removeAt(i)
-                    HomeMemoListAdapter.lockData.removeAt(i)
-                    HomeMemoListAdapter.completeData.removeAt(i)
-                }
+                for (i in deletePosition) nm.selectByTempId(deletePosition.toString())
+                nm.deleteAll()
+//                for (i in deletePosition) {
+//                    HomeMemoListAdapter.titleData.removeAt(i)
+//                    HomeMemoListAdapter.detailData.removeAt(i)
+//                    HomeMemoListAdapter.notificationSettingData.removeAt(i)
+//                    HomeMemoListAdapter.lockData.removeAt(i)
+//                    HomeMemoListAdapter.completeData.removeAt(i)
+//                }
+
                 // 削除処理
                 finish()
             }

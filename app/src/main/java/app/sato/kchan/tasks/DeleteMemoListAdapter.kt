@@ -8,28 +8,26 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import app.sato.kchan.tasks.fanction.NoteManager
+import java.time.format.DateTimeFormatter
 
 class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHolder>() {
 
-    val titleData = HomeMemoListAdapter.titleData
-    val notificationSettingData = HomeMemoListAdapter.notificationSettingData
-    val lockData = HomeMemoListAdapter.lockData
+//    val titleData = HomeMemoListAdapter.titleData
+//    val notificationSettingData = HomeMemoListAdapter.notificationSettingData
+//    val lockData = HomeMemoListAdapter.lockData
+    val nm = NoteManager()
     
     companion object {
         val selectedItemPositions = mutableSetOf<Int>()
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val titleText: TextView
-        val settingText: TextView
-        val memo: LinearLayout
-        val lockImage: ImageView
-        init {
-            titleText = view.findViewById(R.id.delete_list_title_text)
-            settingText = view.findViewById(R.id.delete_list_setting_text)
-            memo = view.findViewById(R.id.delete_memo)
-            lockImage = view.findViewById(R.id.delete_list_lock_image)
-        }
+        val titleText = view.findViewById<TextView>(R.id.delete_list_title_text)
+        val noticeText = view.findViewById<TextView>(R.id.delete_list_notice_text)
+        val locationText = view.findViewById<TextView>(R.id.delete_list_location_text)
+        val memo = view.findViewById<LinearLayout>(R.id.delete_memo)
+        val lockImage = view.findViewById<ImageView>(R.id.delete_list_lock_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,24 +37,31 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.titleText.text = titleData[position]
-        val notification = notificationSettingData[position]
-        
-        when {
-            notification[0] == "1" -> viewHolder.settingText.text = notification[1] + "〜"
-            notification[0] == "2" -> viewHolder.settingText.text = notification[1] + "〜" + notification[2]
-            notification[0] == "3" -> viewHolder.settingText.text = notification[1]
-        }
+        nm.selectByTempId(position.toString())
+        val n = nm.getNote()
+        viewHolder.titleText.text = n.getTitle()
 
-        if (lockData[position]) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
+        val startTime = n.getNoticeShow()
+        val stopTime = n.getNoticeHide()
+        val location = n.getNoticeLocation()
+        val f = DateTimeFormatter.ofPattern("yyyy/mm/dd hh:mm")
+
+        if (startTime != null && stopTime != null) viewHolder.noticeText.text = "${startTime.format(f)} 〜 ${stopTime.format(f)}"
+        else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
+
+        if (location != null) viewHolder.locationText.text = location.toString()
+
+        if (n.isLock()) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImage.setImageResource(R.drawable.space)
 
         viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
 
             override fun onClick(v: View) {
                 val touchPosition = viewHolder.adapterPosition
+                nm.selectByTempId(touchPosition.toString())
+
                 v.setOnClickListener {
-                    if (!lockData[touchPosition]) {
+                    if (!nm.getNote().isLock()) {
                         if (isSelectedItem(touchPosition)) {
                             viewHolder.memo.setBackgroundColor(Color.WHITE)
                             removeSelectedItem(touchPosition)
@@ -70,7 +75,9 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         })
     }
 
-    override fun getItemCount() = HomeMemoListAdapter.titleData.size
+    override fun getItemCount(): Int {
+        return -1
+    }
 
     //指定されたPositionのアイテムが選択済みか確認する
     private fun isSelectedItem(position: Int): Boolean = (selectedItemPositions.contains(position))

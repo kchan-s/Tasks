@@ -9,14 +9,16 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.LocationActivityBinding
+import app.sato.kchan.tasks.fanction.Location
+import app.sato.kchan.tasks.fanction.NoteManager
 
 
 class LocationActivity: AppCompatActivity(){
     private lateinit var binding: LocationActivityBinding
     val locationNameList = LocationStockAdapter.locationNameData
     val locationCoordinateList = LocationStockAdapter.locationCoordinateData
+    val nm = NoteManager()
     var position = -1 // 初期値
-    lateinit var notificationList: MutableList<String>
 
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,12 +27,8 @@ class LocationActivity: AppCompatActivity(){
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         position = intent.getIntExtra("position", -1)
-        if (position == -1) {
-            HomeMemoListAdapter.notificationSettingData.add(mutableListOf(""))
-            position = HomeMemoListAdapter.notificationSettingData.lastIndex
-        }
-
-        notificationList = HomeMemoListAdapter.notificationSettingData[position]
+        nm.selectByTempId(position.toString())
+        val n = nm.getNote()
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, locationNameList)
 
@@ -42,24 +40,21 @@ class LocationActivity: AppCompatActivity(){
                     binding.locationMapButton.isVisible = true
                 } else if (pos != 0) {
                     // 場所設定
-                    notificationList.clear()
-                    notificationList.addAll(
-                        mutableListOf(
-                            "3",
-                            locationNameList[pos],
-                            pos.toString(),
-                            locationCoordinateList[pos-1][0].toString(),
-                            locationCoordinateList[pos-1][1].toString()
+                    n.setNoticeLocation(Location(
+                        mutableMapOf(
+                            "latitude" to locationCoordinateList[pos][0].toString(),
+                            "longitude" to locationCoordinateList[pos][1].toString()
                         )
-                    )
+                    ))
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        if (notificationList[0] == "3") {
-            binding.locationSettingSpinner.setSelection(notificationList[2].toInt())
+        // 既に場所設定がされている場合の初期設定
+        if (n.getNoticeLocation() != null) {
+//            binding.locationSettingSpinner.setSelection(locationNameList[].toInt())
         }
 
         // map表示ボタンクリック時の処理
@@ -77,20 +72,20 @@ class LocationActivity: AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        if (notificationList[0] == "4") {
-            binding.locationNameEdit.isVisible = true
-            binding.locationNameEdit.setText(notificationList[1])
-            binding.locationSettingSpinner.setSelection(locationNameList.lastIndex)
-        }
+//        if (notificationList[0] == "4") {
+//            binding.locationNameEdit.isVisible = true
+//            binding.locationNameEdit.setText(notificationList[1])
+//            binding.locationSettingSpinner.setSelection(locationNameList.lastIndex)
+//        }
     }
 
      // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                if (notificationList[0] == "4") {
-                    notificationList[1] = binding.locationNameEdit.text.toString()
-                }
+//                if (notificationList[0] == "4") {
+//                    notificationList[1] = binding.locationNameEdit.text.toString()
+//                }
                 finish()
             }
         }

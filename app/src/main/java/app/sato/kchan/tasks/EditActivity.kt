@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.EditActivityBinding
+import app.sato.kchan.tasks.fanction.NoteManager
 
 
 class EditActivity : AppCompatActivity() {
     private lateinit var binding: EditActivityBinding
+    val nm = NoteManager()
     var position = -1
     var l = false // 新規作成時に使用
 
@@ -20,10 +22,10 @@ class EditActivity : AppCompatActivity() {
         position = intent.getIntExtra("position", -1)
 
         if (position != -1) {
-            val title = HomeMemoListAdapter.titleData[position]
-            val detail = HomeMemoListAdapter.detailData[position]
-            binding.editTitleEdit.setText(title)
-            binding.editMemoEdit.setText(detail)
+            nm.selectByTempId(position.toString())
+            val n = nm.getNote()
+            binding.editTitleEdit.setText(n.getTitle())
+            binding.editMemoEdit.setText(n.getContent())
         }
 
         val toolbar = binding.editToolbar
@@ -44,20 +46,20 @@ class EditActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_lock -> {
                 //ロック押下
-                if (position != -1) HomeMemoListAdapter.lockData[position] = !HomeMemoListAdapter.lockData[position]
-                //lockButton_onClick()
+//                if (position != -1) HomeMemoListAdapter.lockData[position] = !HomeMemoListAdapter.lockData[position]
+                lockButton_onClick(position)
             }
             R.id.menu_delete -> {
                 //削除押下
-                //deleteButton_onClick()
-                if (position != -1) {
-                    HomeMemoListAdapter.titleData.removeAt(position)
-                    HomeMemoListAdapter.detailData.removeAt(position)
-                    HomeMemoListAdapter.notificationSettingData.removeAt(position)
-                    HomeMemoListAdapter.lockData.removeAt(position)
-                    HomeMemoListAdapter.completeData.removeAt(position)
-                }
-                finish()
+                deleteButton_onClick()
+//                if (position != -1) {
+//                    HomeMemoListAdapter.titleData.removeAt(position)
+//                    HomeMemoListAdapter.detailData.removeAt(position)
+//                    HomeMemoListAdapter.notificationSettingData.removeAt(position)
+//                    HomeMemoListAdapter.lockData.removeAt(position)
+//                    HomeMemoListAdapter.completeData.removeAt(position)
+//                }
+
             }
             R.id.menu_time -> {
                 //時間通知押下
@@ -70,19 +72,8 @@ class EditActivity : AppCompatActivity() {
             android.R.id.home -> {
                 // 戻るボタン
                 //backButton_onClick()
-                val notification = HomeMemoListAdapter.notificationSettingData
-                if (position == -1 && binding.editTitleEdit.text.toString() != "") {
-                    HomeMemoListAdapter.titleData.add(binding.editTitleEdit.text.toString())
-                    HomeMemoListAdapter.detailData.add(binding.editMemoEdit.text.toString())
-                    HomeMemoListAdapter.lockData.add(l)
-                    HomeMemoListAdapter.completeData.add(false) // 作成時点ではcheckはfalse
-                } else if (HomeMemoListAdapter.titleData.size != notification.size) {
-                    notification.removeAt(notification.lastIndex)
-                } else if (notification.size == 0) {
-                    println(notification)
-                    notification.add(mutableListOf("0"))
-                    println(notification)
-                }
+                nm.create()
+                position = nm.getTempId().toInt()
                 finish()
             }
         }
@@ -90,19 +81,24 @@ class EditActivity : AppCompatActivity() {
     }
 
     //ロック・未ロック
-//    private fun lockButton_onClick() {
-//        if(Note.isLock()){
-//            Note.setUnlock()
-//        }else{
-//            Note.setLock()
-//        }
-//    }
-//
-//    //削除
-//    private fun deleteButton_onClick() {
-//        Note.delete()
-//        画面遷移？
-//    }
+    private fun lockButton_onClick(position: Int) {
+        nm.selectByTempId(position.toString())
+        val note = nm.getNote()
+        if(note.isLock()){
+            note.setUnlock()
+        }else{
+            note.setLock()
+        }
+    }
+
+    //削除
+    private fun deleteButton_onClick() {
+        nm.selectByTempId(position.toString())
+        val note = nm.getNote()
+        note.delete()
+
+        finish()
+    }
 
     //画面遷移　時間通知
     private fun noticeButton_onClick() {

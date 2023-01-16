@@ -30,8 +30,8 @@ class AlarmNotification : BroadcastReceiver() {
         )
         val channelId = "default"
         // app name
-        val title = HomeMemoListAdapter.titleData[position]
-        val message = HomeMemoListAdapter.detailData[position]
+        val title = "a"
+        val message = "i"
 
         // Notification　Channel 設定
         val channel = NotificationChannel(
