@@ -65,6 +65,27 @@ class Location public constructor(pick:MutableMap<String, String>) {
             pick = pick
         )
     }
+    fun isPermanent():Boolean{
+        return DataOperator().selectQuery(
+            table = "place",
+            column = "status_flag",
+            pick = pick
+        ).getInt() and 1.shl(0) > 0
+    }
+    fun setPermanent(){
+        DataOperator().updateQuery(
+            table = "place",
+            value = mutableListOf("status_flag" to "status_flag | (1 << 0)"),
+            pick = pick
+        )
+    }
+    fun setTemporary(){
+        DataOperator().updateQuery(
+            table = "place",
+            value = mutableListOf("status_flag" to "status_flag & ~ (1 << 0)"),
+            pick = pick
+        )
+    }
     fun isCollision():Boolean{
         return DataOperator().selectQuery(
             table = "place",
