@@ -32,56 +32,15 @@ class SettingActivity : AppCompatActivity() {
         list.setOnItemClickListener { _, _, position, _ ->
             val intent = Intent()
             when (position) {
-                //画面遷移　カスタム
-                // customButton_onClick
-                0 -> {
-                    intent.setClass(this, CustomActivity::class.java)
-                    startActivity(intent)
-                }
-
-                //画面遷移　アカウント
-                // accountButton_onClick
-                1 -> {
-                    intent.setClass(this, AccountActivity::class.java)
-                    startActivity(intent)
-                }
-
-                //画面遷移　デフォ
-                // defaultNoticeButton_onClick
-                2 -> {
-                    intent.setClass(this, DefaultNoticeActivity::class.java)
-                    startActivity(intent)
-                }
-
-                //画面遷移　よくいく
-                // locationButton_onClick
-                3 -> {
-                    intent.setClass(this, LocationStockActivity::class.java)
-                    startActivity(intent)
-                }
-
-                //画面遷移　自動削除
-                // autoDeletionButton_onClick
-                4 -> {
-                    intent.setClass(this, AutoDeletionActivity::class.java)
-                    startActivity(intent)
-                }
-
-                //画面遷移　ヘルプ
-                // helpButton_onClick
-                5 -> {
-                    // アプリ内にWebView埋め込み
-                    // 戻るボタン機能させたいならintentで遷移？
-                    val webView = WebView(this)
-                    webView.webViewClient = WebViewClient()
-                    webView.getSettings().setJavaScriptEnabled(true) // JavaScriptを有効にする
-                    webView.loadUrl("https://google.com") // URLを読み込む
-                    setContentView(webView)
-                }
+                0 -> customButton_onClick()
+                1 -> accountButton_onClick()
+                2 -> defaultNoticeButton_onClick()
+                3 -> locationButton_onClick()
+                4 -> autoDeletionButton_onClick()
+                5 -> helpButton_onClick()
             }
         }
 
-        // ツールバーの設定(触らなくていいです)
         val toolbar = binding.settingToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -96,6 +55,46 @@ class SettingActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+    // カスタマイズ画面に遷移
+    private fun customButton_onClick() {
+        intent.setClass(this, CustomActivity::class.java)
+        startActivity(intent)
+    }
+
+    // アカウント画面に遷移
+    private fun accountButton_onClick() {
+        intent.setClass(this, AccountActivity::class.java)
+        startActivity(intent)
+    }
+
+    // 標準通知時間設定画面に遷移
+    private fun defaultNoticeButton_onClick() {
+        intent.setClass(this, DefaultNoticeActivity::class.java)
+        startActivity(intent)
+    }
+
+    // よく行く場所一覧画面に遷移
+    private fun locationButton_onClick() {
+        intent.setClass(this, LocationStockActivity::class.java)
+        startActivity(intent)
+    }
+
+    // 自動削除設定画面に遷移
+    private fun autoDeletionButton_onClick() {
+        intent.setClass(this, AutoDeletionActivity::class.java)
+        startActivity(intent)
+    }
+
+    // ヘルプページに遷移
+    private fun helpButton_onClick() {
+        val webView = WebView(this)
+        webView.webViewClient = WebViewClient()
+        webView.getSettings().setJavaScriptEnabled(true) // JavaScriptを有効にする
+        webView.loadUrl("https://google.com") // URLを読み込む
+        setContentView(webView)
     }
 
     private fun loadTheme() {

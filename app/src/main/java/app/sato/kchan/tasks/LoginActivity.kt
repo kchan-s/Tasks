@@ -5,12 +5,15 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.LoginActivityBinding
+import app.sato.kchan.tasks.fanction.Account
 import com.google.android.material.textfield.TextInputLayout
 
 class LoginActivity: AppCompatActivity(){
     private lateinit var binding: LoginActivityBinding
+    val account = Account()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +50,10 @@ class LoginActivity: AppCompatActivity(){
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
 
+        binding.loginDoneButton.setOnClickListener {
+            loginButton_onClick()
+        }
+
         val toolbar = binding.loginToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -64,6 +71,15 @@ class LoginActivity: AppCompatActivity(){
     }
 
     //ログイン
+    private fun loginButton_onClick() {
+        if (binding.loginIdEdit.text.toString() != "" &&  binding.loginPasswordEdit.text.toString() != "") {
+            val login = account.login(binding.loginIdEdit.text.toString(), binding.loginPasswordEdit.text.toString())
+            if (login) finish()
+            else Toast.makeText(this, "ログインIDまたはパスワードが間違っています", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
+        }
+    }
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)

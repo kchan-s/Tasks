@@ -17,25 +17,18 @@ class LocationStockActivity: AppCompatActivity(){
         loadTheme()
         binding = LocationStockActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        //RecyclerViewの取得
+        // よく行く場所一覧のリスト設定
         val recyclerView = binding.locationStockList
-
-        //Adapterの設定
         adapter = LocationStockAdapter()
         recyclerView.adapter = adapter
-
-        //LayoutManagerの設定
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-
-        // 境界線の設定
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(itemDecoration)
 
         // LocationStockRegisterActivityへの遷移
         binding.locationStockRegisterButton.setOnClickListener {
-            val intent = Intent(this, LocationStockRegisterActivity::class.java)
-            startActivity(intent)
+            createButton_onClick()
         }
 
         val toolbar = binding.locationStockToolbar
@@ -57,6 +50,11 @@ class LocationStockActivity: AppCompatActivity(){
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun createButton_onClick() {
+        val intent = Intent(this, LocationStockRegisterActivity::class.java)
+        startActivity(intent)
     }
 
     private fun loadTheme() {

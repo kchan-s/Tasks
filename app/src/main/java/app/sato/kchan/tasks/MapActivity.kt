@@ -1,6 +1,7 @@
 package app.sato.kchan.tasks
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import app.sato.kchan.tasks.databinding.MapActivityBinding
 import app.sato.kchan.tasks.fanction.Location
+import app.sato.kchan.tasks.fanction.LocationManager
 import app.sato.kchan.tasks.fanction.NoteManager
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -61,28 +63,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home-> {
-                val nm = NoteManager()
-                nm.selectByTempId(position.toString())
-                val n = nm.getNote()
-                n.setNoticeLocation(Location(
-                    mutableMapOf(
-                        "latitude" to newLocation.latitude.toString(),
-                        "longitude" to newLocation.longitude.toString()
-                    )
-                ))
-//                if (position != -1 && mFirst == false) {
-//                    notificationDataList.clear()
-//                    notificationDataList.addAll(
-//                        mutableListOf(
-//                            "4",
-//                            "",
-//                            newLocation.latitude.toString(),
-//                            newLocation.longitude.toString()
-//                        )
-//                    )
-//                } else if (position == -1){
-//                    LocationStockAdapter.locationCoordinateData.add(listOf(newLocation.latitude, newLocation.longitude))
-//                }
+                val addressLine = doReverseGeoCoding(newLocation.latitude, newLocation.longitude).get(0).getAddressLine(0).toString()
+                val address = addressLine.split(" ")
+                val intent = Intent()
+                intent.putExtra(address[1], "")
+                setResult(RESULT_OK, intent)
                 finish()
             }
         }
@@ -100,11 +85,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        // Add a marker in Sydney and move the camera
-//        val sydney = LatLng(-34.0, 151.0)
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-
         checkPermission()
 
         val nm = NoteManager()
@@ -112,12 +92,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val n = nm.getNote()
         val noteLocation = n.getNoticeLocation()
 
-//      既に場所設定がされてたらmarkerを立てたい
-//        if (noteLocation != null) {
-//            newLocation = LatLng(notificationDataList[2].toDouble(), notificationDataList[3].toDouble())
-//            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(notificationDataList[1]))!!
-//            mFirst = false
-//        }
+        if (noteLocation != null) {
+            val coordinate = doGeoCoding(noteLocation.getAddress())
+            newLocation = LatLng(coordinate[0].latitude, coordinate[0].longitude)
+            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(noteLocation.getAddress()))!!
+            mFirst = false
+        }
 
         mMap.setOnMapLongClickListener { longpushLocation: LatLng ->
             if (!mFirst) marker.remove()
@@ -179,16 +159,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
 
-//            override fun onPause() {
-//                super.onPause()
-//                stopLocationUpdates()
-//            }
-//
-//            private fun stopLocationUpdates() {
-//                fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-//            }
-
-
             val locationRequest = LocationRequest.create().apply {
                 interval = 0
                 fastestInterval = 0
@@ -197,6 +167,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             fusedLocationProviderClient.requestLocationUpdates(locationRequest,
                 locationCallback as LocationCallback,mainLooper)
         }
+    }
+
+    private fun doGeoCoding(query: String): MutableList<Address> {
+        val gcoder = Geocoder(this, Locale.getDefault())
+        return gcoder.getFromLocationName(query, 1)
+    }
+
+    private fun doReverseGeoCoding(lat: Double, lng: Double) : MutableList<Address>{
+        val gcoder = Geocoder(this, Locale.getDefault())
+        return gcoder.getFromLocation(lat, lng, 1)
     }
 
     private fun loadTheme() {

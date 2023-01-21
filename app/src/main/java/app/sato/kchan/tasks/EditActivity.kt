@@ -12,7 +12,7 @@ class EditActivity : AppCompatActivity() {
     private lateinit var binding: EditActivityBinding
     val nm = NoteManager()
     var position = -1
-    var l = false // 新規作成時に使用
+    var new = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +26,10 @@ class EditActivity : AppCompatActivity() {
             val n = nm.getNote()
             binding.editTitleEdit.setText(n.getTitle())
             binding.editMemoEdit.setText(n.getContent())
+        } else {
+            nm.create()
+            position = nm.getNoteNumber()
+            new = true
         }
 
         val toolbar = binding.editToolbar
@@ -46,20 +50,11 @@ class EditActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_lock -> {
                 //ロック押下
-//                if (position != -1) HomeMemoListAdapter.lockData[position] = !HomeMemoListAdapter.lockData[position]
                 lockButton_onClick(position)
             }
             R.id.menu_delete -> {
                 //削除押下
                 deleteButton_onClick()
-//                if (position != -1) {
-//                    HomeMemoListAdapter.titleData.removeAt(position)
-//                    HomeMemoListAdapter.detailData.removeAt(position)
-//                    HomeMemoListAdapter.notificationSettingData.removeAt(position)
-//                    HomeMemoListAdapter.lockData.removeAt(position)
-//                    HomeMemoListAdapter.completeData.removeAt(position)
-//                }
-
             }
             R.id.menu_time -> {
                 //時間通知押下
@@ -70,10 +65,14 @@ class EditActivity : AppCompatActivity() {
                 locationButton_onClick()
             }
             android.R.id.home -> {
-                // 戻るボタン
-                //backButton_onClick()
-                nm.create()
-                position = nm.getTempId().toInt()
+                if (new && binding.editTitleEdit.text.toString() == "") {
+                    nm.delete()
+                } else {
+                    nm.selectByTempId(position.toString())
+                    val n = nm.getNote()
+                    n.setTitle(binding.editTitleEdit.text.toString())
+                    n.setContent(binding.editMemoEdit.text.toString())
+                }
                 finish()
             }
         }
@@ -96,7 +95,6 @@ class EditActivity : AppCompatActivity() {
         nm.selectByTempId(position.toString())
         val note = nm.getNote()
         note.delete()
-
         finish()
     }
 

@@ -13,9 +13,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.PasswordInitializeActivityBinding
+import app.sato.kchan.tasks.fanction.Account
 
 class PasswordInitializeActivity: AppCompatActivity(){
     private lateinit var binding: PasswordInitializeActivityBinding
+    val account = Account()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +32,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
                 if (p0.length < 8) {
                     binding.passwordInitializeSettingLayout.error = "8文字以上入力してください"
-                } else if (p0.length >= 50) {
+                } else if (p0.length > 50) {
                     binding.passwordInitializeSettingLayout.error = "50文字以下で設定してください"
                 } else {
                     binding.passwordInitializeSettingLayout.error = null
@@ -56,47 +58,12 @@ class PasswordInitializeActivity: AppCompatActivity(){
 
         // 設定完了ボタンタップ処理
         binding.passwordInitializeDoneButton.setOnClickListener {
-            val question1 = binding.passwordInitializeQuestion1Spinner.selectedItemPosition
-            val question2 = binding.passwordInitializeQuestion2Spinner.selectedItemPosition
-            val question3 = binding.passwordInitializeQuestion3Spinner.selectedItemPosition
-            val answer1 = binding.passwordInitializeAnswer1Edit.text.toString()
-            val answer2 = binding.passwordInitializeAnswer2Edit.text.toString()
-            val answer3 = binding.passwordInitializeAnswer3Edit.text.toString()
-            val password = binding.passwordInitializeSettingEdit.text.toString()
-            val verification = binding.passwordInitializeVerificationEdit.text.toString()
-
-            // 質問が選択されていない場合の場合分けも行う
-            when {
-                question1 == question2 || question1 == question3 || question2 == question3 ->{
-                    Toast.makeText(this, "秘密の質問は異なるものにしてください", Toast.LENGTH_LONG).show()
-                }
-                answer1 != "" && answer2 != "" && answer3 != "" && password.length >= 8 && verification.length >= 8 -> {
-                    if (password == verification) {
-                        // 保存
-
-                        // パスワードが登録完了したことを保存
-                        val aPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
-                        val aEditor = aPreferences.edit()
-                        aEditor.putBoolean("passwordInitialize", false)
-                        aEditor.commit()
-
-                        val intent = Intent(this, AccountActivity::class.java)
-                        startActivity(intent)
-                    }
-                    else {
-                        Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
-                    }
-                }
-                password.length > 50 || verification.length > 50 -> {
-                    Toast.makeText(this, "パスワードは50文字以下で設定してください", Toast.LENGTH_LONG).show()
-                }
-                else -> {
-                    Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
-                }
-            }
+            changeButton_onClick()
         }
 
-        val question = listOf("はじめて飼ったペットの名前は？",
+        // ドロップダウンリストの設定
+        val question = listOf("未選択",
+                "はじめて飼ったペットの名前は？",
                 "一番年上のいとこの名前は？",
                 "母親の旧姓は？",
                 "両親が出会った街は？",
@@ -104,10 +71,8 @@ class PasswordInitializeActivity: AppCompatActivity(){
                 "初めて買ったCDは？",
                 "初めて買った車は？")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, question)
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.passwordInitializeQuestion1Spinner.adapter = adapter
-
         binding.passwordInitializeQuestion2Spinner.adapter = adapter
         binding.passwordInitializeQuestion2Spinner.setSelection(1)
         binding.passwordInitializeQuestion2Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -146,6 +111,50 @@ class PasswordInitializeActivity: AppCompatActivity(){
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun changeButton_onClick() {
+        val question1 = binding.passwordInitializeQuestion1Spinner.selectedItemPosition
+        val question2 = binding.passwordInitializeQuestion2Spinner.selectedItemPosition
+        val question3 = binding.passwordInitializeQuestion3Spinner.selectedItemPosition
+        val answer1 = binding.passwordInitializeAnswer1Edit.text.toString()
+        val answer2 = binding.passwordInitializeAnswer2Edit.text.toString()
+        val answer3 = binding.passwordInitializeAnswer3Edit.text.toString()
+        val password = binding.passwordInitializeSettingEdit.text.toString()
+        val verification = binding.passwordInitializeVerificationEdit.text.toString()
+
+        // 質問が選択されていない場合の場合分けも行う
+        when {
+            question1 == 0 || question2 == 0 || question3 == 0 -> {
+                Toast.makeText(this, "秘密の質問を選択してください", Toast.LENGTH_LONG).show()
+            }
+            question1 == question2 || question1 == question3 || question2 == question3 -> {
+                Toast.makeText(this, "秘密の質問は異なるものにしてください", Toast.LENGTH_LONG).show()
+            }
+            answer1 != "" && answer2 != "" && answer3 != "" && password.length >= 8 && verification.length >= 8 -> {
+                if (password == verification) {
+                    // 保存
+                    account.setPassword(password)
+                    // パスワードが登録完了したことを保存
+                    val aPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
+                    val aEditor = aPreferences.edit()
+                    aEditor.putBoolean("passwordInitialize", false)
+                    aEditor.commit()
+
+                    val intent = Intent(this, AccountActivity::class.java)
+                    startActivity(intent)
+                }
+                else {
+                    Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
+                }
+            }
+            password.length > 50 || verification.length > 50 -> {
+                Toast.makeText(this, "パスワードは50文字以下で設定してください", Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun loadTheme() {

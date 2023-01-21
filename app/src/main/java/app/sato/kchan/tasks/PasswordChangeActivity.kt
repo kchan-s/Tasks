@@ -8,9 +8,11 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.PasswordChangeActivityBinding
+import app.sato.kchan.tasks.fanction.Account
 
 class PasswordChangeActivity: AppCompatActivity(){
     private lateinit var binding: PasswordChangeActivityBinding
+    val account = Account()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,41 +21,12 @@ class PasswordChangeActivity: AppCompatActivity(){
 
         // パスワードを忘れた方はこちらボタンタップ処理
         binding.passwordChangeResetButton.setOnClickListener {
-            val reset = Intent(this, PasswordResetActivity::class.java)
-            startActivity(reset)
+            resetPasswordButton_onClick()
         }
 
         // 設定完了ボタンタップ処理
         binding.passwordChangeDoneButton.setOnClickListener {
-            val nowPassword = binding.passwordChangeNowEdit.text.toString()
-            val newPassword = binding.passwordChangeNewEdit.text.toString()
-            val verification = binding.passwordChangeVerificationEdit.text.toString()
-            if (nowPassword.length >= 8 && newPassword.length >= 8 && verification.length >= 8) {
-                // 今のパスワードがあっているか判定が必要
-                when {
-                    // ↓のnowPasswordは読み込んできたやつにする
-                    nowPassword.length > 50 -> {
-                        Toast.makeText(this, "現在のパスワードは50文字以下です", Toast.LENGTH_LONG).show()
-                    }
-                    newPassword.length > 50 || verification.length > 50 -> {
-                        Toast.makeText(this, "パスワードは50文字以下で設定してください", Toast.LENGTH_LONG).show()
-                    }
-                    nowPassword == newPassword -> {
-                        Toast.makeText(this, "新しいパスワードが現在のパスワードと同じです", Toast.LENGTH_LONG).show()
-                    }
-                    newPassword == verification -> {
-                        // 保存
-                        val intent = Intent(this, AccountActivity::class.java)
-                        startActivity(intent)
-                    }
-                    else -> {
-                        Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } else {
-                Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
-            }
-
+            changeButton_onClick()
         }
 
         binding.passwordChangeNowEdit.addTextChangedListener(object: TextWatcher {
@@ -120,10 +93,41 @@ class PasswordChangeActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-//設定完了 画面遷移　アカウントへ
-//    private fun changeButton_onClick() {
-//        Account.resetPassword()
-//    }
+    private fun resetPasswordButton_onClick() {
+        val reset = Intent(this, PasswordResetActivity::class.java)
+        startActivity(reset)
+    }
+
+    private fun changeButton_onClick() {
+        val nowPassword = binding.passwordChangeNowEdit.text.toString()
+        val newPassword = binding.passwordChangeNewEdit.text.toString()
+        val verification = binding.passwordChangeVerificationEdit.text.toString()
+        if (nowPassword.length >= 8 && newPassword.length >= 8 && verification.length >= 8) {
+            // 今のパスワードがあっているか判定が必要
+            when {
+                // ↓のnowPasswordは読み込んできたやつにする
+                nowPassword.length > 50 -> {
+                    Toast.makeText(this, "現在のパスワードは50文字以下です", Toast.LENGTH_LONG).show()
+                }
+                newPassword.length > 50 || verification.length > 50 -> {
+                    Toast.makeText(this, "パスワードは50文字以下で設定してください", Toast.LENGTH_LONG).show()
+                }
+                nowPassword == newPassword -> {
+                    Toast.makeText(this, "新しいパスワードが現在のパスワードと同じです", Toast.LENGTH_LONG).show()
+                }
+                newPassword == verification -> {
+                    account.changePassword(nowPassword, newPassword)
+                    val intent = Intent(this, AccountActivity::class.java)
+                    startActivity(intent)
+                }
+                else -> {
+                    Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
+        }
+    }
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)

@@ -5,14 +5,18 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.AccountActivityBinding
+import app.sato.kchan.tasks.fanction.Account
 
 class AccountActivity: AppCompatActivity(){
     private lateinit var binding: AccountActivityBinding
+    val account = Account()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = AccountActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+
+        binding.loginIdText.text = account.getId()
 
         // アカウント切り替えボタンを押した時の処理
         binding.accountChangeButton.setOnClickListener {

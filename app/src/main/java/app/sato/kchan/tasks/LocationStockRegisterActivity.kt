@@ -6,40 +6,40 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.LocationStockRegisterActivityBinding
+import app.sato.kchan.tasks.fanction.LocationManager
 import java.util.*
+
 
 class LocationStockRegisterActivity: AppCompatActivity(){
     private lateinit var binding: LocationStockRegisterActivityBinding
-    lateinit var locationNameList: MutableList<String>
-    lateinit var locationCoordinateList: MutableList<List<Double>>
+    var address: String? = ""
+    private val resultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) {
+            val intent = result.data
+            address = ""
+            if (intent != null) {
+                address = intent.getStringExtra(address)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = LocationStockRegisterActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
-        locationNameList = LocationStockAdapter.locationNameData
-        locationCoordinateList = LocationStockAdapter.locationCoordinateData
 
         binding.locationStockRegisterMapButton.setOnClickListener {
-            val map = Intent(this, MapActivity::class.java)
-            startActivity(map)
+            mapButton_onClick()
         }
 
         binding.locationStockRegisterDoneButton.setOnClickListener {
-            // 保存処理
-            val locationName = binding.locationStockRegisterNameEdit.text.toString()
-            val locationAddress = binding.locationStockRegisterAddressEdit.text.toString()
-
-            if (locationName != "" && locationAddress != "") {
-                val addr = doGeoCoding(locationAddress)
-                locationNameList.add(locationName)
-                locationCoordinateList.add(listOf(addr[0].latitude, addr[0].longitude))
-                finish()
-            } else {
-                Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
-            }
+            registerButton_onClick()
         }
 
         val toolbar = binding.locationStockRegisterToolbar
@@ -50,10 +50,7 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        val lData = locationCoordinateList[locationCoordinateList.lastIndex]
-        val addressLine = doReverseGeoCoding(lData[0], lData[1]).get(0).getAddressLine(0).toString()
-        val addr = addressLine.split(" ")
-        binding.locationStockRegisterNameEdit.setText(addr[1])
+        binding.locationStockRegisterNameEdit.setText(address)
     }
 
     // 戻るボタン
@@ -66,14 +63,25 @@ class LocationStockRegisterActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-    private fun doGeoCoding(query: String): MutableList<Address> {
-        val gcoder = Geocoder(this, Locale.getDefault())
-        return gcoder.getFromLocationName(query, 1)
+    private fun mapButton_onClick() {
+        val map = Intent(this, MapActivity::class.java)
+        resultLauncher.launch(map)
     }
 
-    private fun doReverseGeoCoding(lat: Double, lng: Double) : MutableList<Address>{
-        val gcoder = Geocoder(this, Locale.getDefault())
-        return gcoder.getFromLocation(lat, lng, 1)
+    private fun registerButton_onClick() {
+        val locationName = binding.locationStockRegisterNameEdit.text.toString()
+        val locationAddress = binding.locationStockRegisterAddressEdit.text.toString()
+
+        val lm = LocationManager()
+        if (locationName != "" && locationAddress != "") {
+            val l = lm.create()
+            l.setName(locationName)
+            l.setAddress(locationAddress)
+            l.setPermanent()
+            finish()
+        } else {
+            Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun loadTheme() {

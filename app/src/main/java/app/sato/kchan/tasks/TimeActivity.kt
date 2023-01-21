@@ -15,7 +15,6 @@ import java.util.*
 class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
     var start = true // falseならend
-    var startTimeSetting = false // 開始時間が設定されているか
     var startText = ""
     var endText = ""
     var startDateTimeList = mutableListOf<Int>()
@@ -38,9 +37,9 @@ class TimeActivity: AppCompatActivity(){
             binding.timeStartSettingButton.isVisible = true
             binding.timeEndText.isVisible = true
             binding.timeEndSettingButton.isVisible = true
-            binding.timeStartText.text = "通知開始時間 : " // 設定した時間の取り方がわからん
+            binding.timeStartText.text = "通知開始時間 : ${n.getNoticeShow()}"
         }
-        if (n.getNoticeHide() != null) binding.timeEndText.text = "通知終了時間 : "
+        if (n.getNoticeHide() != null) binding.timeEndText.text = "通知終了時間 : ${n.getNoticeHide()}"
 
         // トグルの値読み込みが必要
         binding.timeSettingSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -61,17 +60,15 @@ class TimeActivity: AppCompatActivity(){
             }
         }
 
-        // ↓showButton_onClick()
+        // 通知開始時間設定ボタンタップ処理
         binding.timeStartSettingButton.setOnClickListener {
             start = true
-            startTimeSetting = true
             showDatePickerDialog()
-            //開始時刻に設定？
         }
 
-        // ↓hideButton_onClick()
+        // 通知終了時間設定ボタンタップ処理
         binding.timeEndSettingButton.setOnClickListener {
-            if (!startTimeSetting) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
+            if (n.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
             else {
                 start = false
                 showDatePickerDialog()
@@ -96,7 +93,7 @@ class TimeActivity: AppCompatActivity(){
     }
 
     // 日付選択のダイアログ生成
-    fun showDatePickerDialog() {
+    private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
 
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
@@ -136,7 +133,7 @@ class TimeActivity: AppCompatActivity(){
 
     // 時間選択のダイアログ生成
     @SuppressLint("SetTextI18n")
-    fun showTimePickerDialog() {
+    private fun showTimePickerDialog() {
         val calendar = Calendar.getInstance()
 
         val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->

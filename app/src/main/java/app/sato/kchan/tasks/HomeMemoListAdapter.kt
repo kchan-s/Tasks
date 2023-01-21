@@ -26,7 +26,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     val nm = NoteManager()
 
     companion object {
-//        val titleData = mutableListOf("メモ1", "メモ2", "メモ3", "メモ4", "メモ5", "メモ6", "メモ7", "メモ8", "メモ9", "メモ10", "a", "b", "c", "d", "e")
+        //        val titleData = mutableListOf("メモ1", "メモ2", "メモ3", "メモ4", "メモ5", "メモ6", "メモ7", "メモ8", "メモ9", "メモ10", "a", "b", "c", "d", "e")
 //        val titleData = mutableListOf<String>()
 //        val detailData = mutableListOf<String>()
 //        val notificationSettingData = mutableListOf(
@@ -48,17 +48,17 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 //        )
 //        val completeData = mutableListOf(false, true, false, false, false, false, false, false, false, false, false, false, false, false, false) // 完了・未完了
 //        val lockData = mutableListOf(true, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
-//        var searchIndex = mutableListOf<Int>()
-//        var search = false
+        var searchIndex = mutableListOf<Int>()
+        var search = false
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val context = view.context
-        val titleText = view.findViewById<TextView>(R.id.home_list_title_text)
-        val noticeText = view.findViewById<TextView>(R.id.home_list_notice_text)
-        val locationText = view.findViewById<TextView>(R.id.home_list_location_text)
-        val lockImageView = view.findViewById<ImageView>(R.id.home_list_lock_image)
-        val checkBox = view.findViewById<CheckBox>(R.id.home_list_check_box)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val context: Context = view.context
+        val titleText: TextView = view.findViewById(R.id.home_list_title_text)
+        val noticeText: TextView = view.findViewById(R.id.home_list_notice_text)
+        val locationText: TextView = view.findViewById(R.id.home_list_location_text)
+        val lockImageView: ImageView = view.findViewById(R.id.home_list_lock_image)
+        val checkBox: CheckBox = view.findViewById(R.id.home_list_check_box)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -68,34 +68,29 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        DataSet(viewHolder, position)
+        if (!search) dataSet(viewHolder, position)
+        else dataSet(viewHolder, searchIndex[position])
 
-        viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View) {
-                val aPosition = viewHolder.adapterPosition
+            viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(v: View) {
+                    var adapterPosition = viewHolder.adapterPosition
+                    if (search) adapterPosition = searchIndex[adapterPosition]
 
-                viewHolder.lockImageView.setOnClickListener {
-                    lockButton_onClick(viewHolder, aPosition)
-//                    if (lockData[aPosition]) {
-//                        lockData[aPosition] = false
-//                    } else {
-//                        lockData[aPosition] = true
-//                    }
+                    // ホーム画面に存在するリスト内のロック部分のタップ処理
+                    viewHolder.lockImageView.setOnClickListener {
+                        lockButton_onClick(viewHolder, adapterPosition)
+                    }
+
+                    // ホーム画面に存在するリスト内の完了・未完了のチェックボックスタップ処理
+                    viewHolder.checkBox.setOnCheckedChangeListener { _, _ ->
+                        completeButton_onClick(adapterPosition)
+                    }
+
+                    v.setOnClickListener {
+                        taskmemo_onClick(viewHolder, adapterPosition)
+                    }
                 }
-
-                viewHolder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    completeButton_onClick(aPosition)
-                }
-
-                v.setOnClickListener {
-                    val intent = Intent(viewHolder.context, EditActivity::class.java)
-//                    if (searchIndex.size == 0) intent.putExtra("position", aPosition)
-//                    else intent.putExtra("position", searchIndex[aPosition])
-                    intent.putExtra("position", aPosition)
-                    viewHolder.context.startActivity(intent)
-                }
-            }
-        })
+            })
     }
 
     //完了・未完了切替モジュール
@@ -103,9 +98,9 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         nm.selectByTempId(position.toString())
         nm.isNote()
         var note = nm.getNote()
-        if(note.isComplete()){
+        if (note.isComplete()) {
             note.setUncomplete()
-        }else{
+        } else {
             note.setComplete()
         }
     }
@@ -115,16 +110,26 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         nm.selectByTempId(position.toString())
         nm.isNote()
         val note = nm.getNote()
-        if(note.isLock()){
+        if (note.isLock()) {
             note.setUnlock()
             viewHolder.lockImageView.setImageResource(R.drawable.space)
-        }else{
+        } else {
             note.setLock()
             viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
         }
     }
 
-    private fun DataSet(viewHolder: ViewHolder, position: Int) {
+    // タスクメモのクリック処理
+    private fun taskmemo_onClick(viewHolder: ViewHolder, position: Int) {
+        val intent = Intent(viewHolder.context, EditActivity::class.java)
+//                    if (searchIndex.size == 0) intent.putExtra("position", adapterPosition)
+//                    else intent.putExtra("position", searchIndex[adapterPosition])
+        intent.putExtra("position", position)
+        viewHolder.context.startActivity(intent)
+    }
+
+    // リストの設定
+    private fun dataSet(viewHolder: ViewHolder, position: Int) {
         nm.selectByTempId(position.toString())
         val n = nm.getNote()
 
@@ -136,37 +141,31 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val location = n.getNoticeLocation()
         val f = DateTimeFormatter.ofPattern("yyyy/mm/dd hh:mm")
 
-        if (startTime != null && stopTime != null) viewHolder.noticeText.text = "${startTime.format(f)} 〜 ${stopTime.format(f)}"
+        if (startTime != null && stopTime != null) viewHolder.noticeText.text =
+            "${startTime.format(f)} 〜 ${stopTime.format(f)}"
         else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
 
         if (location != null) viewHolder.locationText.text = location.toString()
-
-//        when {
-//            item2[0] == "0" -> viewHolder.settingText.text = ""
-//            item2[0] == "1" -> {
-//                viewHolder.settingText.text = item2[1]
-//                setAlarm(viewHolder.context, position)
-//            }
-//            item2[0] == "2" -> {
-//                viewHolder.settingText.text = item2[1] + " 〜 " + item2[2]
-//                setAlarm(viewHolder.context, position)
-//            }
-//            item2[0] == "3" || item2[0] == "4" -> viewHolder.settingText.text = item2[1]
-//        }
 
         if (n.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.space)
         else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
         if (!n.isComplete()) viewHolder.checkBox.isChecked = true
     }
 
-    fun searchRequest(text:String) {
-        nm.search(text)
-//        search = true
-//        for (i in 0..titleData.lastIndex) {
+    fun searchRequest(text: String) {
+        search = true
+        for (i in 0..nm.getNoteNumber()) {
+            nm.search(text)
+            if (nm.isNote()) {
+                searchIndex.add(nm.getNoteNumber())
+                //        for (i in 0..titleData.lastIndex) {
 //            if (titleData[i].contains(text)) {
 //                searchIndex.add(i)
 //            }
-//        }
+//        }}
+            }
+//        search = true
+        }
     }
 
 //    fun setAlarm(context: Context, position: Int) {
@@ -210,14 +209,16 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         )
 
         // アラームを解除する
-        val am =
-            context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
         am.cancel(pending)
-    }
+        }
 
     override fun getItemCount(): Int {
-        return 0
-//       if (search) return searchIndex.size
-//       else return titleData.size
+        if (!search) {
+            nm.search("")
+            return nm.getNoteNumber()
+        } else {
+            return searchIndex.size
+        }
     }
 }

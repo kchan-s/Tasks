@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -13,9 +14,6 @@ import java.time.format.DateTimeFormatter
 
 class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHolder>() {
 
-//    val titleData = HomeMemoListAdapter.titleData
-//    val notificationSettingData = HomeMemoListAdapter.notificationSettingData
-//    val lockData = HomeMemoListAdapter.lockData
     val nm = NoteManager()
     
     companion object {
@@ -23,11 +21,11 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val titleText = view.findViewById<TextView>(R.id.delete_list_title_text)
-        val noticeText = view.findViewById<TextView>(R.id.delete_list_notice_text)
-        val locationText = view.findViewById<TextView>(R.id.delete_list_location_text)
-        val memo = view.findViewById<LinearLayout>(R.id.delete_memo)
-        val lockImage = view.findViewById<ImageView>(R.id.delete_list_lock_image)
+        val titleText: TextView = view.findViewById(R.id.home_list_title_text)
+        val noticeText: TextView = view.findViewById(R.id.home_list_notice_text)
+        val locationText: TextView = view.findViewById(R.id.home_list_location_text)
+        val memo: LinearLayout = view.findViewById(R.id.delete_memo)
+        val lockImage: ImageView = view.findViewById(R.id.delete_list_lock_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -76,7 +74,8 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     override fun getItemCount(): Int {
-        return -1
+        nm.search("")
+        return nm.getNoteNumber()
     }
 
     //指定されたPositionのアイテムが選択済みか確認する

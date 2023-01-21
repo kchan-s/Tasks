@@ -5,20 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import app.sato.kchan.tasks.fanction.LocationManager
 
 class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder>(){
-    companion object{
-        val locationNameData = mutableListOf("未選択", "土佐山田駅", "高知工科大学", "高知駅", "Mapを表示")
-        val locationCoordinateData = mutableListOf(listOf(33.607133, 133.685047),
-            listOf(33.620917, 133.719833),
-            listOf(33.567153, 133.543661))
-    }
+
+    val lm = LocationManager()
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val locationText: TextView
-        init {
-            locationText = view.findViewById(R.id.location_stock_text)
-        }
+        val locationText = view.findViewById<TextView>(R.id.location_stock_text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,9 +22,13 @@ class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        if (position != 0 || position != locationNameData.lastIndex) viewHolder.locationText.text = locationNameData[position]
+        lm.selectByTempId(position.toString())
+        val location = lm.getLocation()
+        if (location.isPermanent()) viewHolder.locationText.text = location.getName()
     }
 
-    override fun getItemCount() = locationNameData.size
+    override fun getItemCount(): Int{
+        return lm.getLocationNumber()
+    }
 
 }

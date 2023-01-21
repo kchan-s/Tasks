@@ -18,40 +18,42 @@ class HomeActivity : AppCompatActivity() {
         loadTheme()
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        //RecyclerViewの取得
+        // 以下リストの設定
         val recyclerView = binding.homeList
-
-        //Adapterの設定
         recyclerView.adapter = adapter
-
-        //LayoutManagerの設定
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-
-        // 境界線の設定
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(itemDecoration)
 
+        // 検索バーの設定
         binding.homeSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-//                HomeMemoListAdapter.searchIndex.clear()
-                HomeMemoListAdapter().searchRequest(newText)
-                adapter.notifyDataSetChanged()
-                return false
+                if (newText != "") {
+                    HomeMemoListAdapter().searchRequest(newText)
+                    adapter.notifyDataSetChanged()
+                    return false
+                } else {
+                    HomeMemoListAdapter.search = false
+                    adapter.notifyDataSetChanged()
+                    return false
+                }
             }
-            override fun onQueryTextSubmit(query: String): Boolean {
-                // submit button pressed
-                return false
-            }
+            override fun onQueryTextSubmit(query: String): Boolean { return false }
+//          listUpdate()
         })
 
+        // 設定ボタンタップ処理
         binding.homeSettingButton.setOnClickListener {
             settingButton_onClick()
         }
 
+        // 削除ボタンタップ処理
         binding.homeTrashButton.setOnClickListener {
             deleteButton_onClick()
         }
+
+        // 新規作成ボタンタップ処理
         binding.homeCreateMemoButton.setOnClickListener {
             newButton_onClick()
         }
@@ -76,23 +78,11 @@ class HomeActivity : AppCompatActivity() {
         startActivity(deleteIntent)
     }
 
-    //画面遷移　編集へ
-//    private fun （？）_onClick() {
-//        val newIntent = Intent(this, EditActivity::class.java)
-//        startActivity(newIntent)
-//    }
-
     //新規作成
     private fun newButton_onClick() {
         val newIntent = Intent(this, EditActivity::class.java)
         startActivity(newIntent)
     }
-
-
-//    //リスト更新モジュール
-//    private fun searchBox_onEditorAction() {
-//        listUpdate()
-//    }
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)

@@ -20,18 +20,12 @@ class DeleteActivity: AppCompatActivity() {
         loadTheme()
         binding = DeleteActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        //RecyclerViewの取得
+        // リストの設定
         val recyclerView = binding.deleteList
-
-        //Adapterの設定
         val adapter = DeleteMemoListAdapter()
         recyclerView.adapter = adapter
-
-        //LayoutManagerの設定
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-
-        // 境界線の設定
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(itemDecoration)
 
@@ -48,24 +42,11 @@ class DeleteActivity: AppCompatActivity() {
         return true
     }
 
-    //画面遷移　ホームへ
-    // 戻るボタン
+    // 画面遷移の場合分け
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.delete_button -> {
-                val deletePosition = DeleteMemoListAdapter.selectedItemPositions.sortedDescending()
-                DeleteMemoListAdapter.selectedItemPositions.clear()
-                for (i in deletePosition) nm.selectByTempId(deletePosition.toString())
-                nm.deleteAll()
-//                for (i in deletePosition) {
-//                    HomeMemoListAdapter.titleData.removeAt(i)
-//                    HomeMemoListAdapter.detailData.removeAt(i)
-//                    HomeMemoListAdapter.notificationSettingData.removeAt(i)
-//                    HomeMemoListAdapter.lockData.removeAt(i)
-//                    HomeMemoListAdapter.completeData.removeAt(i)
-//                }
-
-                // 削除処理
+                deleteButton_onClick()
                 finish()
             }
             android.R.id.home-> {
@@ -75,14 +56,13 @@ class DeleteActivity: AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-//    //複数削除実行モジュール
-//    private fun deleteButton_onClick() {
-//        //while()?
-//        NoteManager.selectByTempId()
-//        NoteManager.isNote()
-//        NoteManager.getNote()
-//        NoteManager.delete()
-//    }
+    //複数削除実行モジュール
+    private fun deleteButton_onClick() {
+        val deletePosition = DeleteMemoListAdapter.selectedItemPositions.sortedDescending()
+        DeleteMemoListAdapter.selectedItemPositions.clear()
+        for (i in deletePosition) nm.selectByTempId(deletePosition.toString())
+        nm.deleteAll()
+    }
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
