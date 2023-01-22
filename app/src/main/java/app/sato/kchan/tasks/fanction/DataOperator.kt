@@ -44,7 +44,7 @@ class DataOperator(){
             sql += col + ""
             c++
         }
-        sql += " FROM  " + table + " "
+        sql += " FROM  " + table + " where "
         var values = arrayOf<String?>()
         c = 0
         for ((k, v) in pick) {
