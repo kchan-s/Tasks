@@ -1,12 +1,15 @@
 package app.sato.kchan.tasks.fanction
 
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
+import app.sato.kchan.tasks.HomeActivity.Companion.context
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 class DataOperator(){
+
     //<プロパティ>
     val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase

@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import app.sato.kchan.tasks.fanction.NoteManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -19,6 +20,9 @@ class AlarmNotification : BroadcastReceiver() {
         val requestCode = intent.getIntExtra("RequestCode", 0)
         val deleteTime = intent.getLongExtra("deleteTime", 0)
         val position = intent.getIntExtra("position", -1)
+        val nm = NoteManager()
+        nm.selectByTempId(position.toString())
+        val n = nm.getNote()
 
         val mainIntent = Intent(context, HomeActivity::class.java).apply(){
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -28,10 +32,10 @@ class AlarmNotification : BroadcastReceiver() {
             context, requestCode, mainIntent,
             0
         )
-        val channelId = "default"
+        val channelId = "TaSks"
         // app name
-        val title = "a"
-        val message = "i"
+        val title = n.getTitle()
+        val message = n.getContent()
 
         // Notification　Channel 設定
         val channel = NotificationChannel(
@@ -70,6 +74,7 @@ class AlarmNotification : BroadcastReceiver() {
         val notificationManagerCompat = NotificationManagerCompat.from(context)
 
         // 通知
-        notificationManagerCompat.notify(R.string.app_name, notification)
+        val uuid = UUID.randomUUID().hashCode()
+        notificationManagerCompat.notify(uuid, notification)
     }
 }

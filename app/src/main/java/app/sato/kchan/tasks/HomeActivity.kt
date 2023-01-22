@@ -1,5 +1,6 @@
 package app.sato.kchan.tasks
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.SearchView
@@ -9,11 +10,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.HomeActivityBinding
 
 class HomeActivity : AppCompatActivity() {
+    companion object {
+        lateinit var context: Context
+    }
     private lateinit var binding: HomeActivityBinding
     val adapter = HomeMemoListAdapter()
 
     // 画面作成
     override fun onCreate(savedInstanceState: Bundle?) {
+        context = applicationContext
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
