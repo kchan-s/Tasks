@@ -26,28 +26,6 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     val nm = NoteManager()
 
     companion object {
-        //        val titleData = mutableListOf("メモ1", "メモ2", "メモ3", "メモ4", "メモ5", "メモ6", "メモ7", "メモ8", "メモ9", "メモ10", "a", "b", "c", "d", "e")
-//        val titleData = mutableListOf<String>()
-//        val detailData = mutableListOf<String>()
-//        val notificationSettingData = mutableListOf(
-//            mutableListOf("0"),
-//            mutableListOf("0"),
-//            mutableListOf("2", "2022/11/8 13:20", "2022/11/9 15:08"),
-//            mutableListOf("0"),
-//            mutableListOf("0"),
-//            mutableListOf("3", "高知工科大学", "2", "33.620917", "133.719833"),
-//            mutableListOf("0"),
-//            mutableListOf("0"),
-//            mutableListOf("0"),
-//            mutableListOf("1", "2023/01/11 01:30"),
-//            mutableListOf("0"),
-//            mutableListOf("0"),
-//            mutableListOf("0"),
-//            mutableListOf("0"),
-//            mutableListOf("0")
-//        )
-//        val completeData = mutableListOf(false, true, false, false, false, false, false, false, false, false, false, false, false, false, false) // 完了・未完了
-//        val lockData = mutableListOf(true, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
         var searchIndex = mutableListOf<Int>()
         var search = false
     }
@@ -97,7 +75,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     private fun completeButton_onClick(position: Int) {
         nm.selectByTempId(position.toString())
         nm.isNote()
-        var note = nm.getNote()
+        val note = nm.getNote()
         if (note.isComplete()) {
             note.setUncomplete()
         } else {
@@ -131,23 +109,23 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     // リストの設定
     private fun dataSet(viewHolder: ViewHolder, position: Int) {
         nm.selectByTempId(position.toString())
-        val n = nm.getNote()
-        viewHolder.titleText.setText(n.getTitle())
-        println(n.getTitle())
-        val startTime = n.getNoticeShow()
-        val stopTime = n.getNoticeHide()
-        val location = n.getNoticeLocation()
+        val note = nm.getNote()
+        viewHolder.titleText.setText(note.getTitle())
+        println(note.getTitle())
+        val startTime = note.getNoticeShow()
+        val stopTime = note.getNoticeHide()
+//        val location = n.getNoticeLocation()
         val f = DateTimeFormatter.ofPattern("yyyy/mm/dd hh:mm")
 
         if (startTime != null && stopTime != null) viewHolder.noticeText.text =
             "${startTime.format(f)} 〜 ${stopTime.format(f)}"
         else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
 
-        if (location != null) viewHolder.locationText.text = location.toString()
+//        if (location != null) viewHolder.locationText.text = location.toString()
 
-        if (n.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.space)
-        else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
-        if (!n.isComplete()) viewHolder.checkBox.isChecked = true
+//        if (n.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.space)
+//        else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
+//        if (!n.isComplete()) viewHolder.checkBox.isChecked = true
     }
 
     fun searchRequest(text: String) {

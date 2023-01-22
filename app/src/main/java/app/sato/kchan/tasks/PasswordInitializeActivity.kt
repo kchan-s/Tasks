@@ -74,10 +74,10 @@ class PasswordInitializeActivity: AppCompatActivity(){
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.passwordInitializeQuestion1Spinner.adapter = adapter
         binding.passwordInitializeQuestion2Spinner.adapter = adapter
-        binding.passwordInitializeQuestion2Spinner.setSelection(1)
         binding.passwordInitializeQuestion2Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (binding.passwordInitializeQuestion2Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
+                if (binding.passwordInitializeQuestion2Spinner.selectedItemPosition != 0 &&
+                    binding.passwordInitializeQuestion2Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
                     Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
                 }
             }
@@ -85,12 +85,13 @@ class PasswordInitializeActivity: AppCompatActivity(){
         }
 
         binding.passwordInitializeQuestion3Spinner.adapter = adapter
-        binding.passwordInitializeQuestion3Spinner.setSelection(2)
         binding.passwordInitializeQuestion3Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
+                if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition != 0 &&
+                    binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
                     Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
-                } else if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion2Spinner.selectedItemPosition) {
+                } else if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition != 0 &&
+                    binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion2Spinner.selectedItemPosition) {
                     Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
                 }
             }

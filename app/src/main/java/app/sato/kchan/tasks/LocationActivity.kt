@@ -29,10 +29,7 @@ class LocationActivity: AppCompatActivity(){
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
-            val intent = result.data
-            if (intent != null) {
-                address = intent.getStringExtra(address)
-            }
+            address = result.data?.getStringExtra(MapActivity.ADDRESS_RESULT).toString()
         }
     }
 

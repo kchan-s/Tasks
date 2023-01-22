@@ -80,7 +80,7 @@ class Note public constructor(pick:MutableMap<String, String>) {
         }else{
             DataOperator().updateQuery(
                 table = "notice",
-                value = mutableListOf("show_at" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(value)),
+                value = mutableListOf("show_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value)),
                 pick = pick
             )
         }
@@ -119,7 +119,7 @@ class Note public constructor(pick:MutableMap<String, String>) {
         }else {
             DataOperator().updateQuery(
                 table = "notice",
-                value = mutableListOf("hide_at" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(value)),
+                value = mutableListOf("hide_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value)),
                 pick = pick
             )
         }

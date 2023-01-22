@@ -10,14 +10,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.TimeActivityBinding
 import app.sato.kchan.tasks.fanction.NoteManager
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
+
+    val nm = NoteManager()
     var start = true // falseならend
-    var startText = ""
-    var endText = ""
     var startDateTimeList = mutableListOf<Int>()
+    var endDateList = mutableListOf<Int>()
     var position = -1
 
     // 画面生成
@@ -27,7 +30,6 @@ class TimeActivity: AppCompatActivity(){
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
         position = intent.getIntExtra("position", -1)
 
-        val nm = NoteManager()
         nm.selectByTempId(position.toString())
         val n = nm.getNote()
 
@@ -37,9 +39,9 @@ class TimeActivity: AppCompatActivity(){
             binding.timeStartSettingButton.isVisible = true
             binding.timeEndText.isVisible = true
             binding.timeEndSettingButton.isVisible = true
-            binding.timeStartText.text = "通知開始時間 : ${n.getNoticeShow()}"
+            binding.timeStartText.text = "通知開始時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(n.getNoticeShow())}"
         }
-        if (n.getNoticeHide() != null) binding.timeEndText.text = "通知終了時間 : ${n.getNoticeHide()}"
+        if (n.getNoticeHide() != null) binding.timeEndText.text = "通知終了時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(n.getNoticeHide())}"
 
         // トグルの値読み込みが必要
         binding.timeSettingSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -68,11 +70,11 @@ class TimeActivity: AppCompatActivity(){
 
         // 通知終了時間設定ボタンタップ処理
         binding.timeEndSettingButton.setOnClickListener {
-            if (n.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
-            else {
+//            if (n.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
+//            else {
                 start = false
                 showDatePickerDialog()
-            }
+//            }
             //終了時間に設定？
         }
 
@@ -105,30 +107,42 @@ class TimeActivity: AppCompatActivity(){
             if (start) {
                 // 開始年月日保存処理
                 startDateTimeList.add(0, year)
-                startDateTimeList.add(1, month)
+                startDateTimeList.add(1, month+1)
                 startDateTimeList.add(2, day)
-                startText = "${year}/${month+1}/${day}"
             }
             else {
                 // 終了年月日保存処理
-                if (startDateTimeList[0] <= year && startDateTimeList[1] <= month && startDateTimeList[2] <= day) {
-                    endText = "${year}/${month+1}/${day}"
+                if (startDateTimeList[0] <= year && startDateTimeList[1] <= month+1 && startDateTimeList[2] <= day) {
+                    endDateList.add(0, year)
+                    endDateList.add(1, month+1)
+                    endDateList.add(2, day)
                 } else {
-                    Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "終了日時は開始日時より後に設定してください", Toast.LENGTH_LONG).show()
                 }
             }
             showTimePickerDialog()
         }
 
         //日付ピッカーダイアログを生成および設定
-        DatePickerDialog(
-            this,
-            dateSetListener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).apply {
-        }.show()
+        if (start) {
+            DatePickerDialog(
+                this,
+                dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).apply {
+            }.show()
+        } else {
+            DatePickerDialog(
+                this,
+                dateSetListener,
+                startDateTimeList[0],
+                startDateTimeList[1] - 1,
+                startDateTimeList[2]
+            ).apply {
+            }.show()
+        }
     }
 
     // 時間選択のダイアログ生成
@@ -139,38 +153,59 @@ class TimeActivity: AppCompatActivity(){
         val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
             calendar.set(Calendar.HOUR_OF_DAY, hour)
             calendar.set(Calendar.MINUTE, minute)
+            val format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+            nm.selectByTempId(position.toString())
+            val n = nm.getNote()
 
             if (start) {
-                // 開始時刻保存処理
                 startDateTimeList.add(3, hour)
                 startDateTimeList.add(4, minute)
-                if (hour < 10 && minute < 10) startText = "$startText 0$hour:0$minute"
-                else if (hour < 10) startText = "$startText 0$hour:$minute"
-                else if (minute < 10) startText = "$startText $hour:0$minute"
-                else startText = "$startText $hour:$minute"
-                binding.timeStartText.text = "通知開始時間 : ${startText}"
+                val startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
+                binding.timeStartText.text = "通知開始時間 : ${startDateTime.format(format)}"
+
+                n.setNoticeShow(startDateTime)
             }
             else {
-                if (startDateTimeList[3] <= hour && startDateTimeList[4] <= minute) {
-                    // 終了時刻保存処理
-                    if (hour < 10 && minute < 10) endText = "$endText 0$hour:0$minute"
-                    else if (hour < 10) endText = "$endText 0$hour:$minute"
-                    else if (minute < 10) endText = "$endText $hour:0$minute"
-                    else endText = "$endText $hour:$minute"
-                    binding.timeEndText.text = "通知終了時間 : ${endText}"
+                if (startDateTimeList[3] < hour || (startDateTimeList[3] == hour && startDateTimeList[4] < minute)) {
+                    val endDateTime = LocalDateTime.of(endDateList[0], endDateList[1], endDateList[2], hour, minute, 0)
+                    binding.timeEndText.text = "通知終了時間 : ${endDateTime.format(format)}"
+
+                    n.setNoticeHide(endDateTime)
                 } else {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 }
             }
         }
         //タイムピッカーダイアログを生成および設定
-        TimePickerDialog(
-            this,
-            timeSetListener,
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
-            true)
-            .show()
+        if (start) {
+            TimePickerDialog(
+                this,
+                timeSetListener,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true)
+                .show()
+        } else {
+            if (startDateTimeList[4]+1 == 60) {
+                TimePickerDialog(
+                    this,
+                    timeSetListener,
+                    startDateTimeList[3] + 1,
+                    0,
+                    true
+                )
+                    .show()
+            } else {
+                TimePickerDialog(
+                    this,
+                    timeSetListener,
+                    startDateTimeList[3],
+                    startDateTimeList[4] + 1,
+                    true
+                )
+                    .show()
+            }
+        }
     }
 
     private fun loadTheme() {
