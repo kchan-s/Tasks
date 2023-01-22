@@ -26,6 +26,9 @@ import java.util.*
 
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+    companion object {
+        const val ADDRESS_RESULT = "address"
+    }
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: MapActivityBinding
@@ -65,8 +68,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             android.R.id.home-> {
                 val addressLine = doReverseGeoCoding(newLocation.latitude, newLocation.longitude).get(0).getAddressLine(0).toString()
                 val address = addressLine.split(" ")
+                println(address[1])
                 val intent = Intent()
-                intent.putExtra(address[1], "")
+                intent.putExtra(ADDRESS_RESULT, address[1])
                 setResult(RESULT_OK, intent)
                 finish()
             }
@@ -87,16 +91,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         checkPermission()
 
-        val nm = NoteManager()
-        nm.selectByTempId(position.toString())
-        val n = nm.getNote()
-        val noteLocation = n.getNoticeLocation()
+        if (position != -1) {
+            val nm = NoteManager()
+            nm.selectByTempId(position.toString())
+            val n = nm.getNote()
+            val noteLocation = n.getNoticeLocation()
 
-        if (noteLocation != null) {
-            val coordinate = doGeoCoding(noteLocation.getAddress())
-            newLocation = LatLng(coordinate[0].latitude, coordinate[0].longitude)
-            marker = mMap.addMarker(MarkerOptions().position(newLocation).title(noteLocation.getAddress()))!!
-            mFirst = false
+            if (noteLocation != null) {
+                val coordinate = doGeoCoding(noteLocation.getAddress())
+                newLocation = LatLng(coordinate[0].latitude, coordinate[0].longitude)
+                marker = mMap.addMarker(
+                    MarkerOptions().position(newLocation).title(noteLocation.getAddress())
+                )!!
+                mFirst = false
+            }
         }
 
         mMap.setOnMapLongClickListener { longpushLocation: LatLng ->

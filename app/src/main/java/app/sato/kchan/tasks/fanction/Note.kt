@@ -48,11 +48,27 @@ class Note public constructor(pick:MutableMap<String, String>) {
         )
     }
     fun getNoticeShow(): LocalDateTime? {
-        return DataOperator().selectQuery(
+        val res = DataOperator().selectQuery(
             table = "notice",
             column = "show_at",
-            pick = pick
-        ).getDateTime()
+            filter = arrayOf(mutableMapOf(
+                "column" to "target_note_id",
+                "value" to pick["note_id"],
+                "compare" to "Equal"
+            ),mutableMapOf(
+                "column" to "target_note_service_id",
+                "value" to pick["service_id"],
+                "compare" to "Equal"
+            )),
+            sort = arrayOf(mutableMapOf(
+                "column" to "create_at",
+                "type" to "ASC"
+            ))
+        )
+        if(res.isResult())
+            return res.getDateTime()
+        else
+            return null
     }
     fun setNoticeShow(value:LocalDateTime?){
         if(value == null){
@@ -71,11 +87,27 @@ class Note public constructor(pick:MutableMap<String, String>) {
 
     }
     fun getNoticeHide():LocalDateTime?{
-        return DataOperator().selectQuery(
+        val res = DataOperator().selectQuery(
             table = "notice",
             column = "hide_at",
-            pick = pick
-        ).getDateTime()
+            filter = arrayOf(mutableMapOf(
+                "column" to "target_note_id",
+                "value" to pick["note_id"],
+                "compare" to "Equal"
+            ),mutableMapOf(
+                "column" to "target_note_service_id",
+                "value" to pick["service_id"],
+                "compare" to "Equal"
+            )),
+            sort = arrayOf(mutableMapOf(
+                "column" to "create_at",
+                "type" to "ASC"
+            ))
+        )
+        if(res.isResult())
+            return res.getDateTime()
+        else
+            return null
     }
     fun setNoticeHide(value:LocalDateTime?){
         if(value == null){
@@ -102,10 +134,17 @@ class Note public constructor(pick:MutableMap<String, String>) {
         val locaSerId = res.getString("place_service_id") ?: return null
         return Location(mutableMapOf("place_id" to locaId, "service_id" to locaSerId))
     }
-    fun setNoticeLocation(location:Location){
-        val locaObj = location.getPick() ?: return
-        val locaId = locaObj["location_id"] ?: return
-        val locaSerId = locaObj["service_id"] ?: return
+    fun setNoticeLocation(location:Location?){
+        val locaId: String?
+        val locaSerId: String?
+        if(location == null){
+            locaId = null
+            locaSerId = null
+        }else{
+            val locaObj = location.getPick() ?: return
+            locaId = locaObj["location_id"] ?: return
+            locaSerId = locaObj["service_id"] ?: return
+        }
         DataOperator().updateQuery(
             table = "notice",
             value = mutableListOf("place_id" to locaId,"place_service_id" to locaSerId),

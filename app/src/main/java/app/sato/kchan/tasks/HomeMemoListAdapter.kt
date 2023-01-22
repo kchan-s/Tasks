@@ -132,10 +132,8 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     private fun dataSet(viewHolder: ViewHolder, position: Int) {
         nm.selectByTempId(position.toString())
         val n = nm.getNote()
-
-        val item = n.getTitle()
-        viewHolder.titleText.text = item
-
+        viewHolder.titleText.setText(n.getTitle())
+        println(n.getTitle())
         val startTime = n.getNoticeShow()
         val stopTime = n.getNoticeHide()
         val location = n.getNoticeLocation()
@@ -217,6 +215,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         if (!search) {
             nm.search("")
             return nm.getNoteNumber()
+//            return 1
         } else {
             return searchIndex.size
         }

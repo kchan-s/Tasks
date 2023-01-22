@@ -16,16 +16,12 @@ import java.util.*
 
 class LocationStockRegisterActivity: AppCompatActivity(){
     private lateinit var binding: LocationStockRegisterActivityBinding
-    var address: String? = ""
-    private val resultLauncher = registerForActivityResult(
+    var address = ""
+    val resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
-            val intent = result.data
-            address = ""
-            if (intent != null) {
-                address = intent.getStringExtra(address)
-            }
+            address = result.data?.getStringExtra(MapActivity.ADDRESS_RESULT).toString()
         }
     }
 
@@ -50,7 +46,8 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        binding.locationStockRegisterNameEdit.setText(address)
+        println(address)
+        binding.locationStockRegisterAddressEdit.setText(address)
     }
 
     // 戻るボタン

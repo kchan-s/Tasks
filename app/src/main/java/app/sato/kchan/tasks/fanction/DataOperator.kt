@@ -44,12 +44,14 @@ class DataOperator(){
             sql += col + ""
             c++
         }
-        sql += " FROM  " + table + " where "
+        sql += " FROM " + table
         var values = arrayOf<String?>()
         c = 0
         for ((k, v) in pick) {
             if(c > 0)
                 sql += " AND "
+            else
+                sql += " WHERE "
             sql += k + " = ?"
             values += v
             c++
@@ -57,6 +59,8 @@ class DataOperator(){
         for (fil in filter) {
             if(c > 0)
                 sql += " AND "
+            else
+                sql += " WHERE "
             sql += fil["column"]
             if(fil["compare"] == "Big")
                 sql += " > "
@@ -128,10 +132,15 @@ class DataOperator(){
             val no: Int = getNumber(column)
             return getBlob(no)
         }
-        fun getDateTime(no:Int = 0): LocalDateTime {
-            return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss"))
+        fun getDateTime(no:Int = 0): LocalDateTime? {
+            val dt = cursor.getString(no)
+            if(dt == null){
+                return null
+            }else{
+                return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss"))
+            }
         }
-        fun getDateTime(column:String): LocalDateTime {
+        fun getDateTime(column:String): LocalDateTime? {
             val no: Int = getNumber(column)
             return getDateTime(no)
         }

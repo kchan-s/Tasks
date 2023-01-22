@@ -124,7 +124,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 }
             }
         }
-        val dt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+        val dt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
         DataOperator().insertQuery(
             table = "place",
             value = mutableMapOf(

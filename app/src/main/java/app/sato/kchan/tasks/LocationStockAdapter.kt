@@ -28,7 +28,8 @@ class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder
     }
 
     override fun getItemCount(): Int{
-        return lm.getLocationNumber()
+//        return lm.getLocationNumber()
+        return 1
     }
 
 }

@@ -29,6 +29,11 @@ class EditActivity : AppCompatActivity() {
         } else {
             nm.create()
             position = nm.getNoteNumber()
+            nm.selectByTempId(position.toString())
+            val n = nm.getNote()
+            n.setNoticeShow(null)
+            n.setNoticeHide(null)
+            n.setNoticeLocation(null)
             new = true
         }
 
@@ -65,13 +70,16 @@ class EditActivity : AppCompatActivity() {
                 locationButton_onClick()
             }
             android.R.id.home -> {
-                if (new && binding.editTitleEdit.text.toString() == "") {
+                if (!new && binding.editTitleEdit.text.toString() == "") {
                     nm.delete()
                 } else {
                     nm.selectByTempId(position.toString())
                     val n = nm.getNote()
                     n.setTitle(binding.editTitleEdit.text.toString())
                     n.setContent(binding.editMemoEdit.text.toString())
+//                    n.setNoticeShow(null)
+//                    n.setNoticeHide(null)
+//                    n.setNoticeLocation(null)
                 }
                 finish()
             }
