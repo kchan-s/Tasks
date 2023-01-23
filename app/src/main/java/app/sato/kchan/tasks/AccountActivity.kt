@@ -38,7 +38,10 @@ class AccountActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                finish()
+                // 応急処置 もっといい方法があるかも？
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+//                finish()
             }
         }
         return super.onOptionsItemSelected(item)

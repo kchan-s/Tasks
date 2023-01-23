@@ -89,6 +89,7 @@ class PasswordResetActivity: AppCompatActivity(){
                 }
                 password == verification -> {
                     account.resetPassword()
+                    Toast.makeText(this, "パスワード再設定が完了しました", Toast.LENGTH_LONG).show()
                     val intent = Intent(this, AccountActivity::class.java)
                     startActivity(intent)
                 }

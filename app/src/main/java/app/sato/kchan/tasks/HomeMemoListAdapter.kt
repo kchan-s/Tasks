@@ -4,13 +4,11 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.fanction.NoteManager
@@ -37,6 +35,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val locationText: TextView = view.findViewById(R.id.home_list_location_text)
         val lockImageView: ImageView = view.findViewById(R.id.home_list_lock_image)
         val checkBox: CheckBox = view.findViewById(R.id.home_list_check_box)
+        val list: LinearLayout = view.findViewById(R.id.home_list)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -114,8 +113,8 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         println(note.getTitle())
         val startTime = note.getNoticeShow()
         val stopTime = note.getNoticeHide()
-//        val location = n.getNoticeLocation()
-        val f = DateTimeFormatter.ofPattern("yyyy/mm/dd hh:mm")
+//        val location = note.getNoticeLocation()
+        val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
         if (startTime != null && stopTime != null) viewHolder.noticeText.text =
             "${startTime.format(f)} 〜 ${stopTime.format(f)}"
@@ -123,9 +122,12 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
 //        if (location != null) viewHolder.locationText.text = location.toString()
 
-//        if (n.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.space)
+//        if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
 //        else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
-//        if (!n.isComplete()) viewHolder.checkBox.isChecked = true
+//        if (note.isComplete()) {
+//            viewHolder.checkBox.isChecked = true
+//            viewHolder.list.setBackgroundColor(Color.LTGRAY)
+//        }
     }
 
     fun searchRequest(text: String) {

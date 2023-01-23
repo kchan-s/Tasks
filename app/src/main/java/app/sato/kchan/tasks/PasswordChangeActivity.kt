@@ -112,16 +112,17 @@ class PasswordChangeActivity: AppCompatActivity(){
                 newPassword.length > 50 || verification.length > 50 -> {
                     Toast.makeText(this, "パスワードは50文字以下で設定してください", Toast.LENGTH_LONG).show()
                 }
+                newPassword != verification -> {
+                    Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
+                }
                 nowPassword == newPassword -> {
                     Toast.makeText(this, "新しいパスワードが現在のパスワードと同じです", Toast.LENGTH_LONG).show()
                 }
                 newPassword == verification -> {
                     account.changePassword(nowPassword, newPassword)
+                    Toast.makeText(this, "パスワード変更が完了しました", Toast.LENGTH_LONG).show()
                     val intent = Intent(this, AccountActivity::class.java)
                     startActivity(intent)
-                }
-                else -> {
-                    Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
                 }
             }
         } else {

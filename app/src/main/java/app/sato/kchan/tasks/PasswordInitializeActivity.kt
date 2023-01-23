@@ -142,6 +142,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
                     aEditor.putBoolean("passwordInitialize", false)
                     aEditor.commit()
 
+                    Toast.makeText(this, "パスワード設定が完了しました", Toast.LENGTH_LONG).show()
                     val intent = Intent(this, AccountActivity::class.java)
                     startActivity(intent)
                 }

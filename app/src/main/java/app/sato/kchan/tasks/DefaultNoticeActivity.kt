@@ -22,11 +22,6 @@ class DefaultNoticeActivity: AppCompatActivity(){
         binding.defaultNoticeSwitch.setOnCheckedChangeListener { _, isChenged ->
             if (isChenged) {
                 // 変更を保存
-                val calender = Calendar.getInstance()
-                val m = calender.get(Calendar.MINUTE)+1
-                binding.defaultNoticeStartText.text = calender.get(Calendar.HOUR_OF_DAY).toString() + ":" + calender.get(Calendar.MINUTE)
-                binding.defaultNoticeEndText.text = calender.get(Calendar.HOUR_OF_DAY).toString() + ":" + m
-
                 binding.defaultNoticeStartText.isVisible = true
                 binding.defaultNoticeStartTime.isVisible = true
                 binding.defaultNoticeEndText.isVisible = true

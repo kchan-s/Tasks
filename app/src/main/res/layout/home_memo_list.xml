@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/home_list"
     android:layout_width="match_parent"
     android:layout_height="90sp">
 
@@ -46,6 +47,6 @@
             android:layout_weight="3.5"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            app:srcCompat="@drawable/ic_baseline_lock_24" />
+            app:srcCompat="@drawable/ic_baseline_lock_open_24" />
 
 </LinearLayout>

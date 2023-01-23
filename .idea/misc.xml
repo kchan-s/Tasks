@@ -93,6 +93,7 @@
         <entry key="app/src/main/res/layout/web_view.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
         <entry key="app/src/main/res/menu/delete_menu.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/edit_menu.xml" value="0.165" />
         <entry key="app/src/main/res/menu/toolbar_menu.xml" value="0.28871002197265627" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.115625" />
       </map>
