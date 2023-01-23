@@ -36,7 +36,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var fusedLocationProviderClient : FusedLocationProviderClient
     var locationCallback: LocationCallback? = null
 
-    var position = -1
+//    var position = -1
+    var note = ""
     var first = true
     var mFirst = true // marker生成が初めてか
     var newLocation = LatLng(0.0, 0.0) // 登録されているなら読み込み
@@ -47,7 +48,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         loadTheme()
         binding = MapActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        position = intent.getIntExtra("position", -1)
+        note = intent.getStringExtra("note").toString()
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -65,13 +66,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            android.R.id.home-> {
-                val addressLine = doReverseGeoCoding(newLocation.latitude, newLocation.longitude).get(0).getAddressLine(0).toString()
-                val address = addressLine.split(" ")
-                println(address[1])
-                val intent = Intent()
-                intent.putExtra(ADDRESS_RESULT, address[1])
-                setResult(RESULT_OK, intent)
+            android.R.id.home -> {
+                if (!mFirst) {
+                    val addressLine =
+                        doReverseGeoCoding(newLocation.latitude, newLocation.longitude).get(0)
+                            .getAddressLine(0).toString()
+                    val address = addressLine.split(" ")
+                    val intent = Intent()
+                    intent.putExtra(ADDRESS_RESULT, address[1])
+                    setResult(RESULT_OK, intent)
+                }
                 finish()
             }
         }
@@ -91,14 +95,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         checkPermission()
 
-        if (position != -1) {
+        if (note != "") {
             val nm = NoteManager()
-            nm.selectByTempId(position.toString())
-            val n = nm.getNote()
+            nm.receive(note)
+            val n = nm.getNote()!!
             val noteLocation = n.getNoticeLocation()
 
             if (noteLocation != null) {
-                val coordinate = doGeoCoding(noteLocation.getAddress())
+                val coordinate = doGeoCoding(noteLocation.getAddress().toString())
                 newLocation = LatLng(coordinate[0].latitude, coordinate[0].longitude)
                 marker = mMap.addMarker(
                     MarkerOptions().position(newLocation).title(noteLocation.getAddress())

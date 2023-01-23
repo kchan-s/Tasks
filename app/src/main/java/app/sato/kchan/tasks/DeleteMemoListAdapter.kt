@@ -37,7 +37,7 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         nm.selectByTempId(position.toString())
         val n = nm.getNote()
-        viewHolder.titleText.text = n.getTitle()
+        viewHolder.titleText.text = n!!.getTitle()
 
         val startTime = n.getNoticeShow()
         val stopTime = n.getNoticeHide()
@@ -59,7 +59,7 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
                 nm.selectByTempId(touchPosition.toString())
 
                 v.setOnClickListener {
-                    if (!nm.getNote().isLock()) {
+                    if (!nm.getNote()!!.isLock()) {
                         if (isSelectedItem(touchPosition)) {
                             viewHolder.memo.setBackgroundColor(Color.WHITE)
                             removeSelectedItem(touchPosition)

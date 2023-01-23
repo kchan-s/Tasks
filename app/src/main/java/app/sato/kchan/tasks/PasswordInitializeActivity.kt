@@ -145,8 +145,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
                     Toast.makeText(this, "パスワード設定が完了しました", Toast.LENGTH_LONG).show()
                     val intent = Intent(this, AccountActivity::class.java)
                     startActivity(intent)
-                }
-                else {
+                } else {
                     Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
                 }
             }

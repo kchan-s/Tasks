@@ -22,17 +22,16 @@ class TimeActivity: AppCompatActivity(){
     var start = true // falseならend
     var startDateTimeList = mutableListOf<Int>()
     var endDateList = mutableListOf<Int>()
-    var position = -1
+    var note = ""
 
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
-        position = intent.getIntExtra("position", -1)
 
-        nm.selectByTempId(position.toString())
-        val n = nm.getNote()
+        note = nm.receive(note).toString()
+        val n = nm.getNote()!!
 
         if (n.getNoticeShow() != null) {
             binding.timeSettingSwitch.isChecked = true
@@ -158,8 +157,8 @@ class TimeActivity: AppCompatActivity(){
             calendar.set(Calendar.HOUR_OF_DAY, hour)
             calendar.set(Calendar.MINUTE, minute)
             val format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-            nm.selectByTempId(position.toString())
-            val n = nm.getNote()
+            nm.receive(note)
+            val n = nm.getNote()!!
 
             if (start) {
                 startDateTimeList.add(3, hour)

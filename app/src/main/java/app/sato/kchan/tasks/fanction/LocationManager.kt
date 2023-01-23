@@ -13,7 +13,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
     //<プロパティ>
     private var idList : MutableList<String>
     private var point : Int = 0
-    private var tempList : MutableMap<String, MutableMap<String, String> >
+    private var tempList : MutableMap<String, MutableMap<String, String>>
     private var nextTempId : Int = 0
 
     //<初期化処理>
@@ -31,8 +31,8 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
             column = arrayOf("place_id", "service_id"),
             filter = arrayOf(mutableMapOf(
                 "column" to "name",
-                "value" to word,
-                "compare" to "Equal"
+                "value" to "%" + word + "%",
+                "compare" to "Like"
             )),
             sort = arrayOf(mutableMapOf(
                 "column" to "priority",
@@ -42,11 +42,15 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
         if(res.isResult()){
             do{
                 val key = "location_" + nextTempId.toString()
-                tempList[key] = res.getStringMap().toMutableMap()
+                val buf = res.getStringMap()
+                tempList[key] = buf.toMutableMap()
                 idList.add(key)
                 nextTempId++
             } while(res.next())
         }
+    }
+    fun select(index:Int){
+        idList = mutableListOf(idList[index])
     }
     fun selectByTempId(tempId:String){
         idList.add(tempId)
@@ -72,8 +76,8 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
         val tempId = idList[point]
         return tempList[tempId]
     }
-    fun getLocation():Location{
-        val pick = getPick() ?: return Location(mutableMapOf())
+    fun getLocation():Location?{
+        val pick = getPick() ?: return null
         return Location(pick)
     }
     fun getTempId():String{
@@ -81,13 +85,43 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
     }
 
     fun delete(){
-        getLocation().delete()
+        getLocation()?.delete()
     }
     fun deleteAll(){
         if(isLocation()){
             do{
-                getLocation().delete()
+                getLocation()?.delete()
             } while(next())
+        }
+    }
+    fun send():String{
+        var buff = ""
+        var item = arrayOf<String>()
+        var c = 0;
+        for(id in idList){
+            for((column, value) in tempList[id]!!){
+                if(c > 0){
+                    buff += ","
+                }
+                buff += column + ":" + value
+                c++
+            }
+            item += buff
+        }
+        return item.joinToString("|")
+    }
+    fun receive(text: String){
+        var idList = arrayOf<String>()
+        tempList = mutableMapOf()
+        var item = text.split("|")
+        for(buff in item){
+            var tmp:MutableMap<String, String> = mutableMapOf()
+            for(b in buff.split(",")){
+                var (column, value) = b.split(":")
+                tmp[column] = value
+            }
+            tempList["note_" + nextTempId.toString()] = tmp
+            nextTempId++
         }
     }
     fun create():Location{
@@ -103,6 +137,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
         var placeId:Int = 0
         if(res.isResult()){
             for(v in res.getIntArray("place_id")){
+                if (v == null) throw Exception()
                 if(placeId < v){
                     placeId = v
                 }
@@ -119,6 +154,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
         var priority:Int = 0
         if(res.isResult()){
             for(v in res.getIntArray("priority")){
+                if (v == null) throw Exception()
                 if(priority < v){
                     priority = v
                 }

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import app.sato.kchan.tasks.fanction.DataOperator
 import app.sato.kchan.tasks.fanction.NoteManager
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -75,7 +76,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         nm.selectByTempId(position.toString())
         nm.isNote()
         val note = nm.getNote()
-        if (note.isComplete()) {
+        if (note!!.isComplete()) {
             note.setUncomplete()
         } else {
             note.setComplete()
@@ -87,7 +88,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         nm.selectByTempId(position.toString())
         nm.isNote()
         val note = nm.getNote()
-        if (note.isLock()) {
+        if (note!!.isLock()) {
             note.setUnlock()
             viewHolder.lockImageView.setImageResource(R.drawable.space)
         } else {
@@ -98,36 +99,36 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
     // タスクメモのクリック処理
     private fun taskmemo_onClick(viewHolder: ViewHolder, position: Int) {
+        EditActivity.new = false
         val intent = Intent(viewHolder.context, EditActivity::class.java)
-//                    if (searchIndex.size == 0) intent.putExtra("position", adapterPosition)
-//                    else intent.putExtra("position", searchIndex[adapterPosition])
-        intent.putExtra("position", position)
+        nm.select(position)
+        val note = nm.send()
+        intent.putExtra("note", note)
         viewHolder.context.startActivity(intent)
     }
 
     // リストの設定
     private fun dataSet(viewHolder: ViewHolder, position: Int) {
-        nm.selectByTempId(position.toString())
-        val note = nm.getNote()
+        nm.select(position)
+        val note = nm.getNote()!!
         viewHolder.titleText.setText(note.getTitle())
-        println(note.getTitle())
         val startTime = note.getNoticeShow()
         val stopTime = note.getNoticeHide()
-//        val location = note.getNoticeLocation()
+        val location = note.getNoticeLocation()
         val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
         if (startTime != null && stopTime != null) viewHolder.noticeText.text =
             "${startTime.format(f)} 〜 ${stopTime.format(f)}"
         else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
 
-//        if (location != null) viewHolder.locationText.text = location.toString()
+        if (location != null) viewHolder.locationText.text = location.toString()
 
-//        if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
-//        else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
-//        if (note.isComplete()) {
-//            viewHolder.checkBox.isChecked = true
-//            viewHolder.list.setBackgroundColor(Color.LTGRAY)
-//        }
+        if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
+        else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
+        if (note.isComplete()) {
+            viewHolder.checkBox.isChecked = true
+            viewHolder.list.setBackgroundColor(Color.LTGRAY)
+        }
     }
 
     fun searchRequest(text: String) {
@@ -195,7 +196,6 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         if (!search) {
             nm.search("")
             return nm.getNoteNumber()
-//            return 1
         } else {
             return searchIndex.size
         }

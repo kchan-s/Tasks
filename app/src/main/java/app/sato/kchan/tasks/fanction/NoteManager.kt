@@ -12,7 +12,7 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
     //<プロパティ>
     private var idList : MutableList<String>
     private var point : Int = 0
-    private var tempList : MutableMap<String, MutableMap<String, String> >
+    private var tempList : MutableMap<String, MutableMap<String, String>>
     private var nextTempId : Int = 0
 
     //<初期化処理>
@@ -23,29 +23,32 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
 
     //<メソッド>
     fun search(word : String){
-        idList.clear()
+        idList = mutableListOf()
         tempList = mutableMapOf()
         val res = DataOperator().selectQuery(
             table = "note",
             column = arrayOf("note_id", "service_id"),
             filter = arrayOf(mutableMapOf(
                 "column" to "title",
-                "value" to word,
-                "compare" to "Equal"
+                "value" to "%" + word + "%",
+                "compare" to "Like"
             )),
             sort = arrayOf(mutableMapOf(
                 "column" to "title",
                 "type" to "ASC"
             ))
         )
-        if(res.isResult()){
+        if(res.setResultTop()){
             do{
-                val key = "location_" + nextTempId.toString()
+                val key = "note_" + nextTempId.toString()
                 tempList[key] = res.getStringMap().toMutableMap()
                 idList.add(key)
                 nextTempId++
             } while(res.next())
         }
+    }
+    fun select(index:Int){
+        idList = mutableListOf(idList[index])
     }
     fun selectByTempId(tempId:String){
         idList = mutableListOf(tempId)
@@ -72,24 +75,55 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
         val tempId = idList[point]
         return tempList[tempId]
     }
-    fun getNote(): Note {
-        val pick = getPick() ?: return Note(mutableMapOf())
+    fun getNote(): Note? {
+        val pick = getPick() ?: return null
         return Note(pick)
     }
     fun getTempId():String{
         return idList[point]
     }
     fun delete(){
-        getNote().delete()
+        getNote()?.delete()
     }
     fun deleteAll(){
         if(isNote()){
             do{
-                getNote().delete()
+                getNote()?.delete()
             } while(next())
         }
     }
-    fun create():MutableMap<String,String>{
+    fun send():String{
+        var buff = ""
+        var item = arrayOf<String>()
+        var c = 0;
+        for(id in idList){
+            for((column, value) in tempList[id]!!){
+                if(c > 0){
+                    buff += ","
+                }
+                buff += column + ":" + value
+                c++
+            }
+            item += buff
+        }
+        return item.joinToString("|")
+    }
+    fun receive(text: String){
+        idList = mutableListOf()
+        tempList = mutableMapOf()
+        var item = text.split("|")
+        for(buff in item){
+            var tmp:MutableMap<String, String> = mutableMapOf()
+            for(b in buff.split(",")){
+                var (column, value) = b.split(":")
+                tmp[column] = value
+            }
+            tempList["note_" + nextTempId.toString()] = tmp
+            idList += "note_" + nextTempId.toString()
+            nextTempId++
+        }
+    }
+    fun create():Note{
         val res = DataOperator().selectQuery(
             table = "note",
             column = "note_id",
@@ -103,6 +137,8 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
                 }
             }
         }
+        max++
+        println("a" + max)
         val dt = LocalDateTime.now().toString()
         DataOperator().insertQuery(
             table = "note",
@@ -120,6 +156,6 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
                 "status_update_at" to dt
             )
         )
-        return mutableMapOf(max.toString() to "place_id", "123" to "service_id")
+        return Note(mutableMapOf("note_id" to max.toString(), "service_id" to "0"))
     }
 }

@@ -18,12 +18,13 @@ import app.sato.kchan.tasks.fanction.NoteManager
 
 class LocationActivity: AppCompatActivity(){
     private lateinit var binding: LocationActivityBinding
-    var position = -1 // 初期値
+//    var position = -1 // 初期値
     val locationData = mutableListOf("未選択", "Mapから選択")
     val idData = mutableListOf<String>()
     val lm = LocationManager()
     val nm = NoteManager()
     var address: String? = ""
+    var note = ""
 
     var resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -42,16 +43,17 @@ class LocationActivity: AppCompatActivity(){
         // よく行く場所に設定してある場所をとってくる
         for (i in 0 .. lm.getLocationNumber()) {
             lm.selectByTempId(i.toString())
-            val location = lm.getLocation()
+            val location = lm.getLocation()!!
             if (location.isPermanent()) {
-                locationData.add(1, location.getName())
+                locationData.add(1, location.getName().toString())
                 idData.add(i.toString())
             }
         }
 
-        position = intent.getIntExtra("position", -1)
-        nm.selectByTempId(position.toString())
-        val n = nm.getNote()
+//        position = intent.getIntExtra("position", -1)
+        note = intent.getStringExtra("note").toString()
+        nm.receive(note)
+        val n = nm.getNote()!!
 
         // ドロップダウンリスト関連処理
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, locationData)
@@ -96,8 +98,8 @@ class LocationActivity: AppCompatActivity(){
         when(item.itemId){
             android.R.id.home->{
                 if (address != "") {
-                    nm.selectByTempId(position.toString())
-                    val n = nm.getNote()
+                    nm.receive(note)
+                    val n = nm.getNote()!!
                     lm.search(address.toString())
                     if (lm.isLocation()) n.setNoticeLocation(lm.getLocation())
                     else {
@@ -114,7 +116,7 @@ class LocationActivity: AppCompatActivity(){
 
     private fun mapButton_onClick() {
         val map = Intent(this, MapActivity::class.java)
-        map.putExtra("position", position)
+        map.putExtra("note", note)
         resultLauncher.launch(map)
     }
 

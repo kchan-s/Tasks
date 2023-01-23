@@ -85,6 +85,7 @@ class HomeActivity : AppCompatActivity() {
 
     //新規作成
     private fun newButton_onClick() {
+        EditActivity.new = true
         val newIntent = Intent(this, EditActivity::class.java)
         startActivity(newIntent)
     }

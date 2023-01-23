@@ -47,135 +47,83 @@ class Note public constructor(pick:MutableMap<String, String>) {
             pick = pick
         )
     }
+    // fun getNoticeTarget(value:Int?){
+    //     var nm = NoticeManager().searchByNote(this)
+    //     if(nm.isNotice()){
+    //         return nm.getNotice().getNoticeShow()
+    //     }else{
+    //         return null
+    //     }
+    // }
+    // fun setNoticeTarget(value:Int?){
+    // }
     fun getNoticeShow(): LocalDateTime? {
-        val res = DataOperator().selectQuery(
-            table = "notice",
-            column = "show_at",
-            filter = arrayOf(mutableMapOf(
-                "column" to "target_note_id",
-                "value" to pick["note_id"],
-                "compare" to "Equal"
-            ),mutableMapOf(
-                "column" to "target_note_service_id",
-                "value" to pick["service_id"],
-                "compare" to "Equal"
-            )),
-            sort = arrayOf(mutableMapOf(
-                "column" to "create_at",
-                "type" to "ASC"
-            ))
-        )
-        if(res.isResult())
-            return res.getDateTime()
-        else
+        var nm = NoticeManager()
+        nm.searchByNote(this)
+        if(nm.isNotice()){
+            return nm.getNotice()?.getNoticeShow()
+        }else{
             return null
+        }
     }
     fun setNoticeShow(value:LocalDateTime?){
-        if(value == null){
-            DataOperator().updateQuery(
-                table = "notice",
-                value = mutableListOf("show_at" to null),
-                pick = pick
-            )
-        }else{
-            DataOperator().updateQuery(
-                table = "notice",
-                value = mutableListOf("show_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value)),
-                pick = pick
-            )
-        }
-
+        var nm = NoticeManager()
+        nm.searchByNote(this)
+        val notice = if(nm.isNotice()) nm.getNotice() else nm.create(this, 0)
+        notice?.setNoticeShow(value)
     }
     fun getNoticeHide():LocalDateTime?{
-        val res = DataOperator().selectQuery(
-            table = "notice",
-            column = "hide_at",
-            filter = arrayOf(mutableMapOf(
-                "column" to "target_note_id",
-                "value" to pick["note_id"],
-                "compare" to "Equal"
-            ),mutableMapOf(
-                "column" to "target_note_service_id",
-                "value" to pick["service_id"],
-                "compare" to "Equal"
-            )),
-            sort = arrayOf(mutableMapOf(
-                "column" to "create_at",
-                "type" to "ASC"
-            ))
-        )
-        if(res.isResult())
-            return res.getDateTime()
-        else
+        var nm = NoticeManager()
+        nm.searchByNote(this)
+        if(nm.isNotice()){
+            return nm.getNotice()?.getNoticeHide()
+        }else{
             return null
+        }
     }
     fun setNoticeHide(value:LocalDateTime?){
-        if(value == null){
-            DataOperator().updateQuery(
-                table = "notice",
-                value = mutableListOf("hide_at" to null),
-                pick = pick
-            )
-        }else {
-            DataOperator().updateQuery(
-                table = "notice",
-                value = mutableListOf("hide_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value)),
-                pick = pick
-            )
-        }
+        var nm = NoticeManager()
+        nm.searchByNote(this)
+        val notice = if(nm.isNotice()) nm.getNotice() else nm.create(this, 0)
+        notice?.setNoticeHide(value)
     }
     fun getNoticeLocation():Location?{
-        val res = DataOperator().selectQuery(
-            table = "notice",
-            column = arrayOf("place_id","place_service_id"),
-            pick = pick
-        )
-        val locaId = res.getString("place_id") ?: return null
-        val locaSerId = res.getString("place_service_id") ?: return null
-        return Location(mutableMapOf("place_id" to locaId, "service_id" to locaSerId))
+        var nm = NoticeManager()
+        nm.searchByNote(this)
+        val notice = if(nm.isNotice()) nm.getNotice() else nm.create(this, 0)
+        return notice!!.getNoticeLocation()
     }
     fun setNoticeLocation(location:Location?){
-        val locaId: String?
-        val locaSerId: String?
-        if(location == null){
-            locaId = null
-            locaSerId = null
-        }else{
-            val locaObj = location.getPick() ?: return
-            locaId = locaObj["location_id"] ?: return
-            locaSerId = locaObj["service_id"] ?: return
-        }
-        DataOperator().updateQuery(
-            table = "notice",
-            value = mutableListOf("place_id" to locaId,"place_service_id" to locaSerId),
-            pick = pick
-        )
+        var nm = NoticeManager()
+        nm.searchByNote(this)
+        val notice = if(nm.isNotice()) nm.getNotice() else nm.create(this, 0)
+        notice?.setNoticeLocation(location)
     }
     fun isLock():Boolean{
-        return DataOperator().selectQuery(
-            table = "notice",
-            column = "hide_at",
+        return !DataOperator().selectQuery(
+            table = "note",
+            column = "lock_at",
             pick = pick
-        ).getBoolean()
+        ).isNull()
     }
     fun setLock(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("title" to true.toString()),
+            value = mutableListOf("title" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss"))),
             pick = pick
         )
     }
     fun setUnlock(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("title" to false.toString()),
+            value = mutableListOf("title" to null),
             pick = pick
         )
     }
     fun isComplete():Boolean{
         return DataOperator().selectQuery(
-            table = "notice",
-            column = "hide_at",
+            table = "note",
+            column = "complete_at",
             pick = pick
         ).isNull()
     }

@@ -22,7 +22,7 @@ class AlarmNotification : BroadcastReceiver() {
         val position = intent.getIntExtra("position", -1)
         val nm = NoteManager()
         nm.selectByTempId(position.toString())
-        val n = nm.getNote()
+        val n = nm.getNote()!!
 
         val mainIntent = Intent(context, HomeActivity::class.java).apply(){
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

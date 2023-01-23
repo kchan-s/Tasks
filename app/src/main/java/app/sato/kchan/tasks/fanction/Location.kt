@@ -19,7 +19,7 @@ class Location public constructor(pick:MutableMap<String, String>) {
     }
 
     //<メソッド>
-    fun getName():String{
+    fun getName():String?{
         return DataOperator().selectQuery(
             table = "place",
             column = "name",
@@ -33,7 +33,7 @@ class Location public constructor(pick:MutableMap<String, String>) {
             pick = pick
         )
     }
-    fun getAddress():String{
+    fun getAddress():String?{
         return DataOperator().selectQuery(
             table = "place",
             column = "address",
@@ -66,11 +66,13 @@ class Location public constructor(pick:MutableMap<String, String>) {
         )
     }
     fun isPermanent():Boolean{
-        return DataOperator().selectQuery(
+        val status = DataOperator().selectQuery(
             table = "place",
             column = "status_flag",
             pick = pick
-        ).getInt() and 1.shl(0) > 0
+        ).getInt()
+        if (status == null) return false
+        return status and 1.shl(0) > 0
     }
     fun setPermanent(){
         DataOperator().updateQuery(
@@ -87,11 +89,13 @@ class Location public constructor(pick:MutableMap<String, String>) {
         )
     }
     fun isCollision():Boolean{
-        return DataOperator().selectQuery(
+        val status = DataOperator().selectQuery(
             table = "place",
             column = "status_flag",
             pick = pick
-        ).getInt() and 1.shl(30) > 0
+        ).getInt()
+        if (status == null) return false
+        return status and 1.shl(30) > 0
     }
     fun setCollisionReset(){
         DataOperator().updateQuery(
