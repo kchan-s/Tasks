@@ -35,7 +35,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val noticeText: TextView = view.findViewById(R.id.home_list_notice_text)
         val locationText: TextView = view.findViewById(R.id.home_list_location_text)
         val lockImageView: ImageView = view.findViewById(R.id.home_list_lock_image)
-        val checkBox: CheckBox = view.findViewById(R.id.home_list_check_box)
+        val checkBox: ImageView = view.findViewById(R.id.home_list_check_image)
         val list: LinearLayout = view.findViewById(R.id.home_list)
     }
 
@@ -77,15 +77,18 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
     //完了・未完了切替モジュール
     private fun completeButton_onClick(viewHolder: ViewHolder, position: Int) {
-        println("a")
         val completeNoteManager = nm.copy()
         completeNoteManager.select(position)
         val note = completeNoteManager.getNote()!!
         if (note.isComplete()) {
             note.setUncomplete()
+            viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
+            viewHolder.checkBox.setBackgroundColor(Color.WHITE)
             viewHolder.list.setBackgroundColor(Color.WHITE)
         } else {
             note.setComplete()
+            viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
+            viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
             viewHolder.list.setBackgroundColor(Color.LTGRAY)
         }
     }
@@ -147,8 +150,11 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
             else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
             if (note.isComplete()) {
-                viewHolder.checkBox.isChecked = true
+                viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
                 viewHolder.list.setBackgroundColor(Color.LTGRAY)
+            } else {
+                viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
+                viewHolder.checkBox.setBackgroundColor(Color.WHITE)
             }
         }
     }
