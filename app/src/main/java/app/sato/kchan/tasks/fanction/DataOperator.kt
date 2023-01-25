@@ -225,7 +225,7 @@ class DataOperator(){
 //        for ((k,v) in value){
 //            values.put(k, v)
 //        }
-        sql += "UPDATE $table SET ("
+        sql += "UPDATE $table SET "
         for ((k,v) in value){
             if(c > 0)
                 sql += ", "
@@ -233,7 +233,6 @@ class DataOperator(){
             vl += v
             c++
         }
-        sql += " )"
 
 //        for ((k, v) in pick) {
 //            if(c > 0)
