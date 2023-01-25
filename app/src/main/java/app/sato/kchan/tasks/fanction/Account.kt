@@ -14,7 +14,7 @@ class Account public constructor() {
             table = "account",
             column = arrayOf("account_id")
         )
-        return if(res.isResult())
+        return if(res.isResult() and !res.isNull())
             res.getString()
         else
             ""

@@ -15,7 +15,7 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
     private var type:MutableMap<Int, String>
     private var array:MutableMap<Int, Array<Int>>
     private var value:MutableMap<Int, String>
-    private var nextC:Int = 0
+    private var nextC:Int = 1
     private var root:Int = 0
     private var current:Int = 0
     private var hierarchy: MutableList<Int>
@@ -170,6 +170,8 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return "{" + buff.joinToString(",") + "}"
     }
     fun outJSON():String?{
+        println(type)
+        println(structure)
         return try{
             valueEncoder(root)
         }catch(e:Exception){
