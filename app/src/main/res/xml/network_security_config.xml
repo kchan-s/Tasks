@@ -3,4 +3,7 @@
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">secure.example.com</domain>
     </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">kutse09.hopto.org</domain>
+    </domain-config>
 </network-security-config>

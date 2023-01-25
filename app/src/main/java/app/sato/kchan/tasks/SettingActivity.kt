@@ -2,13 +2,16 @@ package app.sato.kchan.tasks
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.SettingActivityBinding
-
+import app.sato.kchan.tasks.fanction.Util
+import app.sato.kchan.tasks.fanction.ConnectionWrapper
+import kotlinx.coroutines.launch
 
 class SettingActivity : AppCompatActivity() {
     private lateinit var binding: SettingActivityBinding
@@ -60,8 +63,16 @@ class SettingActivity : AppCompatActivity() {
 
     // カスタマイズ画面に遷移
     private fun customButton_onClick() {
-        intent.setClass(this, CustomActivity::class.java)
-        startActivity(intent)
+
+        val inputJson = Util.createJson()
+
+        ConnectionWrapper.scope.launch{
+            ConnectionWrapper().executeServerConnection(inputJson)
+            Log.d("SettingActivity",ConnectionWrapper().postOutput())
+        }
+
+//        intent.setClass(this, CustomActivity::class.java)
+//        startActivity(intent)
     }
 
     // アカウント画面に遷移
