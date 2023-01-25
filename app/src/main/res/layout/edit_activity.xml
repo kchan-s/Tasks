@@ -28,17 +28,19 @@
     <EditText
         android:id="@+id/edit_memo_edit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginStart="20sp"
         android:layout_marginTop="20sp"
         android:layout_marginEnd="20sp"
+        android:layout_marginBottom="20sp"
         android:background="@drawable/border_style"
         android:ems="10"
+        android:gravity="top|left"
         android:hint="メモを入力"
         android:inputType="textLongMessage|textMultiLine|textPersonName"
         android:paddingStart="10sp"
         android:paddingTop="10sp"
         android:paddingEnd="10sp"
-        android:paddingBottom="300sp" />
+        android:paddingBottom="10sp" />
 
 </LinearLayout>

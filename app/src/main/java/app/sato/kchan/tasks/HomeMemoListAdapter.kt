@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -161,16 +162,24 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
     fun setAlarm(context: Context, position: Int, note: Note) {
         val intent = Intent(context, AlarmNotification::class.java)
-        val sdFormat = SimpleDateFormat("yyyy/mm/dd hh:mm")
 
-        val start = sdFormat.parse(note.getNoticeShow().toString())
+        val start = note.getNoticeShow()!!
         val startCalendar = Calendar.getInstance()
-        startCalendar.set(start.year, start.month, start.day, start.hours, start.minutes, 0)
+        if (start.isBefore(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) {
+            startCalendar.set(
+                start.year,
+                start.monthValue,
+                start.dayOfMonth,
+                start.hour,
+                start.minute,
+                0
+            )
+        }
 
         if (note.getNoticeHide() != null) {
-            val stop = sdFormat.parse(note.getNoticeHide().toString())
+            val stop = note.getNoticeHide()!!
             val stopCalendar = Calendar.getInstance()
-            stopCalendar.set(stop.year, stop.month, stop.day, stop.hours, stop.minutes, 59)
+            stopCalendar.set(stop.year, stop.monthValue, stop.dayOfMonth, stop.hour, stop.minute, 0)
             intent.putExtra("deleteTime", stopCalendar.timeInMillis - startCalendar.timeInMillis)
         }
 
