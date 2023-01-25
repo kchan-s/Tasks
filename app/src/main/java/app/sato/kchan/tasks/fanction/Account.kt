@@ -14,7 +14,7 @@ class Account public constructor() {
             table = "account",
             column = arrayOf("account_id")
         )
-        return if(res.isResult() and !res.isNull())
+        return if(res.isResult())
             res.getString()
         else
             ""
@@ -60,7 +60,7 @@ class Account public constructor() {
 
     fun hello(){
         var data = MyData()
-        data.setString("type", "Load")
+        data.setString("type", "Hello")
         data.move("content")
         println(data.outJSON())
 
