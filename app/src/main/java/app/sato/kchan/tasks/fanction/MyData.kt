@@ -184,7 +184,7 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         }
         return list
     }
-//    fun values(): Array<String> {
+//  　　  fun values(): Array<String> {
 //        var list:Array<String> = arrayOf()
 //        if("Object" == type[current]){
 //            for(value in structure[current]?.values ?: return arrayOf()){
