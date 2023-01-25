@@ -221,69 +221,21 @@ class DataOperator(){
         var sql = ""
         var c = 0
 
-//        val values = ContentValues()
-//        for ((k,v) in value){
-//            values.put(k, v)
-//        }
-        sql += "UPDATE $table SET "
+        val values = ContentValues()
         for ((k,v) in value){
-            if(c > 0)
-                sql += ", "
-            sql += "$k = ?"
-            vl += v
-            c++
+            values.put(k, v)
         }
 
-//        for ((k, v) in pick) {
-//            if(c > 0)
-//                sql += " AND "
-//            sql += k + " = ?"
-//            vl += v
-//            c++
-//        }
-        c = 0
         for ((k, v) in pick) {
-            sql += if(c > 0)
-                " AND "
-            else
-                " WHERE "
-            sql += "$k = ?"
+            if(c > 0)
+                sql += " AND "
+            sql += k + " = ?"
             vl += v
             c++
         }
-
-//        for (fil in filter) {
-//            if(c > 0)
-//                sql += " AND "
-//            when(fil["compare"]) {
-//                "Big" -> {
-//                    sql += fil["column"] + " > ?"
-//                    vl += fil["value"].toString()
-//                }
-//                "Small" -> {
-//                    sql += fil["column"] + " < ?"
-//                    vl += fil["value"].toString()
-//                }
-//                "Equal" -> {
-//                    sql += fil["column"] + " = ?"
-//                    vl += fil["value"].toString()
-//                }
-//                "Like" -> {
-//                    sql += fil["column"] + " LIKE ?"
-//                    vl += fil["value"].toString()
-//                }
-//                "Equation" -> {
-//                    sql += fil["equation"]
-//                }
-//                else -> throw Exception("そんな比較演算子使えない!! " + fil["compare"])
-//            }
-//            c++
-//        }
         for (fil in filter) {
-            sql += if(c > 0)
-                " AND "
-            else
-                " WHERE "
+            if(c > 0)
+                sql += " AND "
             when(fil["compare"]) {
                 "Big" -> {
                     sql += fil["column"] + " > ?"
@@ -308,9 +260,60 @@ class DataOperator(){
             }
             c++
         }
-//        return if(c == 0){ database.update(table, values, sql, null) }else{ database.update(table, values, sql, vl) }
-        database.execSQL(sql, vl)
-        return 0
+
+        return if(c == 0){ database.update(table, values, sql, null) }else{ database.update(table, values, sql, vl) }
+//        var vl = arrayOf<String?>()
+//        var sql = ""
+//        var c = 0
+//        sql += "UPDATE $table SET "
+//        for ((k,v) in value){
+//            if(c > 0)
+//                sql += ", "
+//            sql += "$k = ?"
+//            vl += v
+//            c++
+//        }
+//        c = 0
+//        for ((k, v) in pick) {
+//            sql += if(c > 0)
+//                " AND "
+//            else
+//                " WHERE "
+//            sql += "$k = ?"
+//            vl += v
+//            c++
+//        }
+//        for (fil in filter) {
+//            sql += if(c > 0)
+//                " AND "
+//            else
+//                " WHERE "
+//            when(fil["compare"]) {
+//                "Big" -> {
+//                    sql += fil["column"] + " > ?"
+//                    vl += fil["value"].toString()
+//                }
+//                "Small" -> {
+//                    sql += fil["column"] + " < ?"
+//                    vl += fil["value"].toString()
+//                }
+//                "Equal" -> {
+//                    sql += fil["column"] + " = ?"
+//                    vl += fil["value"].toString()
+//                }
+//                "Like" -> {
+//                    sql += fil["column"] + " LIKE ?"
+//                    vl += fil["value"].toString()
+//                }
+//                "Equation" -> {
+//                    sql += fil["equation"]
+//                }
+//                else -> throw Exception("そんな比較演算子使えない!! " + fil["compare"])
+//            }
+//            c++
+//        }
+//        database.execSQL(sql, vl)
+//        return 0
     }
     fun sync() {
 
