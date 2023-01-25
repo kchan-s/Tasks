@@ -1,6 +1,8 @@
 package app.sato.kchan.tasks
 
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -14,6 +16,7 @@ import app.sato.kchan.tasks.databinding.LocationActivityBinding
 import app.sato.kchan.tasks.fanction.Location
 import app.sato.kchan.tasks.fanction.LocationManager
 import app.sato.kchan.tasks.fanction.NoteManager
+import java.util.*
 
 
 class LocationActivity: AppCompatActivity(){
@@ -113,10 +116,16 @@ class LocationActivity: AppCompatActivity(){
                     lm.search(address)
                     if (lm.isLocation()) n.setNoticeLocation(lm.getLocation())
                     else {
-                        val l = lm.create()
-                        l.setAddress(address)
-                        l.setName(binding.locationNameEdit.text.toString())
-                        n.setNoticeLocation(lm.getLocation())
+                        val location = lm.create()
+                        val coordinate = doGeoCoding(address)
+                        location.setAddress(address)
+                        location.setName(binding.locationNameEdit.text.toString())
+                        location.setLatitude(coordinate[0].latitude.toFloat())
+                        location.setLongitude(coordinate[0].longitude.toFloat())
+                        n.setNoticeLocation(location)
+                        println(location.getAddress())
+                        println(n.getTitle())
+                        println(n.getNoticeLocation())
                     }
                     finish()
                 }
@@ -130,6 +139,11 @@ class LocationActivity: AppCompatActivity(){
         val map = Intent(this, MapActivity::class.java)
         map.putExtra("note", note)
         resultLauncher.launch(map)
+    }
+
+    private fun doGeoCoding(query: String): MutableList<Address> {
+        val gcoder = Geocoder(this, Locale.getDefault())
+        return gcoder.getFromLocationName(query, 1)
     }
 
     private fun loadTheme() {

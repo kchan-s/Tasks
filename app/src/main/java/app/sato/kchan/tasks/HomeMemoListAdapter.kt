@@ -133,6 +133,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             val startTime = note.getNoticeShow()
             val stopTime = note.getNoticeHide()
             val location = note.getNoticeLocation()
+            println(location)
             val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
             if (startTime != null && stopTime != null) {
