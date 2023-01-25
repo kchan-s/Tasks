@@ -58,11 +58,13 @@ class Account public constructor() {
 
 
 
-    fun hello(){
+    fun hello():String{
         var data = MyData()
         data.setString("type", "Hello")
         data.move("content")
-        println(data.outJSON())
+        val res: String = data.outJSON() ?: throw Exception("")
+        println(res)
+        return res
 
     }
 }
