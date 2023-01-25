@@ -53,7 +53,7 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
         )
         if(res.isResult()){
             do{
-                val key = "location_" + nextTempId.toString()
+                val key = "notice_" + nextTempId.toString()
                 tempList[key] = res.getStringMap().toMutableMap()
                 idList.add(key)
                 nextTempId++

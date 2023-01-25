@@ -101,9 +101,9 @@ class Notice public constructor(pick:MutableMap<String, String>) {
             locaId = null
             locaSerId = null
         }else{
-            val locaObj = location.getPick() ?: return
-            locaId = locaObj["location_id"] ?: return
-            locaSerId = locaObj["service_id"] ?: return
+            val locaPick = location.getPick()
+            locaId = locaPick["place_id"] ?: return
+            locaSerId = locaPick["service_id"] ?: return
         }
         DataOperator().updateQuery(
             table = "notice",
