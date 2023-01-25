@@ -137,6 +137,7 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return true
     }
     private fun valueEncoder(id: Int): String {
+        println("pass value")
         return when(type[id]) {
             "Value" -> value[id]!!
             "String" -> stringEncoder(id)
@@ -223,6 +224,7 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         val id = getId(key)
         type[id] = "Object"
         structure[id] = mutableMapOf()
+        structure[current]?.set(key, id)
         hierarchy += current
         current = id
     }
