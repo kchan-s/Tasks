@@ -11,12 +11,9 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import app.sato.kchan.tasks.fanction.DataOperator
+import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
 class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
@@ -25,7 +22,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     val nm = NoteManager()
 
     companion object {
-        var searchIndex = mutableListOf<Int>()
+        var searchNote = mutableListOf<Note?>()
         var search = false
     }
 
@@ -46,51 +43,58 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        if (!search) dataSet(viewHolder, position)
-        else dataSet(viewHolder, searchIndex[position])
+        val note: Note
 
-            viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
-                override fun onClick(v: View) {
-                    var adapterPosition = viewHolder.adapterPosition
-                    if (search) adapterPosition = searchIndex[adapterPosition]
+        if (!search)  {
+            nm.select(position)
+            note = nm.getNote()!!
+        } else {
+            note = searchNote[position]!!
+        }
+        dataSet(viewHolder, note)
 
-                    // ホーム画面に存在するリスト内のロック部分のタップ処理
-                    viewHolder.lockImageView.setOnClickListener {
-                        lockButton_onClick(viewHolder, adapterPosition)
-                    }
+            viewHolder.itemView.setOnClickListener { v ->
+                var adapterPosition = viewHolder.adapterPosition
+//                if (search) adapterPosition = searchNote[adapterPosition]
 
-                    // ホーム画面に存在するリスト内の完了・未完了のチェックボックスタップ処理
-                    viewHolder.checkBox.setOnCheckedChangeListener { _, _ ->
-                        completeButton_onClick(adapterPosition)
-                    }
-
-                    v.setOnClickListener {
-                        taskmemo_onClick(viewHolder, adapterPosition)
-                    }
+                // リスト内の完了・未完了のチェックボックスタップ処理
+                viewHolder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    completeButton_onClick(viewHolder, position, isChecked)
                 }
-            })
+
+                // リスト内のロック部分のタップ処理
+                viewHolder.lockImageView.setOnClickListener {
+                    lockButton_onClick(viewHolder, position)
+                }
+
+                v.setOnClickListener {
+                    taskmemo_onClick(viewHolder, adapterPosition)
+                }
+            }
     }
 
     //完了・未完了切替モジュール
-    private fun completeButton_onClick(position: Int) {
-        nm.selectByTempId(position.toString())
-        nm.isNote()
-        val note = nm.getNote()
-        if (note!!.isComplete()) {
-            note.setUncomplete()
-        } else {
+    private fun completeButton_onClick(viewHolder: ViewHolder, position: Int, isChecked: Boolean) {
+        val completeNoteManager = NoteManager()
+        completeNoteManager.receive(nm.send())
+        val note = completeNoteManager.getNote()!!
+        if (isChecked) {
             note.setComplete()
+            viewHolder.list.setBackgroundColor(Color.LTGRAY)
+        } else {
+            note.setUncomplete()
+            viewHolder.list.setBackgroundColor(Color.WHITE)
         }
     }
 
     //ロック・未ロック切替モジュール
     private fun lockButton_onClick(viewHolder: ViewHolder, position: Int) {
-        nm.selectByTempId(position.toString())
-        nm.isNote()
-        val note = nm.getNote()
-        if (note!!.isLock()) {
+        var lockNoteManager = NoteManager()
+        lockNoteManager.receive(nm.send())
+        val note = lockNoteManager.getNote()!!
+        if (note.isLock()) {
             note.setUnlock()
-            viewHolder.lockImageView.setImageResource(R.drawable.space)
+            viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
         } else {
             note.setLock()
             viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
@@ -107,44 +111,40 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         viewHolder.context.startActivity(intent)
     }
 
-    // リストの設定
-    private fun dataSet(viewHolder: ViewHolder, position: Int) {
-        nm.select(position)
-        val note = nm.getNote()!!
-        viewHolder.titleText.setText(note.getTitle())
-        val startTime = note.getNoticeShow()
-        val stopTime = note.getNoticeHide()
-        val location = note.getNoticeLocation()
-        val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+    // リストの初期設定
+    private fun dataSet(viewHolder: ViewHolder, note: Note) {
+        if (nm.isNote()) {
+            viewHolder.titleText.setText(note.getTitle())
+            val startTime = note.getNoticeShow()
+            val stopTime = note.getNoticeHide()
+            val location = note.getNoticeLocation()
+            val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
-        if (startTime != null && stopTime != null) viewHolder.noticeText.text =
-            "${startTime.format(f)} 〜 ${stopTime.format(f)}"
-        else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
+            if (startTime != null && stopTime != null) viewHolder.noticeText.text =
+                "${startTime.format(f)} 〜 ${stopTime.format(f)}"
+            else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
 
-        if (location != null) viewHolder.locationText.text = location.toString()
+            if (location != null) viewHolder.locationText.text = location.toString()
 
-        if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
-        else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
-        if (note.isComplete()) {
-            viewHolder.checkBox.isChecked = true
-            viewHolder.list.setBackgroundColor(Color.LTGRAY)
+            if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
+            else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
+            if (note.isComplete()) {
+                viewHolder.checkBox.isChecked = true
+                viewHolder.list.setBackgroundColor(Color.LTGRAY)
+            }
         }
     }
 
     fun searchRequest(text: String) {
         search = true
-        for (i in 0..nm.getNoteNumber()) {
-            nm.search(text)
-            if (nm.isNote()) {
-                searchIndex.add(nm.getNoteNumber())
-                //        for (i in 0..titleData.lastIndex) {
-//            if (titleData[i].contains(text)) {
-//                searchIndex.add(i)
-//            }
-//        }}
+        nm.search(text)
+        if (nm.getNoteNumber() != 0) {
+            for (i in 0..nm.getNoteNumber()) {
+                searchNote.add(nm.getNote())
+                nm.next()
             }
-//        search = true
         }
+        println(nm.getNote())
     }
 
 //    fun setAlarm(context: Context, position: Int) {
@@ -197,7 +197,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             nm.search("")
             return nm.getNoteNumber()
         } else {
-            return searchIndex.size
+            return searchNote.size
         }
     }
 }

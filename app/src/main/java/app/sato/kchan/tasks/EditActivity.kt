@@ -25,9 +25,9 @@ class EditActivity : AppCompatActivity() {
 
         if (!new) {
             nm.receive(note)
-            val n = nm.getNote()
-            binding.editTitleEdit.setText(n?.getTitle())
-            binding.editMemoEdit.setText(n?.getContent())
+            val n = nm.getNote()!!
+            binding.editTitleEdit.setText(n.getTitle())
+            binding.editMemoEdit.setText(n.getContent())
         }
 
         val toolbar = binding.editToolbar
@@ -69,7 +69,6 @@ class EditActivity : AppCompatActivity() {
                     note.setNoticeHide(null)
                     note.setNoticeLocation(null)
                 } else if (!new) {
-                    nm.receive(note)
                     val note = nm.getNote()!!
                     note.setTitle(binding.editTitleEdit.text.toString())
                     note.setContent(binding.editMemoEdit.text.toString())
@@ -80,20 +79,8 @@ class EditActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    //ロック・未ロック
-    private fun lockButton_onClick(position: Int) {
-        nm.selectByTempId(position.toString())
-        val note = nm.getNote()
-        if(note!!.isLock()){
-            note.setUnlock()
-        }else{
-            note.setLock()
-        }
-    }
-
     //削除
     private fun deleteButton_onClick() {
-        nm.receive(note)
         val note = nm.getNote()!!
         note.delete()
         finish()

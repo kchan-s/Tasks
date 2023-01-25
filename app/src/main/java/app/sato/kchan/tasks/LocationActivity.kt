@@ -23,7 +23,7 @@ class LocationActivity: AppCompatActivity(){
     val idData = mutableListOf<String>()
     val lm = LocationManager()
     val nm = NoteManager()
-    var address: String? = ""
+    var address = ""
     var note = ""
 
     var resultLauncher = registerForActivityResult(
@@ -40,8 +40,9 @@ class LocationActivity: AppCompatActivity(){
         loadTheme()
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        lm.search("")
         // よく行く場所に設定してある場所をとってくる
-        for (i in 0 .. lm.getLocationNumber()) {
+        for (i in 1 .. lm.getLocationNumber()) {
             lm.selectByTempId(i.toString())
             val location = lm.getLocation()!!
             if (location.isPermanent()) {
@@ -93,19 +94,30 @@ class LocationActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (address != "") {
+            binding.locationNameEdit.isVisible = true
+            binding.locationAddress.isVisible = true
+            binding.locationAddress.text = address
+        }
+    }
+
      // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
+                println(note)
                 if (address != "") {
                     nm.receive(note)
                     val n = nm.getNote()!!
-                    lm.search(address.toString())
+                    lm.search(address)
                     if (lm.isLocation()) n.setNoticeLocation(lm.getLocation())
                     else {
                         val l = lm.create()
-                        l.setAddress(address.toString())
+                        l.setAddress(address)
                         l.setName(binding.locationNameEdit.text.toString())
+                        n.setNoticeLocation(lm.getLocation())
                     }
                     finish()
                 }
@@ -115,6 +127,7 @@ class LocationActivity: AppCompatActivity(){
     }
 
     private fun mapButton_onClick() {
+        MapActivity.notice = true
         val map = Intent(this, MapActivity::class.java)
         map.putExtra("note", note)
         resultLauncher.launch(map)

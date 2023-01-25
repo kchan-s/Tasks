@@ -11,8 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import app.sato.kchan.tasks.databinding.MapActivityBinding
-import app.sato.kchan.tasks.fanction.Location
-import app.sato.kchan.tasks.fanction.LocationManager
 import app.sato.kchan.tasks.fanction.NoteManager
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,6 +26,7 @@ import java.util.*
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
         const val ADDRESS_RESULT = "address"
+        var notice = false
     }
 
     private lateinit var mMap: GoogleMap
@@ -36,7 +35,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var fusedLocationProviderClient : FusedLocationProviderClient
     var locationCallback: LocationCallback? = null
 
-//    var position = -1
     var note = ""
     var first = true
     var mFirst = true // marker生成が初めてか
@@ -95,9 +93,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         checkPermission()
 
-        if (note != "") {
+        if (notice) {
             val nm = NoteManager()
-            nm.receive(note)
+            nm.receive(note.toString())
             val n = nm.getNote()!!
             val noteLocation = n.getNoticeLocation()
 
@@ -129,7 +127,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    //requestPeermissionsのコールバック
+    //requestPermissionsのコールバック
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -162,7 +160,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult) {
                     super.onLocationResult(p0)
-                    var currentLatLog = LatLng(p0.lastLocation!!.latitude, p0.lastLocation!!.longitude)
+                    val currentLatLog = LatLng(p0.lastLocation!!.latitude, p0.lastLocation!!.longitude)
                     if (first) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLog))
                         mMap.moveCamera(CameraUpdateFactory.zoomTo(mMap.maxZoomLevel - 5))

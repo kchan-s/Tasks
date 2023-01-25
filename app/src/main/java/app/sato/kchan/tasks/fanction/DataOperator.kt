@@ -175,7 +175,7 @@ class DataOperator(){
             if(dt == null){
                 return null
             }else{
-                return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss"))
+                return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
             }
         }
         fun getDateTime(column:String): LocalDateTime? {

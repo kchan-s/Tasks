@@ -21,9 +21,9 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val titleText: TextView = view.findViewById(R.id.home_list_title_text)
-        val noticeText: TextView = view.findViewById(R.id.home_list_notice_text)
-        val locationText: TextView = view.findViewById(R.id.home_list_location_text)
+        val titleText: TextView = view.findViewById(R.id.delete_list_title_text)
+        val noticeText: TextView = view.findViewById(R.id.delete_list_notice_text)
+        val locationText: TextView = view.findViewById(R.id.delete_list_location_text)
         val memo: LinearLayout = view.findViewById(R.id.delete_memo)
         val lockImage: ImageView = view.findViewById(R.id.delete_list_lock_image)
     }
@@ -35,9 +35,9 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        nm.selectByTempId(position.toString())
-        val n = nm.getNote()
-        viewHolder.titleText.text = n!!.getTitle()
+        nm.select(position)
+        val n = nm.getNote()!!
+        viewHolder.titleText.text = n.getTitle()
 
         val startTime = n.getNoticeShow()
         val stopTime = n.getNoticeHide()
@@ -52,25 +52,27 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         if (n.isLock()) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImage.setImageResource(R.drawable.space)
 
-        viewHolder.itemView.setOnClickListener(object : View.OnClickListener {
+        viewHolder.itemView.setOnClickListener { v ->
+            val touchPosition = viewHolder.adapterPosition
+            nm.select(touchPosition)
 
-            override fun onClick(v: View) {
-                val touchPosition = viewHolder.adapterPosition
-                nm.selectByTempId(touchPosition.toString())
-
-                v.setOnClickListener {
-                    if (!nm.getNote()!!.isLock()) {
-                        if (isSelectedItem(touchPosition)) {
-                            viewHolder.memo.setBackgroundColor(Color.WHITE)
-                            removeSelectedItem(touchPosition)
-                        } else {
-                            viewHolder.memo.setBackgroundColor(Color.LTGRAY)
-                            addSelectedItem(touchPosition)
-                        }
+            v.setOnClickListener {
+                println("u")
+                println(nm.getNoteNumber())
+                println(!nm.getNote()!!.isLock())
+                if (!nm.getNote()!!.isLock()) {
+                    println("i")
+                    if (isSelectedItem(touchPosition)) {
+                        viewHolder.memo.setBackgroundColor(Color.WHITE)
+                        removeSelectedItem(touchPosition)
+                        println("a")
+                    } else {
+                        viewHolder.memo.setBackgroundColor(Color.LTGRAY)
+                        addSelectedItem(touchPosition)
                     }
                 }
             }
-        })
+        }
     }
 
     override fun getItemCount(): Int {

@@ -109,19 +109,19 @@ class Note public constructor(pick:MutableMap<String, String>) {
     fun setLock(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("title" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss"))),
+            value = mutableListOf("lock_at" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss"))),
             pick = pick
         )
     }
     fun setUnlock(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("title" to null),
+            value = mutableListOf("lock_at" to null),
             pick = pick
         )
     }
     fun isComplete():Boolean{
-        return DataOperator().selectQuery(
+        return !DataOperator().selectQuery(
             table = "note",
             column = "complete_at",
             pick = pick

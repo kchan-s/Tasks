@@ -30,18 +30,30 @@ class TimeActivity: AppCompatActivity(){
         loadTheme()
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        note = nm.receive(note).toString()
+        note = intent.getStringExtra("note").toString()
+        nm.receive(note)
         val n = nm.getNote()!!
 
-        if (n.getNoticeShow() != null) {
+        val startTime = n.getNoticeShow()
+        if (startTime != null) {
             binding.timeSettingSwitch.isChecked = true
             binding.timeStartText.isVisible = true
             binding.timeStartSettingButton.isVisible = true
             binding.timeEndText.isVisible = true
             binding.timeEndSettingButton.isVisible = true
+
+            println(startTime.monthValue)
+            startDateTimeList.add(startTime.year)
+            startDateTimeList.add(startTime.monthValue)
+            startDateTimeList.add(startTime.dayOfMonth)
+            startDateTimeList.add(startTime.hour)
+            startDateTimeList.add(startTime.minute)
+
             binding.timeStartText.text = "通知開始時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(n.getNoticeShow())}"
         }
-        if (n.getNoticeHide() != null) binding.timeEndText.text = "通知終了時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(n.getNoticeHide())}"
+        if (n.getNoticeHide() != null) {
+            binding.timeEndText.text = "通知終了時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(n.getNoticeHide())}"
+        }
 
         // トグルの値読み込みが必要
         binding.timeSettingSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -105,7 +117,7 @@ class TimeActivity: AppCompatActivity(){
 
             // メモ：monthは0-11らしいので+1する必要がある
             if (start) {
-                // 開始年月日保存処理
+                startDateTimeList.clear()
                 startDateTimeList.add(0, year)
                 startDateTimeList.add(1, month+1)
                 startDateTimeList.add(2, day)
@@ -156,16 +168,14 @@ class TimeActivity: AppCompatActivity(){
         val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
             calendar.set(Calendar.HOUR_OF_DAY, hour)
             calendar.set(Calendar.MINUTE, minute)
-            val format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-            nm.receive(note)
+            val showFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
             val n = nm.getNote()!!
 
             if (start) {
                 startDateTimeList.add(3, hour)
                 startDateTimeList.add(4, minute)
                 val startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
-                binding.timeStartText.text = "通知開始時間 : ${startDateTime.format(format)}"
-
+                binding.timeStartText.text = "通知開始時間 : ${startDateTime.format(showFormat)}"
                 n.setNoticeShow(startDateTime)
             }
             else {
@@ -174,7 +184,7 @@ class TimeActivity: AppCompatActivity(){
                 if (settingTime.isBefore(startDateTime)) {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 } else {
-                    binding.timeEndText.text = "通知終了時間 : ${settingTime.format(format)}"
+                    binding.timeEndText.text = "通知終了時間 : ${settingTime.format(showFormat)}"
 
                     n.setNoticeHide(settingTime)
                 }
