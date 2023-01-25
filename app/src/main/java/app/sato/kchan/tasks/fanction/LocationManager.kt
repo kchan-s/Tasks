@@ -186,6 +186,8 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 "create_at" to dt,
                 "name" to "",
                 "address" to "",
+                "latitude" to "0",
+                "longitude" to "0",
                 "priority" to priority.toString(),
             )
         )
