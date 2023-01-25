@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
  *
  * クラス名: MyData
  ********************/
-class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf(0 to mutableMapOf()), t:MutableMap<Int,String> = mutableMapOf(), a:MutableMap<Int, Array<Int>>, v:MutableMap<Int,String> = mutableMapOf(), r: Int = 0, h:MutableList<Int> = mutableListOf(), c: Int = 0) {
+class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf(0 to mutableMapOf()), t:MutableMap<Int,String> = mutableMapOf(0 to "Object"), a:MutableMap<Int, Array<Int>> = mutableMapOf(), v:MutableMap<Int,String> = mutableMapOf(), r: Int = 0, h:MutableList<Int> = mutableListOf(), c: Int = 0) {
     //<プロパティ>
     private var structure:MutableMap<Int, MutableMap<String, Int>>
     private var type:MutableMap<Int, String>
@@ -137,17 +137,12 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return true
     }
     private fun valueEncoder(id: Int): String {
-        when(type[id]) {
-            "Value" -> {
-                if(id in value)
-                    return value[id]!!
-                else
-                    throw Exception("Unknown Data")
-            }
-            "String" -> return stringEncoder(id)
-            "Array" -> return arrayEncoder(id)
-            "Object" -> return objectEncoder(id)
-            "Null" -> return "nul"
+        return when(type[id]) {
+            "Value" -> value[id]!!
+            "String" -> stringEncoder(id)
+            "Array" -> arrayEncoder(id)
+            "Object" -> objectEncoder(id)
+            "Null" -> "nul"
             else -> throw Exception("Unknown Type")
         }
     }
@@ -165,8 +160,7 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
     }
     private fun objectEncoder(id: Int): String {
         var buff:Array<String> = arrayOf()
-        val items:MutableMap<String,Int> = structure[id] ?: throw StructureException("")
-        for((key, valueId) in items){
+        for((key, valueId) in structure[id] ?: throw StructureException("")){
             buff += "\"" + key.replace("\"", "\\\"") + "\"" + ":" + valueEncoder(valueId)
         }
         return "{" + buff.joinToString(",") + "}"
@@ -202,16 +196,55 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
 //    fun items(): MutableMap<String,String> {
 //
 //    }
-    fun type(): String{
-        return type[current] ?: throw Exception("Nonexistent current element")
+    fun isData(key:String): Boolean{
+        return key in (structure[current] ?: throw Exception("data does not exist"))
     }
-    fun move(key: String): Boolean{
-        val now = structure[current] ?: throw Exception("Nonexistent current element")
-        current = now[key] ?: return false
-        return true
+    private fun getId(key:String): Int {
+        return if (isData(key)){
+            structure[current]!![key] ?: throw Exception("data does not exist")
+        }else{
+            val id: Int = nextC++
+            type[id] = "Null"
+            structure[current]!![key] = id
+            id
+        }
+    }
+    private fun getType(id: Int): String{
+        return type[id] ?: throw Exception("can't get type")
+    }
+    fun getType(key: String): String{
+        val id = getId(key)
+        return getType(id)
+    }
+    fun move(key: String){
+        val id = getId(key)
+        type[id] = "Object"
+        structure[id] = mutableMapOf()
+        hierarchy += current
+        current = id
+    }
+    fun moves(vararg keys: String){
+        for(key in keys){
+            move(key)
+        }
     }
     fun moveRoot(){
         current = root
+    }
+    fun moveChain(key: String): MyData{
+        val myData = this.copy()
+        myData.move(key)
+        return myData
+    }
+    fun movesChain(vararg keys: String): MyData{
+        val myData = this.copy()
+        myData.moves(*keys)
+        return myData
+    }
+    fun moveRootChain(): MyData{
+        val myData = this.copy()
+        myData.moveRoot()
+        return myData
     }
     fun back(){
         if(hierarchy.size > 0) {
@@ -221,92 +254,170 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             current = root
         }
     }
-    fun moveChain(key: String): MyData{
-        val newData = this.copy()
-        if(!newData.move(key)) throw Exception("Nonexistent element")
-        return newData
-    }
     fun backChain(): MyData{
-        val newData = this.copy()
-        newData.back()
-        return newData
+        val myData = this.copy()
+        myData.back()
+        return myData
     }
-    fun moveByPath(vararg paths: String){
-        for(path in paths){
-            for(key in path.split("/")) {
-                when (key) {
-                    "" -> this.moveRoot()
-                    "." -> {}
-                    ".." -> this.back()
-                    else -> this.move(key)
-                }
+    fun delete(key:String){
+        if (isData(key)) {
+            val id = getId(key)
+            if(type[id].toString() in "String,Value") {
+                value.remove(id)
+                type[id] = "Null"
+            }
+            structure.remove(id)
+            type.remove(current)
+        }
+    }
+    fun getString(key:String): String{
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id] ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id].toString()
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
             }
         }
     }
-    fun getString(): String{
-        if(null == type[current] || "Null" == type[current]) throw Exception("Null in non-nullable type")
-        return value[current] ?: throw Exception("Null in non-nullable type")
+    fun getStringOrNull(key:String): String? {
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                return null
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id] ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id].toString()
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
     }
-    fun getStringOrNull(): String? {
-        return value[current]
-    }
-    fun setString(v: String?){
+    fun setString(key:String, v: String?){
+        val id = getId(key)
         if(v == null)
-            type[current] = "Null"
+            type[id] = "Null"
         else{
-            type[current] = "String"
-            value[current] = v
+            type[id] = "String"
+            value[id] = v
         }
     }
-    fun getInt(): Int {
-        if(null == type[current] || "Null" == type[current]) throw Exception("Null in non-nullable type")
-        return value[current]?.toInt() ?: throw Exception("Null in non-nullable type")
-    }
-    fun getIntOrNull(): Int ?{
-        return value[current]?.toInt()
-    }
-    fun setInt(v: Int?) {
-        if (v == null)
-            type[current] = "Null"
-        else {
-            type[current] = "Value"
-            value[current] = v.toString()
+    fun getInt(key:String): Int{
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toInt() ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id]?.toInt() ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
         }
     }
-    fun getBoolean(): Boolean {
-        if(null == type[current] || "Null" == type[current]) throw Exception("Null in non-nullable type")
-        return value[current]?.toBoolean() ?: throw Exception("Null in non-nullable type")
-    }
-    fun getBooleanOrNull(): Boolean? {
-        return value[current]?.toBoolean()
-    }
-    fun setBoolean(v: Boolean?) {
-        if (v == null)
-            type[current] = "Null"
-        else {
-            type[current] = "Value"
-            value[current] = v.toString()
+    fun getIntOrNull(key:String): Int? {
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toInt()
+            }
+            "Value" -> {
+                return value[id]?.toInt()
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
         }
     }
-    fun getDateTime(): LocalDateTime {
-        if(null == type[current] || "Null" == type[current]) throw Exception("Null in non-nullable type")
-        return LocalDateTime.parse(value[current], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
-    }
-    fun getDateTimeOrNull(): LocalDateTime {
-        return LocalDateTime.parse(value[current], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss"))
-    }
-    fun setDateTime(v: LocalDateTime?) {
-        if (v == null)
-            type[current] = "Null"
-        else {
-            type[current] = "Value"
-            value[current] = v.toString()
+    fun setInt(key:String, v: Int?){
+        val id = getId(key)
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "Value"
+            value[id] = v.toString()
         }
     }
-    fun delete(){
-        if(type[current].toString() in "String,Value") value.remove(current)
-        type.remove(current)
+    fun getDateTime(key:String): LocalDateTime{
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
     }
+    fun getDateTimeOrNull(key:String): LocalDateTime? {
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                return null
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun setDateTime(key:String, v: LocalDateTime?){
+        val id = getId(key)
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "Value"
+            value[id] = v.toString()
+        }
+    }
+
     fun copy(): MyData{
         return MyData(structure,type,array,value,root,hierarchy,current)
     }
