@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.SettingActivityBinding
 import app.sato.kchan.tasks.fanction.Util
 import app.sato.kchan.tasks.fanction.ConnectionWrapper
+import app.sato.kchan.tasks.fanction.MyData
 import kotlinx.coroutines.launch
 
 class SettingActivity : AppCompatActivity() {
@@ -64,10 +65,22 @@ class SettingActivity : AppCompatActivity() {
     // カスタマイズ画面に遷移
     private fun customButton_onClick() {
 
+        fun hello():String{
+            var data = MyData()
+            data.setString("type", "Hello")
+            data.move("content")
+            val res: String = data.outJSON() ?: throw Exception("")
+            println(res)
+            return res
+
+        }
+        hello()
+
+
         val inputJson = Util.createJson()
 
         ConnectionWrapper.scope.launch{
-            ConnectionWrapper().executeServerConnection(inputJson)
+            ConnectionWrapper().executeServerConnection(hello())
             Log.d("SettingActivity",ConnectionWrapper().postOutput())
         }
 
