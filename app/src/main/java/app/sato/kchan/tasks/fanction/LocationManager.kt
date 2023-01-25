@@ -190,10 +190,10 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 "longitude" to "0",
                 "priority" to priority.toString(),
                 "status_flag" to "0",
-                "name_update_at" to LocalDateTime.now().toString(),
-                "address_update_at" to LocalDateTime.now().toString(),
-                "priority_update_at" to LocalDateTime.now().toString(),
-                "status_update_at" to LocalDateTime.now().toString()
+                "name_update_at" to dt,
+                "address_update_at" to dt,
+                "priority_update_at" to dt,
+                "status_update_at" to dt
             )
         )
         return Location(mutableMapOf("place_id" to placeId.toString(), "service_id" to "0"))
