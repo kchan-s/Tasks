@@ -42,7 +42,6 @@ class TimeActivity: AppCompatActivity(){
             binding.timeEndText.isVisible = true
             binding.timeEndSettingButton.isVisible = true
 
-            println(startTime.monthValue)
             startDateTimeList.add(startTime.year)
             startDateTimeList.add(startTime.monthValue)
             startDateTimeList.add(startTime.dayOfMonth)

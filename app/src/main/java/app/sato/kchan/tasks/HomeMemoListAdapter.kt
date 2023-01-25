@@ -13,7 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
@@ -23,6 +25,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
     companion object {
         var searchNote = mutableListOf<Note?>()
+        var searchSendText = listOf<String>()
         var search = false
     }
 
@@ -55,7 +58,6 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
             viewHolder.itemView.setOnClickListener { v ->
                 var adapterPosition = viewHolder.adapterPosition
-//                if (search) adapterPosition = searchNote[adapterPosition]
 
                 // リスト内の完了・未完了のチェックボックスタップ処理
                 viewHolder.checkBox.setOnCheckedChangeListener { _, isChecked ->
@@ -103,10 +105,15 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
     // タスクメモのクリック処理
     private fun taskmemo_onClick(viewHolder: ViewHolder, position: Int) {
+        val note: String
         EditActivity.new = false
         val intent = Intent(viewHolder.context, EditActivity::class.java)
-        nm.select(position)
-        val note = nm.send()
+        if (!search) {
+            nm.select(position)
+            note = nm.send()
+        } else {
+            note = searchSendText[position]
+        }
         intent.putExtra("note", note)
         viewHolder.context.startActivity(intent)
     }
@@ -120,11 +127,17 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             val location = note.getNoticeLocation()
             val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
-            if (startTime != null && stopTime != null) viewHolder.noticeText.text =
-                "${startTime.format(f)} 〜 ${stopTime.format(f)}"
-            else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
+            if (startTime != null && stopTime != null) {
+                viewHolder.noticeText.text = "${startTime.format(f)} 〜 ${stopTime.format(f)}"
+
+            }
+            else if (startTime != null) {
+                viewHolder.noticeText.text = startTime.format(f)
+            }
+            else viewHolder.noticeText.text = ""
 
             if (location != null) viewHolder.locationText.text = location.toString()
+            else viewHolder.locationText.text = ""
 
             if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
             else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
@@ -138,47 +151,46 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     fun searchRequest(text: String) {
         search = true
         nm.search(text)
-        if (nm.getNoteNumber() != 0) {
-            for (i in 0..nm.getNoteNumber()) {
-                searchNote.add(nm.getNote())
-                nm.next()
-            }
+        val sendText = nm.send()
+        searchSendText = sendText.split("|")
+        for (i in 1..nm.getNoteNumber()) {
+            searchNote.add(nm.getNote())
+            nm.next()
         }
-        println(nm.getNote())
     }
 
-//    fun setAlarm(context: Context, position: Int) {
-//        val intent = Intent(context, AlarmNotification::class.java)
-//        val sdFormat = SimpleDateFormat("yyyy/mm/dd hh:mm")
-//
-//        val startDate = sdFormat.parse(notificationSettingData[position][1])
-//        val startCalendar = Calendar.getInstance()
-//        startCalendar.set(startDate.year, startDate.month, startDate.day, startDate.hours, startDate.minutes, 0)
-//
-//        if (notificationSettingData[position].size != 2) {
-//            val stopDate = sdFormat.parse(notificationSettingData[position][2])
-//            val stopCalendar = Calendar.getInstance()
-//            stopCalendar.set(stopDate.year, stopDate.month, stopDate.day, stopDate.hours, stopDate.minutes, 59)
-//            intent.putExtra("deleteTime", stopCalendar.timeInMillis - startCalendar.timeInMillis)
-//        }
-//
-//        intent.putExtra("RequestCode", requestCode)
-//        intent.putExtra("position", position)
-//
-//        val pending = PendingIntent.getBroadcast(
-//            context, requestCode, intent,
-//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//        )
-//
-//        // アラームをセットする
-//        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
-//        am.setExact(
-//            AlarmManager.RTC_WAKEUP,
-//            startCalendar.getTimeInMillis(), pending
-//        )
-//
-//        Toast.makeText(context, "set", Toast.LENGTH_LONG).show()
-//    }
+    fun setAlarm(context: Context, position: Int, note: Note) {
+        val intent = Intent(context, AlarmNotification::class.java)
+        val sdFormat = SimpleDateFormat("yyyy/mm/dd hh:mm")
+
+        val start = sdFormat.parse(note.getNoticeShow().toString())
+        val startCalendar = Calendar.getInstance()
+        startCalendar.set(start.year, start.month, start.day, start.hours, start.minutes, 0)
+
+        if (note.getNoticeHide() != null) {
+            val stop = sdFormat.parse(note.getNoticeHide().toString())
+            val stopCalendar = Calendar.getInstance()
+            stopCalendar.set(stop.year, stop.month, stop.day, stop.hours, stop.minutes, 59)
+            intent.putExtra("deleteTime", stopCalendar.timeInMillis - startCalendar.timeInMillis)
+        }
+
+        intent.putExtra("RequestCode", requestCode)
+        intent.putExtra("position", position)
+
+        val pending = PendingIntent.getBroadcast(
+            context, requestCode, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // アラームをセットする
+        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+        am.setExact(
+            AlarmManager.RTC_WAKEUP,
+            startCalendar.getTimeInMillis(), pending
+        )
+
+        Toast.makeText(context, "set", Toast.LENGTH_LONG).show()
+    }
 
     fun cancelAlarm(context: Context) {
         val intent = Intent(context, AlarmNotification::class.java)

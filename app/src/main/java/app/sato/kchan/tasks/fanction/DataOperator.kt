@@ -138,7 +138,6 @@ class DataOperator(){
         }
         fun getString(column:String):String{
             val no: Int = getNumber(column)
-            println(no)
             return getString(no)
         }
         fun getStringNulls(no:Int = 0):String?{
@@ -146,7 +145,6 @@ class DataOperator(){
         }
         fun getStringNulls(column:String):String?{
             val no: Int = getNumber(column)
-            println(no)
             return getStringNulls(no)
         }
         fun getInt(no:Int = 0):Int{

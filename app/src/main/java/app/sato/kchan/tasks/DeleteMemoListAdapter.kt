@@ -57,15 +57,10 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
             nm.select(touchPosition)
 
             v.setOnClickListener {
-                println("u")
-                println(nm.getNoteNumber())
-                println(!nm.getNote()!!.isLock())
                 if (!nm.getNote()!!.isLock()) {
-                    println("i")
                     if (isSelectedItem(touchPosition)) {
                         viewHolder.memo.setBackgroundColor(Color.WHITE)
                         removeSelectedItem(touchPosition)
-                        println("a")
                     } else {
                         viewHolder.memo.setBackgroundColor(Color.LTGRAY)
                         addSelectedItem(touchPosition)

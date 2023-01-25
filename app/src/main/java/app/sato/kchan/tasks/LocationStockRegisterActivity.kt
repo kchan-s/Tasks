@@ -46,7 +46,6 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        println(address)
         binding.locationStockRegisterAddressEdit.setText(address)
     }
 

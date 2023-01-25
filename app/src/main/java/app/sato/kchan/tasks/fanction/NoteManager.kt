@@ -138,7 +138,6 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
             }
         }
         max++
-        println("a" + max)
         val dt = LocalDateTime.now().toString()
         DataOperator().insertQuery(
             table = "note",

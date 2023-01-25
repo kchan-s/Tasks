@@ -29,7 +29,6 @@ class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder
     override fun getItemCount(): Int{
         val lm = LocationManager()
         lm.search("")
-        println(lm.getLocationNumber())
         return lm.getLocationNumber()
 //        return 1
     }

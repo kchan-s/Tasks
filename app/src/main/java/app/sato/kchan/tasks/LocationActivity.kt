@@ -107,7 +107,6 @@ class LocationActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                println(note)
                 if (address != "") {
                     nm.receive(note)
                     val n = nm.getNote()!!
