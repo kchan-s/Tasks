@@ -26,8 +26,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("color$no", color.toString()),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "color$no" to color.toString(),
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -65,8 +65,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag & ~(1 << 0)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag & ~(1 << 0)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -74,8 +74,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag | (1 << 0)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag | (1 << 0)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -103,8 +103,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag | (1 << 2)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag | (1 << 2)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -112,8 +112,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag & ~(1 << 2)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag & ~(1 << 2)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -121,8 +121,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag | (1 << 2)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag | (1 << 2)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -130,8 +130,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag & ~(1 << 2)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag & ~(1 << 2)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -149,8 +149,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("init_show_at", date.toString()),
-                Pair("init_show_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "init_show_at" to date.toString(),
+                "init_show_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -168,8 +168,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("init_hide_at", date.toString()),
-                Pair("init_hide_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "init_hide_at" to date.toString(),
+                "init_hide_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -187,8 +187,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag | (1 << 2)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag | (1 << 2)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -196,8 +196,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("status_flag", "status_flag & ~(1 << 2)"),
-                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag & ~(1 << 2)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }
@@ -215,8 +215,8 @@ class Info public constructor() {
         DataOperator().updateQuery(
             table = "setting",
             value = mutableListOf(
-                Pair("auto_delete_period", time.toString()),
-                Pair("auto_delete_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "auto_delete_period" to time.toString(),
+                "auto_delete_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             )
         )
     }

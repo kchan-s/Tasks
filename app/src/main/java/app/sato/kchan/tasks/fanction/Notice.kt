@@ -1,5 +1,6 @@
 package app.sato.kchan.tasks.fanction
 
+import kotlinx.coroutines.channels.ticker
 import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 
@@ -37,13 +38,19 @@ class Notice public constructor(pick:MutableMap<String, String>) {
         if(value == null){
             DataOperator().updateQuery(
                 table = "notice",
-                value = mutableListOf("show_at" to null),
+                value = mutableListOf(
+                    "show_at" to null,
+                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                ),
                 pick = pick
             )
         }else{
             DataOperator().updateQuery(
                 table = "notice",
-                value = mutableListOf("show_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value)),
+                value = mutableListOf(
+                    "show_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value),
+                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                ),
                 pick = pick
             )
         }
@@ -68,13 +75,19 @@ class Notice public constructor(pick:MutableMap<String, String>) {
         if(value == null){
             DataOperator().updateQuery(
                 table = "notice",
-                value = mutableListOf("hide_at" to null),
+                value = mutableListOf(
+                    "hide_at" to null,
+                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                ),
                 pick = pick
             )
         }else {
             DataOperator().updateQuery(
                 table = "notice",
-                value = mutableListOf("hide_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value)),
+                value = mutableListOf(
+                    "hide_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value),
+                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                ),
                 pick = pick
             )
         }
@@ -88,9 +101,7 @@ class Notice public constructor(pick:MutableMap<String, String>) {
         if (res.isResult()) {
             val locaId = res.getStringNulls("place_id") ?: return null
             val locaSerId = res.getStringNulls("place_service_id") ?: return null
-            if (locaId != null && locaSerId != null)
-                return Location(mutableMapOf("place_id" to locaId, "service_id" to locaSerId))
-            else return null
+            return Location(mutableMapOf("place_id" to locaId, "service_id" to locaSerId))
         }
         return null
     }
@@ -107,7 +118,11 @@ class Notice public constructor(pick:MutableMap<String, String>) {
         }
         DataOperator().updateQuery(
             table = "notice",
-            value = mutableListOf("place_id" to locaId,"place_service_id" to locaSerId),
+            value = mutableListOf(
+                "place_id" to locaId,
+                "place_service_id" to locaSerId,
+                "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
@@ -124,15 +139,20 @@ class Notice public constructor(pick:MutableMap<String, String>) {
     fun serCollisionReset(){
         DataOperator().updateQuery(
             table = "notice",
-            value = mutableListOf("status_flag" to "status_flag & ~ (1 << 30)"),
+            value = mutableListOf(
+                Pair("status_flag", "status_flag & ~ (1 << 30)"),
+                Pair("completion_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            ),
             pick = pick
         )
     }
     fun delete(){
         DataOperator().updateQuery(
             table = "notice",
-            value = mutableListOf("status_flag" to "status_flag | (1 << 31)"),
-            pick = pick
+            value = mutableListOf(
+                Pair("status_flag", "status_flag | (1 << 31)"),
+                Pair("completion_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            ),
         )
     }
     fun getPick():MutableMap<String, String>{

@@ -30,8 +30,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("name", value),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "name" to value,
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -47,8 +47,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("address", value),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "address" to value,
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -71,8 +71,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("longitude", value.toString()),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "longitude" to value.toString(),
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -81,8 +81,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("latitude", value.toString()),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "latitude" to value.toString(),
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -91,8 +91,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("priority", "priority - 1"),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "priority" to "priority - 1",
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             filter = arrayOf(
                 mutableMapOf(
@@ -105,8 +105,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("priority", index.toString()),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "priority" to index.toString(),
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -122,8 +122,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("status_flag", "status_flag | (1 << 0)"),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag | (1 << 0)",
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -132,8 +132,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("status_flag", "status_flag & ~ (1 << 0)"),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag & ~ (1 << 0)",
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -150,8 +150,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("status_flag", "status_flag & ~ (1 << 30)"),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag & ~ (1 << 30)",
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -160,8 +160,8 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                Pair("status_flag", "status_flag | (1 << 31)"),
-                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag | (1 << 31)",
+                "color_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )

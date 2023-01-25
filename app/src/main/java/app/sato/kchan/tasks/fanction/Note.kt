@@ -29,7 +29,10 @@ class Note public constructor(pick:MutableMap<String, String>) {
     fun setTitle(value:String){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("title" to value),
+            value = mutableListOf(
+                "title" to value,
+                "title_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
@@ -43,7 +46,10 @@ class Note public constructor(pick:MutableMap<String, String>) {
     fun setContent(value:String){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("content" to value),
+            value = mutableListOf(
+                "content" to value,
+                "content_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
@@ -109,14 +115,20 @@ class Note public constructor(pick:MutableMap<String, String>) {
     fun setLock(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("lock_at" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss"))),
+            value = mutableListOf(
+                "lock_at" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss")),
+                "lock_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
     fun setUnlock(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("lock_at" to null),
+            value = mutableListOf(
+                "lock_at" to null,
+                "lock_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
@@ -130,14 +142,20 @@ class Note public constructor(pick:MutableMap<String, String>) {
     fun setComplete(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("complete_at" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss"))),
+            value = mutableListOf(
+                "complete_at" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss")),
+                "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
     fun setUncomplete(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("complete_at" to null),
+            value = mutableListOf(
+                "complete_at" to null,
+                "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
@@ -154,14 +172,20 @@ class Note public constructor(pick:MutableMap<String, String>) {
     fun serCollisionReset(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("status_flag" to "status_flag & ~ (1 << 30)"),
+            value = mutableListOf(
+                "status_flag" to "status_flag & ~ (1 << 30)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
     fun delete(){
         DataOperator().updateQuery(
             table = "note",
-            value = mutableListOf("status_flag" to "status_flag | (1 << 31)"),
+            value = mutableListOf(
+                "status_flag" to "status_flag | (1 << 31)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+            ),
             pick = pick
         )
     }
