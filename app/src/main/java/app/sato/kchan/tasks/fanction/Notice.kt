@@ -40,7 +40,7 @@ class Notice public constructor(pick:MutableMap<String, String>) {
                 table = "notice",
                 value = mutableListOf(
                     "show_at" to null,
-                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                    "show_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
                 ),
                 pick = pick
             )
@@ -49,7 +49,7 @@ class Notice public constructor(pick:MutableMap<String, String>) {
                 table = "notice",
                 value = mutableListOf(
                     "show_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value),
-                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                    "show_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
                 ),
                 pick = pick
             )
@@ -77,7 +77,7 @@ class Notice public constructor(pick:MutableMap<String, String>) {
                 table = "notice",
                 value = mutableListOf(
                     "hide_at" to null,
-                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                    "hide_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
                 ),
                 pick = pick
             )
@@ -86,7 +86,7 @@ class Notice public constructor(pick:MutableMap<String, String>) {
                 table = "notice",
                 value = mutableListOf(
                     "hide_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(value),
-                    "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                    "hide_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
                 ),
                 pick = pick
             )
