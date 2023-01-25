@@ -182,7 +182,7 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
         }
         max++
         val notePick:Map<String,String> = target_note.getPick()
-        val dt = LocalDateTime.now().toString()
+        val dt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
         DataOperator().insertQuery(
             table = "notice",
             value = mutableMapOf(

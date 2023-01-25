@@ -25,7 +25,10 @@ class Info public constructor() {
     fun setColor(no:Int, color:Int){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("color$no", color.toString()))
+            value = mutableListOf(
+                Pair("color$no", color.toString()),
+                Pair("color_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun isNormalTheme():Boolean{
@@ -61,13 +64,19 @@ class Info public constructor() {
     fun setNormalTheme(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 0)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag & ~(1 << 0)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun setDarkTheme(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 0)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag | (1 << 0)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun isDefaultNoticeShow():Boolean{
@@ -93,25 +102,37 @@ class Info public constructor() {
     fun setDefaultNoticeShowEnable(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 2)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag | (1 << 2)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun setDefaultNoticeShowDisable(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 2)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag & ~(1 << 2)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun setDefaultNoticeHideEnable(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 2)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag | (1 << 2)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun setDefaultNoticeHideDisable(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 2)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag & ~(1 << 2)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun getDefaultNoticeShow():LocalDateTime?{
@@ -127,7 +148,10 @@ class Info public constructor() {
     fun setDefaultNoticeShow(date:LocalDateTime){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", date.toString()))
+            value = mutableListOf(
+                Pair("init_show_at", date.toString()),
+                Pair("init_show_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun getDefaultNoticeHide(): LocalDateTime? {
@@ -143,7 +167,10 @@ class Info public constructor() {
     fun setDefaultNoticeHide(date:LocalDateTime){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", date.toString()))
+            value = mutableListOf(
+                Pair("init_hide_at", date.toString()),
+                Pair("init_hide_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun isAutoDeletion():Boolean{
@@ -152,20 +179,26 @@ class Info public constructor() {
             column = arrayOf("status_flag")
         )
         if(res.isResult())
-            return res.getInt() and 1.shl(1) == 1
+            return res.getInt() and 1.shl(1) > 0
         else
             throw Exception("Null Prohibited Value")
     }
     fun setAutoDeletionEnable(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 2)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag | (1 << 2)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun setAutoDeletionDisable(){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 2)"))
+            value = mutableListOf(
+                Pair("status_flag", "status_flag & ~(1 << 2)"),
+                Pair("status_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
     fun getAutoDeletion(): Int {
@@ -181,7 +214,10 @@ class Info public constructor() {
     fun setAutoDeletion(time:Int){
         DataOperator().updateQuery(
             table = "setting",
-            value = mutableListOf(Pair("auto_delete_period", time.toString()))
+            value = mutableListOf(
+                Pair("auto_delete_period", time.toString()),
+                Pair("auto_delete_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+            )
         )
     }
 }
