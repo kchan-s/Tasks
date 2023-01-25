@@ -152,10 +152,12 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
             if (note.isComplete()) {
                 viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
+                viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
                 viewHolder.list.setBackgroundColor(Color.LTGRAY)
             } else {
                 viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
                 viewHolder.checkBox.setBackgroundColor(Color.WHITE)
+                viewHolder.list.setBackgroundColor(Color.WHITE)
             }
         }
     }
