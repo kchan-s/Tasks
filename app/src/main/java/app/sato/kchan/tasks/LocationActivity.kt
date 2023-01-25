@@ -44,9 +44,10 @@ class LocationActivity: AppCompatActivity(){
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         lm.search("")
+        println(lm.getLocationNumber())
         // よく行く場所に設定してある場所をとってくる
         for (i in 1 .. lm.getLocationNumber()) {
-            lm.selectByTempId(i.toString())
+            lm.select(i-1)
             val location = lm.getLocation()!!
             if (location.isPermanent()) {
                 locationData.add(1, location.getName().toString())
@@ -123,9 +124,6 @@ class LocationActivity: AppCompatActivity(){
                         location.setLatitude(coordinate[0].latitude.toFloat())
                         location.setLongitude(coordinate[0].longitude.toFloat())
                         n.setNoticeLocation(location)
-                        println(location.getAddress())
-                        println(n.getTitle())
-                        println(n.getNoticeLocation())
                     }
                     finish()
                 }

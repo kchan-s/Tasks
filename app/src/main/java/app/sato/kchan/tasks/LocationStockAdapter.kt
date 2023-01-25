@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.fanction.LocationManager
 
 class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder>(){
+    val lm = LocationManager()
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val locationText = view.findViewById<TextView>(R.id.location_stock_text)
@@ -20,17 +21,15 @@ class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val lm = LocationManager()
-        lm.selectByTempId(position.toString())
+        lm.select(position)
         val location = lm.getLocation()!!
-        if (location.isPermanent()) viewHolder.locationText.text = location.getName()
+        viewHolder.locationText.text = location.getName()
+//        lm.next()
     }
 
     override fun getItemCount(): Int{
-        val lm = LocationManager()
-        lm.search("")
+        lm.search("", arrayOf("PermanentFlagUp"))
         return lm.getLocationNumber()
-//        return 1
     }
 
 }

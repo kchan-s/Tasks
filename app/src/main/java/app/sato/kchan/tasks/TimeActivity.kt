@@ -1,14 +1,19 @@
 package app.sato.kchan.tasks
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.TimeActivityBinding
+import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -32,9 +37,9 @@ class TimeActivity: AppCompatActivity(){
 
         note = intent.getStringExtra("note").toString()
         nm.receive(note)
-        val n = nm.getNote()!!
+        val receivedNote = nm.getNote()!!
 
-        val startTime = n.getNoticeShow()
+        val startTime = receivedNote.getNoticeShow()
         if (startTime != null) {
             binding.timeSettingSwitch.isChecked = true
             binding.timeStartText.isVisible = true
@@ -48,13 +53,14 @@ class TimeActivity: AppCompatActivity(){
             startDateTimeList.add(startTime.hour)
             startDateTimeList.add(startTime.minute)
 
-            binding.timeStartText.text = "通知開始時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(n.getNoticeShow())}"
+            binding.timeStartText.text = "通知開始時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(receivedNote.getNoticeShow())}"
         }
-        if (n.getNoticeHide() != null) {
-            binding.timeEndText.text = "通知終了時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(n.getNoticeHide())}"
+        if (receivedNote.getNoticeHide() != null) {
+            binding.timeEndText.text = "通知終了時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(receivedNote.getNoticeHide())}"
         }
 
-        // トグルの値読み込みが必要
+        binding.timeSettingSwitch.isChecked = receivedNote.getNoticeShow() != null
+
         binding.timeSettingSwitch.setOnCheckedChangeListener { _, isChecked ->
             // トグルがONの時の処理
             if (isChecked) {
@@ -69,7 +75,6 @@ class TimeActivity: AppCompatActivity(){
                 binding.timeStartSettingButton.isVisible = false
                 binding.timeEndText.isVisible = false
                 binding.timeEndSettingButton.isVisible = false
-                //del (time and date)settingが必要
             }
         }
 
@@ -81,7 +86,7 @@ class TimeActivity: AppCompatActivity(){
 
         // 通知終了時間設定ボタンタップ処理
         binding.timeEndSettingButton.setOnClickListener {
-            if (n.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
+            if (receivedNote.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
             else {
                 start = false
                 showDatePickerDialog()
@@ -98,6 +103,13 @@ class TimeActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
             when (item.itemId) {
                 android.R.id.home -> {
+                    val receivedNote = nm.getNote()!!
+                    if (!binding.timeSettingSwitch.isChecked) {
+                        receivedNote.setNoticeShow(null)
+                        receivedNote.setNoticeHide(null)
+                    } else {
+                        setAlarm(applicationContext, receivedNote)
+                    }
                     finish()
                 }
             }
@@ -113,7 +125,7 @@ class TimeActivity: AppCompatActivity(){
             calendar.set(Calendar.MONTH, month)
             calendar.set(Calendar.DAY_OF_MONTH, day)
 
-            // メモ：monthは0-11らしいので+1する必要がある
+            // メモ：monthは0-11なので+1する必要がある
             if (start) {
                 startDateTimeList.clear()
                 startDateTimeList.add(0, year)
@@ -219,6 +231,61 @@ class TimeActivity: AppCompatActivity(){
             }
         }
     }
+
+    fun setAlarm(context: Context, note: Note) {
+        val intent = Intent(context, AlarmNotification::class.java)
+
+        val start = note.getNoticeShow()!!
+        val startCalendar = Calendar.getInstance()
+        val stop = note.getNoticeHide()
+        val stopCalendar = Calendar.getInstance()
+
+        if ((start.isAfter(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) && stop != null) {
+            startCalendar.set(start.year, start.monthValue-1, start.dayOfMonth, start.hour, start.minute, 0)
+            stopCalendar.set(stop.year, stop.monthValue-1, stop.dayOfMonth, stop.hour, stop.minute, 0)
+            intent.putExtra("deleteTime", stopCalendar.timeInMillis - startCalendar.timeInMillis)
+        } else if (start.isAfter(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) {
+            startCalendar.set(start.year, start.monthValue-1, start.dayOfMonth, start.hour, start.minute, 0)
+        } else if (stop == null) {
+            return
+        } else if (start.isBefore(LocalDateTime.now()) && (stop.isAfter(LocalDateTime.now()) || stop.isEqual(LocalDateTime.now()))) {
+            val now = LocalDateTime.now()
+            startCalendar.set(now.year, now.monthValue-1, now.dayOfMonth, now.hour, now.minute, now.second)
+            stopCalendar.set(stop.year, stop.monthValue-1, stop.dayOfMonth, stop.hour, stop.minute, 0)
+            intent.putExtra("deleteTime", stopCalendar.timeInMillis - startCalendar.timeInMillis)
+        } else {
+            return
+        }
+
+        val uuid = UUID.randomUUID().hashCode()
+        intent.putExtra("id", uuid)
+        intent.putExtra("title", note.getTitle())
+        intent.putExtra("content", note.getContent())
+
+        val pending = PendingIntent.getBroadcast(
+            context, uuid, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // アラームをセットする
+        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+        am.setExact(
+            AlarmManager.RTC_WAKEUP,
+            startCalendar.getTimeInMillis(), pending
+        )
+    }
+
+//    fun cancelAlarm(context: Context) {
+//        val intent = Intent(context, AlarmNotification::class.java)
+//        val pending = PendingIntent.getBroadcast(
+//            context, uuid, intent,
+//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//        )
+//
+//        // アラームを解除する
+//        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+//        am.cancel(pending)
+//        }
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)

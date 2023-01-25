@@ -42,22 +42,23 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         val startTime = n.getNoticeShow()
         val stopTime = n.getNoticeHide()
         val location = n.getNoticeLocation()
-        val f = DateTimeFormatter.ofPattern("yyyy/mm/dd hh:mm")
+        val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
         if (startTime != null && stopTime != null) viewHolder.noticeText.text = "${startTime.format(f)} 〜 ${stopTime.format(f)}"
         else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
 
-        if (location != null) viewHolder.locationText.text = location.toString()
+        if (location != null) viewHolder.locationText.text = location.getName()
 
         if (n.isLock()) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImage.setImageResource(R.drawable.space)
 
         viewHolder.itemView.setOnClickListener { v ->
             val touchPosition = viewHolder.adapterPosition
-            nm.select(touchPosition)
+            val deleteNoteManager = nm.copy()
+            deleteNoteManager.select(position)
 
             v.setOnClickListener {
-                if (!nm.getNote()!!.isLock()) {
+                if (!deleteNoteManager.getNote()!!.isLock()) {
                     if (isSelectedItem(touchPosition)) {
                         viewHolder.memo.setBackgroundColor(Color.WHITE)
                         removeSelectedItem(touchPosition)

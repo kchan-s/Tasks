@@ -183,7 +183,7 @@ class Note public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "note",
             value = mutableListOf(
-                "status_flag" to "status_flag | (1 << 31)",
+                "status_flag" to "2147483648",
                 "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick

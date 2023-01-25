@@ -70,14 +70,22 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
         val lm = LocationManager()
         if (locationName != "" && locationAddress != "") {
+            val coordinate = doGeoCoding(address)
             val l = lm.create()
             l.setName(locationName)
             l.setAddress(locationAddress)
+            l.setLongitude(coordinate[0].latitude.toFloat())
+            l.setLongitude(coordinate[0].longitude.toFloat())
             l.setPermanent()
             finish()
         } else {
             Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun doGeoCoding(query: String): MutableList<Address> {
+        val gcoder = Geocoder(this, Locale.getDefault())
+        return gcoder.getFromLocationName(query, 1)
     }
 
     private fun loadTheme() {

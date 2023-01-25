@@ -122,7 +122,7 @@ class Location public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf(
-                "status_flag" to "status_flag | (1 << 0)",
+                "status_flag" to "1",
                 "priority_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick

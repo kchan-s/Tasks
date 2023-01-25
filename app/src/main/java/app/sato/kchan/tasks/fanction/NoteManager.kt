@@ -38,7 +38,7 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
                 ),
                 mutableMapOf(
                     "compare" to "equation",
-                    "equation" to "status_flag & ~(1 << 31) = 0"
+                    "equation" to "status_flag & (1 << 31) = 0"
                 )
             ),
             sort = arrayOf(mutableMapOf(

@@ -33,7 +33,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 "PermanentFlagUp" -> {
                     filter += mutableMapOf(
                         "compare" to "equation",
-                        "equation" to "status_flag & ~(1 << 0) = 1"
+                        "equation" to "status_flag & (1 << 0) = 1"
                     )
                 }
             }
@@ -49,7 +49,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 ),
                 mutableMapOf(
                     "compare" to "equation",
-                    "equation" to "status_flag AND ~(1 << 31) = 0"
+                    "equation" to "status_flag & (1 << 31) = 0"
                 )
             ),
             sort = arrayOf(mutableMapOf(
@@ -199,7 +199,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
         )
         return Location(mutableMapOf("place_id" to placeId.toString(), "service_id" to "0"))
     }
-    fun copy(): NoticeManager{
-        return NoticeManager(idList, tempList, nextTempId)
+    fun copy(): LocationManager{
+        return LocationManager(idList, tempList, nextTempId)
     }
 }

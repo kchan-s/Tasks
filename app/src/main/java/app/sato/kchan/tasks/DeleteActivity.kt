@@ -60,7 +60,7 @@ class DeleteActivity: AppCompatActivity() {
     private fun deleteButton_onClick() {
         val deletePosition = DeleteMemoListAdapter.selectedItemPositions.sortedDescending()
         DeleteMemoListAdapter.selectedItemPositions.clear()
-        for (i in deletePosition) nm.selectByTempId(deletePosition.toString())
+        for (i in deletePosition) nm.select(i)
         nm.deleteAll()
     }
 
