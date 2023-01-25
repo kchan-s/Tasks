@@ -160,6 +160,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 }
             }
         }
+        placeId++
         res = DataOperator().selectQuery(
             table = "place",
             column = "priority",
