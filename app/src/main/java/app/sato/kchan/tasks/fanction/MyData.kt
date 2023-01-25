@@ -147,10 +147,12 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         }
     }
     private fun stringEncoder(id: Int): String {
+        println("string OK")
         val my:String = value[id] ?: throw Exception("Unknown Data")
         return "\"" + my.replace("\"", "\\\"") + "\""
     }
     private fun arrayEncoder(id: Int): String {
+        println("array OK")
         val list = array[id] ?: throw Exception("Unknown Data")
         var buff:Array<String> = arrayOf()
         for(item in list){
@@ -159,6 +161,7 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return "[" + buff.joinToString(",") + "]"
     }
     private fun objectEncoder(id: Int): String {
+        println("object OK")
         var buff:Array<String> = arrayOf()
         for((key, valueId) in structure[id] ?: throw StructureException("")){
             buff += "\"" + key.replace("\"", "\\\"") + "\"" + ":" + valueEncoder(valueId)
