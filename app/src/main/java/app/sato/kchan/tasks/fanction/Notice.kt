@@ -121,7 +121,7 @@ class Notice public constructor(pick:MutableMap<String, String>) {
             value = mutableListOf(
                 "place_id" to locaId,
                 "place_service_id" to locaSerId,
-                "completion_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
+                "place_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -140,8 +140,8 @@ class Notice public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "notice",
             value = mutableListOf(
-                Pair("status_flag", "status_flag & ~ (1 << 30)"),
-                Pair("completion_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag & ~ (1 << 30)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
             pick = pick
         )
@@ -150,8 +150,8 @@ class Notice public constructor(pick:MutableMap<String, String>) {
         DataOperator().updateQuery(
             table = "notice",
             value = mutableListOf(
-                Pair("status_flag", "status_flag | (1 << 31)"),
-                Pair("completion_update_at", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()))
+                "status_flag" to "status_flag | (1 << 31)",
+                "status_update_at" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
             ),
         )
     }
