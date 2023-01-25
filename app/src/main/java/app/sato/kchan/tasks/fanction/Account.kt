@@ -30,7 +30,10 @@ class Account public constructor() {
             throw Exception("Null Prohibited Value")
     }
     fun setPassword(password:String):Boolean{
-        return true
+        var data = MyData()
+        data.setString("type","")
+        data.move("")
+        return false
     }
     fun changePassword(oldPassword:String, newPassword:String):Boolean{
         return true
@@ -50,5 +53,16 @@ class Account public constructor() {
     }
     fun login(accountId:String, password:String):Boolean{
         return true
+    }
+
+
+
+
+    fun hello(){
+        var data = MyData()
+        data.setString("type", "Load")
+        data.move("content")
+        println(data.outJSON())
+
     }
 }
