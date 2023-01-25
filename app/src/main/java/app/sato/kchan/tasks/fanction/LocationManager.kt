@@ -9,31 +9,49 @@ import java.time.LocalDateTime
  *
  * クラス名 :  LocationManager
  ********************/
-class LocationManager public constructor(il : MutableList<String> = mutableListOf(), tl : MutableMap<String,MutableMap<String, String>> = mutableMapOf()) {
+class LocationManager public constructor(il : MutableList<String> = mutableListOf(), tl : MutableMap<String,MutableMap<String, String>> = mutableMapOf(), nti:Int = 0) {
     //<プロパティ>
     private var idList : MutableList<String>
     private var point : Int = 0
     private var tempList : MutableMap<String, MutableMap<String, String>>
-    private var nextTempId : Int = 0
+    private var nextTempId : Int
 
     //<初期化処理>
     init {
         idList = il
         tempList = tl
+        nextTempId = nti
     }
 
     //<メソッド>
-    fun search(word : String){
+    fun search(word : String, option:Array<String> = arrayOf()){
         idList.clear()
         tempList = mutableMapOf()
+        var filter:Array<Map<String,String?>> = arrayOf()
+        for(ope in option){
+            when(ope) {
+                "PermanentFlagUp" -> {
+                    filter += mutableMapOf(
+                        "compare" to "equation",
+                        "equation" to "status_flag & ~(1 << 0) = 1"
+                    )
+                }
+            }
+        }
         val res = DataOperator().selectQuery(
             table = "place",
             column = arrayOf("place_id", "service_id"),
-            filter = arrayOf(mutableMapOf(
-                "column" to "name",
-                "value" to "%" + word + "%",
-                "compare" to "Like"
-            )),
+            filter = filter + arrayOf(
+                mutableMapOf(
+                    "column" to "name",
+                    "value" to "%" + word + "%",
+                    "compare" to "Like"
+                ),
+                mutableMapOf(
+                    "compare" to "equation",
+                    "equation" to "status_flag AND ~(1 << 31) = 0"
+                )
+            ),
             sort = arrayOf(mutableMapOf(
                 "column" to "priority",
                 "type" to "DESC"
@@ -83,7 +101,6 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
     fun getTempId():String{
         return idList[point]
     }
-
     fun delete(){
         getLocation()?.delete()
     }
@@ -97,7 +114,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
     fun send():String{
         var buff = ""
         var item = arrayOf<String>()
-        var c = 0;
+        var c = 0
         for(id in idList){
             for((column, value) in tempList[id]!!){
                 if(c > 0){
@@ -173,5 +190,8 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
             )
         )
         return Location(mutableMapOf("place_id" to placeId.toString(), "service_id" to "0"))
+    }
+    fun copy(): NoticeManager{
+        return NoticeManager(idList, tempList, nextTempId)
     }
 }

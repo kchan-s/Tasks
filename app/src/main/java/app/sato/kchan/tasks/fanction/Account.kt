@@ -10,10 +10,24 @@ class Account public constructor() {
 
     //<メソッド>
     fun getId():String{
-        return "A1B2C3"
+        val res = DataOperator().selectQuery(
+            table = "account",
+            column = arrayOf("account_id")
+        )
+        return if(res.isResult() and !res.isNull())
+            res.getString()
+        else
+            ""
     }
     fun isPassword():Boolean{
-        return false
+        val res = DataOperator().selectQuery(
+            table = "account",
+            column = arrayOf("password_flag")
+        )
+        return if(res.isResult())
+            res.getBoolean()
+        else
+            throw Exception("Null Prohibited Value")
     }
     fun setPassword(password:String):Boolean{
         return true
@@ -25,10 +39,14 @@ class Account public constructor() {
         return true
     }
     fun getQuestion(no:Int):String{
-        return "仮の質問" + no.toString()
-    }
-    fun isLogin():Boolean{
-        return false
+        val res = DataOperator().selectQuery(
+            table = "account",
+            column = arrayOf("secret_question${no}_item")
+        )
+        return if(res.isResult() and !res.isNull())
+            res.getString()
+        else
+            ""
     }
     fun login(accountId:String, password:String):Boolean{
         return true

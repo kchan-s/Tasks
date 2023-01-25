@@ -24,7 +24,7 @@ class Location public constructor(pick:MutableMap<String, String>) {
             table = "place",
             column = "name",
             pick = pick
-        ).getString()
+        ).getStringNulls()
     }
     fun setName(value:String){
         DataOperator().updateQuery(
@@ -38,12 +38,40 @@ class Location public constructor(pick:MutableMap<String, String>) {
             table = "place",
             column = "address",
             pick = pick
-        ).getString()
+        ).getStringNulls()
     }
     fun setAddress(value:String){
         DataOperator().updateQuery(
             table = "place",
             value = mutableListOf("address" to value),
+            pick = pick
+        )
+    }
+    fun getLongitude():Float?{
+        return DataOperator().selectQuery(
+            table = "place",
+            column = "longitude",
+            pick = pick
+        ).getFloatNulls()
+    }
+    fun getLatitude():Float?{
+        return DataOperator().selectQuery(
+            table = "place",
+            column = "latitude",
+            pick = pick
+        ).getFloatNulls()
+    }
+    fun setLongitude(value:Float?){
+        DataOperator().updateQuery(
+            table = "place",
+            value = mutableListOf("longitude" to value.toString()),
+            pick = pick
+        )
+    }
+    fun setLatitude(value:Float?){
+        DataOperator().updateQuery(
+            table = "place",
+            value = mutableListOf("latitude" to value.toString()),
             pick = pick
         )
     }
@@ -71,7 +99,6 @@ class Location public constructor(pick:MutableMap<String, String>) {
             column = "status_flag",
             pick = pick
         ).getInt()
-        if (status == null) return false
         return status and 1.shl(0) > 0
     }
     fun setPermanent(){
@@ -94,7 +121,6 @@ class Location public constructor(pick:MutableMap<String, String>) {
             column = "status_flag",
             pick = pick
         ).getInt()
-        if (status == null) return false
         return status and 1.shl(30) > 0
     }
     fun setCollisionReset(){

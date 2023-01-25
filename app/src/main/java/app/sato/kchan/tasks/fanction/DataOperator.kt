@@ -2,6 +2,7 @@ package app.sato.kchan.tasks.fanction
 
 import android.content.ContentValues
 import android.database.Cursor
+import android.database.Cursor.FIELD_TYPE_NULL
 import app.sato.kchan.tasks.HomeActivity.Companion.context
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -14,27 +15,8 @@ class DataOperator(){
     val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase
     //<初期化処理>
-    init {
-        nullBAN()
-    }
+    init {}
     //<メソッド>
-    fun nullBAN() {
-//        database.delete("service", "service_id = ?", arrayOf(null))
-//        database.delete("note", "note_id = ? or service_id = ?", arrayOf(null, null))
-//        database.delete("place", "place_id = ? or service_id = ?", arrayOf(null, null))
-//        database.delete("notice", "notice_id = ? or service_id = ?", arrayOf(null, null))
-//        val values = ContentValues()
-//        values.put("place_id", 5)
-//        values.put("service_id", 7)
-//        values.put("name", "qwertyuiop")
-//        database.insert("place", null, values)
-    }
-//    fun getData(path:String):String{
-//
-//    }
-//    fun setData(path:String, value:String):Unit{
-//
-//    }
     fun insertQuery(table:String, value:Map<String,String?>) {
         val values = ContentValues()
         for ((k, v) in value) {
@@ -48,7 +30,6 @@ class DataOperator(){
     fun selectQuery(table:String, column:Array<String>, pick:Map<String,String?> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf(), sort:Array<Map<String,String?>> = arrayOf()):Res {
         var sql = ""
         sql += "SELECT "
-        //var sql = "SELECT "
         var c = 0
         for(col in column){
             if(c > 0)
@@ -73,27 +54,28 @@ class DataOperator(){
                 sql += " AND "
             else
                 sql += " WHERE "
-            sql += fil["column"]
             when(fil["compare"]) {
                 "Big" -> {
-                    sql += " > "
-                    sql += "?"
+                    sql += fil["column"] + " > ?"
+                    values += fil["value"].toString()
                 }
                 "Small" -> {
-                    sql += " < "
-                    sql += "?"
+                    sql += fil["column"] + " < ?"
+                    values += fil["value"].toString()
                 }
                 "Equal" -> {
-                    sql += " = "
-                    sql += "?"
+                    sql += fil["column"] + " = ?"
+                    values += fil["value"].toString()
                 }
                 "Like" -> {
-                    sql += " LIKE "
-                    sql += "?"
+                    sql += fil["column"] + " LIKE ?"
+                    values += fil["value"].toString()
+                }
+                "equation" -> {
+                    sql += fil["equation"]
                 }
                 else -> throw Exception("そんな比較演算子使えない!! " + fil["compare"])
             }
-            values += fil["value"].toString()
             c++
         }
         val cursor = if(c == 0){database.rawQuery(sql, null)}else{database.rawQuery(sql, values)}
@@ -105,7 +87,6 @@ class DataOperator(){
 
         private val resultFlag: Boolean
         init {
-//            cursor.moveToFirst()
             resultFlag = cursor.moveToFirst()
             this.columns = columns
             this.cursor = cursor
@@ -119,15 +100,13 @@ class DataOperator(){
         }
         fun setResultTop():Boolean{
             return cursor.moveToFirst()
-//            return cursor.moveToNext()
-//            return cursor.count > 0
         }
         fun next():Boolean{
             cursor.moveToNext()
             return !cursor.isAfterLast
         }
         fun isNull(no:Int = 0):Boolean{
-            return cursor.getString(no) == null
+            return cursor.getType(no) == FIELD_TYPE_NULL
         }
         fun isNull(column:String):Boolean{
             val no: Int = getNumber(column)
@@ -141,6 +120,7 @@ class DataOperator(){
             return getString(no)
         }
         fun getStringNulls(no:Int = 0):String?{
+            if(cursor.getType(no) == FIELD_TYPE_NULL) return null
             return cursor.getString(no)
         }
         fun getStringNulls(column:String):String?{
@@ -153,6 +133,21 @@ class DataOperator(){
         fun getInt(column:String):Int{
             val no: Int = getNumber(column)
             return getInt(no)
+        }
+        fun getFloat(no:Int = 0):Float{
+            return cursor.getFloat(no)
+        }
+        fun getFloat(column:String):Float{
+            val no: Int = getNumber(column)
+            return getFloat(no)
+        }
+        fun getFloatNulls(no:Int = 0):Float?{
+            if(cursor.getType(no) == FIELD_TYPE_NULL) return null
+            return cursor.getFloat(no)
+        }
+        fun getFloatNulls(column:String):Float?{
+            val no: Int = getNumber(column)
+            return getFloat(no)
         }
         fun getBoolean(no:Int = 0):Boolean{
             return cursor.getInt(no) != 0
@@ -169,12 +164,8 @@ class DataOperator(){
             return getBlob(no)
         }
         fun getDateTime(no:Int = 0): LocalDateTime? {
-            val dt = cursor.getString(no)
-            if(dt == null){
-                return null
-            }else{
-                return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-            }
+            val dt = cursor.getString(no) ?: return null
+            return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         }
         fun getDateTime(column:String): LocalDateTime? {
             val no: Int = getNumber(column)
@@ -236,21 +227,6 @@ class DataOperator(){
         var sql = ""
         var c = 0
 
-        for (fil in filter) {
-            if(c > 0)
-                sql += " AND "
-            sql += fil["column"]
-            if(fil["compare"] == "Big")
-                sql += " > "
-            if(fil["compare"] == "Small")
-                sql += " < "
-            if(fil["compare"] == "Equal")
-                sql += " = "
-            sql += "?"
-            vl += fil["value"].toString()
-            c++
-        }
-
         for ((k, v) in pick) {
             if(c > 0)
                 sql += " AND "
@@ -259,7 +235,34 @@ class DataOperator(){
             c++
         }
 
-        return database.update(table, values, sql, vl)
+        for (fil in filter) {
+            if(c > 0)
+                sql += " AND "
+            when(fil["compare"]) {
+                "Big" -> {
+                    sql += fil["column"] + " > ?"
+                    vl += fil["value"].toString()
+                }
+                "Small" -> {
+                    sql += fil["column"] + " < ?"
+                    vl += fil["value"].toString()
+                }
+                "Equal" -> {
+                    sql += fil["column"] + " = ?"
+                    vl += fil["value"].toString()
+                }
+                "Like" -> {
+                    sql += fil["column"] + " LIKE ?"
+                    vl += fil["value"].toString()
+                }
+                "Equation" -> {
+                    sql += fil["equation"]
+                }
+                else -> throw Exception("そんな比較演算子使えない!! " + fil["compare"])
+            }
+            c++
+        }
+        return if(c == 0){ database.update(table, values, sql, null) }else{ database.update(table, values, sql, vl) }
     }
     fun sync() {
 

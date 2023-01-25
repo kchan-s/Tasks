@@ -81,12 +81,11 @@ class TimeActivity: AppCompatActivity(){
 
         // 通知終了時間設定ボタンタップ処理
         binding.timeEndSettingButton.setOnClickListener {
-//            if (n.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
-//            else {
+            if (n.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
+            else {
                 start = false
                 showDatePickerDialog()
-//            }
-            //終了時間に設定？
+            }
         }
 
         val toolbar = binding.timeToolbar

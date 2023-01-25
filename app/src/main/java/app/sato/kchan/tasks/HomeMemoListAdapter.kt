@@ -21,7 +21,6 @@ import java.util.*
 
 class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
 
-    private val requestCode = 1
     val nm = NoteManager()
 
     companion object {
@@ -61,8 +60,8 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                 var adapterPosition = viewHolder.adapterPosition
 
                 // リスト内の完了・未完了のチェックボックスタップ処理
-                viewHolder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    completeButton_onClick(viewHolder, position, isChecked)
+                viewHolder.checkBox.setOnClickListener {
+                    completeButton_onClick(viewHolder, position)
                 }
 
                 // リスト内のロック部分のタップ処理
@@ -77,28 +76,33 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     //完了・未完了切替モジュール
-    private fun completeButton_onClick(viewHolder: ViewHolder, position: Int, isChecked: Boolean) {
-        val completeNoteManager = NoteManager()
-        completeNoteManager.receive(nm.send())
+    private fun completeButton_onClick(viewHolder: ViewHolder, position: Int) {
+        println("a")
+        val completeNoteManager = nm.copy()
+        completeNoteManager.select(position)
         val note = completeNoteManager.getNote()!!
-        if (isChecked) {
-            note.setComplete()
-            viewHolder.list.setBackgroundColor(Color.LTGRAY)
-        } else {
+        if (note.isComplete()) {
             note.setUncomplete()
             viewHolder.list.setBackgroundColor(Color.WHITE)
+        } else {
+            note.setComplete()
+            viewHolder.list.setBackgroundColor(Color.LTGRAY)
         }
     }
 
     //ロック・未ロック切替モジュール
     private fun lockButton_onClick(viewHolder: ViewHolder, position: Int) {
-        var lockNoteManager = NoteManager()
-        lockNoteManager.receive(nm.send())
+        val lockNoteManager = nm.copy()
+        lockNoteManager.select(position)
         val note = lockNoteManager.getNote()!!
         if (note.isLock()) {
+            println(note.getTitle())
+            println(note.isLock())
             note.setUnlock()
             viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
         } else {
+            println(note.getTitle())
+            println(note.isLock())
             note.setLock()
             viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
         }
@@ -130,10 +134,10 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
             if (startTime != null && stopTime != null) {
                 viewHolder.noticeText.text = "${startTime.format(f)} 〜 ${stopTime.format(f)}"
-
-            }
-            else if (startTime != null) {
+                setAlarm(viewHolder.context, note)
+            } else if (startTime != null) {
                 viewHolder.noticeText.text = startTime.format(f)
+                setAlarm(viewHolder.context, note)
             }
             else viewHolder.noticeText.text = ""
 
@@ -160,58 +164,62 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         }
     }
 
-    fun setAlarm(context: Context, position: Int, note: Note) {
+    fun setAlarm(context: Context, note: Note) {
         val intent = Intent(context, AlarmNotification::class.java)
 
         val start = note.getNoticeShow()!!
         val startCalendar = Calendar.getInstance()
-        if (start.isBefore(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) {
-            startCalendar.set(
-                start.year,
-                start.monthValue,
-                start.dayOfMonth,
-                start.hour,
-                start.minute,
-                0
-            )
-        }
+        val stop = note.getNoticeHide()
+        val stopCalendar = Calendar.getInstance()
 
-        if (note.getNoticeHide() != null) {
-            val stop = note.getNoticeHide()!!
-            val stopCalendar = Calendar.getInstance()
-            stopCalendar.set(stop.year, stop.monthValue, stop.dayOfMonth, stop.hour, stop.minute, 0)
+        if ((start.isAfter(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) && stop != null) {
+            startCalendar.set(start.year, start.monthValue-1, start.dayOfMonth, start.hour, start.minute, 0)
+            stopCalendar.set(stop.year, stop.monthValue-1, stop.dayOfMonth, stop.hour, stop.minute, 0)
             intent.putExtra("deleteTime", stopCalendar.timeInMillis - startCalendar.timeInMillis)
+        } else if (start.isAfter(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) {
+            startCalendar.set(start.year, start.monthValue-1, start.dayOfMonth, start.hour, start.minute, 0)
+        } else if (stop == null) {
+            return
+        } else if (start.isBefore(LocalDateTime.now()) && (stop.isAfter(LocalDateTime.now()) || stop.isEqual(LocalDateTime.now()))) {
+            val now = LocalDateTime.now()
+            startCalendar.set(now.year, now.monthValue-1, now.dayOfMonth, now.hour, now.minute, now.second)
+            stopCalendar.set(stop.year, stop.monthValue-1, stop.dayOfMonth, stop.hour, stop.minute, 0)
+            intent.putExtra("deleteTime", stopCalendar.timeInMillis - startCalendar.timeInMillis)
+        } else {
+            return
         }
 
-        intent.putExtra("RequestCode", requestCode)
-        intent.putExtra("position", position)
+        val uuid = UUID.randomUUID().hashCode()
+        intent.putExtra("id", uuid)
+        intent.putExtra("title", note.getTitle())
+        intent.putExtra("content", note.getContent())
 
         val pending = PendingIntent.getBroadcast(
-            context, requestCode, intent,
+            context, uuid, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         // アラームをセットする
+        println(startCalendar)
         val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
         am.setExact(
             AlarmManager.RTC_WAKEUP,
             startCalendar.getTimeInMillis(), pending
         )
-
-        Toast.makeText(context, "set", Toast.LENGTH_LONG).show()
+        println(uuid)
     }
 
-    fun cancelAlarm(context: Context) {
-        val intent = Intent(context, AlarmNotification::class.java)
-        val pending = PendingIntent.getBroadcast(
-            context, requestCode, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // アラームを解除する
-        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
-        am.cancel(pending)
-        }
+//    fun cancelAlarm(context: Context) {
+//        val intent = Intent(context, AlarmNotification::class.java)
+//        val pending = PendingIntent.getBroadcast(
+//            context, uuid, intent,
+//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//        )
+//
+//        // アラームを解除する
+//        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+//        am.cancel(pending)
+//        }
 
     override fun getItemCount(): Int {
         if (!search) {

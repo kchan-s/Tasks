@@ -8,17 +8,18 @@ import java.time.LocalDateTime
  *
  * クラス名 :  NoticeManager
  ********************/
-class NoticeManager public constructor(il : MutableList<String> = mutableListOf(), tl : MutableMap<String, MutableMap<String, String>> = mutableMapOf()) {
+class NoticeManager public constructor(il : MutableList<String> = mutableListOf(), tl : MutableMap<String, MutableMap<String, String>> = mutableMapOf(), nti:Int = 0) {
     //<プロパティ>
     private var idList : MutableList<String>
     private var point : Int = 0
-    private var tempList : MutableMap<String, MutableMap<String, String> >
-    private var nextTempId : Int = 0
+    private var tempList : MutableMap<String, MutableMap<String, String>>
+    private var nextTempId : Int
 
     //<初期化処理>
     init {
         idList = il
         tempList = tl
+        nextTempId = nti
     }
 
     //<メソッド>
@@ -39,6 +40,10 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
                     "column" to "target_note_service_id",
                     "value" to notePick["service_id"],
                     "compare" to "Equal"
+                ),
+                mutableMapOf(
+                    "compare" to "equation",
+                    "equation" to "status_flag & ~(1 << 31) = 0"
                 )
             ),
             sort = arrayOf(mutableMapOf(
@@ -61,11 +66,17 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
         val res = DataOperator().selectQuery(
             table = "notice",
             column = arrayOf("notice_id", "service_id"),
-            filter = arrayOf(mutableMapOf(
-                "column" to "target_service_id",
-                "value" to serviceId.toString(),
-                "compare" to "Equal"
-            )),
+            filter = arrayOf(
+                mutableMapOf(
+                    "column" to "target_service_id",
+                    "value" to serviceId.toString(),
+                    "compare" to "Equal"
+                ),
+                mutableMapOf(
+                    "compare" to "equation",
+                    "equation" to "status_flag & ~(1 << 31) = 0"
+                )
+            ),
             sort = arrayOf(mutableMapOf(
                 "column" to "create_at",
                 "type" to "ASC"
@@ -73,7 +84,7 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
         )
         if(res.isResult()){
             do{
-                val key = "location_" + nextTempId.toString()
+                val key = "notice_" + nextTempId.toString()
                 tempList[key] = res.getStringMap().toMutableMap()
                 idList.add(key)
                 nextTempId++
@@ -128,7 +139,7 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
     fun send():String{
         var buff = ""
         var item = arrayOf<String>()
-        var c = 0;
+        var c = 0
         for(id in idList){
             for((column, value) in tempList[id]!!){
                 if(c > 0){
@@ -189,5 +200,8 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
             )
         )
         return Notice(mutableMapOf("notice_id" to max.toString(), "service_id" to "0"))
+    }
+    fun copy(): NoticeManager{
+        return NoticeManager(idList, tempList, nextTempId)
     }
 }

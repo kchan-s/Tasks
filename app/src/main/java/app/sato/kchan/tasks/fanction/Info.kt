@@ -13,60 +13,175 @@ class Info public constructor() {
 
     //<メソッド>
     fun getColor(no:Int):Int{
-        return 0x808080
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("color$no")
+        )
+        if(res.isResult())
+            return res.getInt()
+        else
+            throw Exception("Null Prohibited Value")
     }
-    fun setColor(no:Int, color:Int):Unit{
-
+    fun setColor(no:Int, color:Int){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("color$no", color.toString()))
+        )
     }
     fun isNormalTheme():Boolean{
-        return true
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("status_flag")
+        )
+        if(res.isResult())
+            return res.getInt() and 1.shl(0) == 0
+        else
+            throw Exception("Null Prohibited Value")
     }
     fun isDarkTheme():Boolean{
-        return false
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("status_flag")
+        )
+        if(res.isResult())
+            return res.getInt() and 1.shl(0) == 1
+        else
+            throw Exception("Null Prohibited Value")
     }
     fun getTheme():Int{
-        return 0
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("status_flag")
+        )
+        if(res.isResult())
+            return if( res.getInt() and 1.shl(0)==0 ) 0 else 1
+        else
+            throw Exception("Null Prohibited Value")
     }
-    fun setNormalTheme():Unit{
-        return
+    fun setNormalTheme(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 0)"))
+        )
     }
-    fun setDarkTheme():Unit{
-        return
+    fun setDarkTheme(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 0)"))
+        )
     }
-    fun isDefaultNotice():Boolean{
-        return false
+    fun isDefaultNoticeShow():Boolean{
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("status_flag")
+        )
+        if(res.isResult())
+            return res.getInt() and 1.shl(2) == 1
+        else
+            throw Exception("Null Prohibited Value")
     }
-    fun setDefaultNoticeEnable():Unit{
-        return
+    fun isDefaultNoticeHide():Boolean{
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("status_flag")
+        )
+        if(res.isResult())
+            return res.getInt() and 1.shl(3) == 1
+        else
+            throw Exception("Null Prohibited Value")
     }
-    fun setDefaultNoticeDisable():Unit{
-        return
+    fun setDefaultNoticeShowEnable(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 2)"))
+        )
     }
-    fun getDefaultNoticeShow():LocalDateTime{
-        return LocalDateTime.now()
+    fun setDefaultNoticeShowDisable(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 2)"))
+        )
     }
-    fun setDefaultNoticeShow(date:LocalDateTime):Unit{
-        return
+    fun setDefaultNoticeHideEnable(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 2)"))
+        )
     }
-    fun getDefaultNoticeHide(): LocalDateTime {
-        return LocalDateTime.now()
+    fun setDefaultNoticeHideDisable(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 2)"))
+        )
     }
-    fun setDefaultNoticeHide(date:LocalDateTime):Unit{
-        return
+    fun getDefaultNoticeShow():LocalDateTime?{
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("init_show_at")
+        )
+        return if(res.isResult())
+            res.getDateTime()
+        else
+            null
+    }
+    fun setDefaultNoticeShow(date:LocalDateTime){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", date.toString()))
+        )
+    }
+    fun getDefaultNoticeHide(): LocalDateTime? {
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("init_hide_at")
+        )
+        return if(res.isResult())
+            res.getDateTime()
+        else
+            null
+    }
+    fun setDefaultNoticeHide(date:LocalDateTime){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", date.toString()))
+        )
     }
     fun isAutoDeletion():Boolean{
-        return false
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("status_flag")
+        )
+        if(res.isResult())
+            return res.getInt() and 1.shl(1) == 1
+        else
+            throw Exception("Null Prohibited Value")
     }
-    fun setAutoDeletionEnable():Unit{
-        return
+    fun setAutoDeletionEnable(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag | (1 << 2)"))
+        )
     }
-    fun setAutoDeletionDisable():Unit{
-        return
+    fun setAutoDeletionDisable(){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("status_flag", "status_flag & ~(1 << 2)"))
+        )
     }
     fun getAutoDeletion(): Int {
-        return 720
+        val res = DataOperator().selectQuery(
+            table = "setting",
+            column = arrayOf("auto_delete_period")
+        )
+        return if(res.isResult())
+            res.getInt()
+        else
+            throw Exception("Null Prohibited Value")
     }
-    fun setAutoDeletion(time:Int):Unit{
-        return
+    fun setAutoDeletion(time:Int){
+        DataOperator().updateQuery(
+            table = "setting",
+            value = mutableListOf(Pair("auto_delete_period", time.toString()))
+        )
     }
 }

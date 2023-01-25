@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import app.sato.kchan.tasks.fanction.NoteManager
@@ -17,25 +18,22 @@ import java.util.*
 class AlarmNotification : BroadcastReceiver() {
     // データを受信した
     override fun onReceive(context: Context, intent: Intent) {
-        val requestCode = intent.getIntExtra("RequestCode", 0)
+        println("receive!!!")
+        val id = intent.getIntExtra("id", 0)
         val deleteTime = intent.getLongExtra("deleteTime", 0)
-        val position = intent.getIntExtra("position", -1)
-        val nm = NoteManager()
-        nm.selectByTempId(position.toString())
-        val n = nm.getNote()!!
 
         val mainIntent = Intent(context, HomeActivity::class.java).apply(){
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            context, requestCode, mainIntent,
+            context, id, mainIntent,
             0
         )
         val channelId = "TaSks"
         // app name
-        val title = n.getTitle()
-        val message = n.getContent()
+        val title = intent.getStringExtra("title")
+        val message = intent.getStringExtra("content")
 
         // Notification　Channel 設定
         val channel = NotificationChannel(
@@ -74,7 +72,7 @@ class AlarmNotification : BroadcastReceiver() {
         val notificationManagerCompat = NotificationManagerCompat.from(context)
 
         // 通知
-        val uuid = UUID.randomUUID().hashCode()
-        notificationManagerCompat.notify(uuid, notification)
+
+        notificationManagerCompat.notify(id, notification)
     }
 }
