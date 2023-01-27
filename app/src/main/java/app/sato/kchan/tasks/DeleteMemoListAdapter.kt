@@ -17,7 +17,7 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     val nm = NoteManager()
     
     companion object {
-        val selectedItemPositions = mutableSetOf<Int>()
+        val selectedItem = mutableListOf<String>()
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -50,21 +50,21 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         if (location != null) viewHolder.locationText.text = location.getName()
 
         if (n.isLock()) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
-        else viewHolder.lockImage.setImageResource(R.drawable.space)
+        else viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_open_24)
 
         viewHolder.itemView.setOnClickListener { v ->
             val touchPosition = viewHolder.adapterPosition
             val deleteNoteManager = nm.copy()
-            deleteNoteManager.select(position)
+            deleteNoteManager.select(touchPosition)
 
             v.setOnClickListener {
                 if (!deleteNoteManager.getNote()!!.isLock()) {
-                    if (isSelectedItem(touchPosition)) {
+                    if (isSelectedItem(deleteNoteManager.send())) {
                         viewHolder.memo.setBackgroundColor(Color.WHITE)
-                        removeSelectedItem(touchPosition)
+                        removeSelectedItem(deleteNoteManager.send())
                     } else {
                         viewHolder.memo.setBackgroundColor(Color.LTGRAY)
-                        addSelectedItem(touchPosition)
+                        addSelectedItem(deleteNoteManager.send())
                     }
                 }
             }
@@ -77,13 +77,13 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     //指定されたPositionのアイテムが選択済みか確認する
-    private fun isSelectedItem(position: Int): Boolean = (selectedItemPositions.contains(position))
+    private fun isSelectedItem(selected: String): Boolean = (selectedItem.contains(selected))
 
-    private fun addSelectedItem(position: Int) {
-        selectedItemPositions.add(position)
+    private fun addSelectedItem(selected: String) {
+        selectedItem.add(selected)
     }
 
-    private fun removeSelectedItem(position: Int) {
-        selectedItemPositions.remove(position)
+    private fun removeSelectedItem(selected: String) {
+        selectedItem.remove(selected)
     }
 }

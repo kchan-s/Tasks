@@ -43,7 +43,8 @@
             android:label="メモ削除画面" />
         <activity
             android:name=".EditActivity"
-            android:label="編集画面" />
+            android:label="編集画面"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".TimeActivity"
             android:label="時間通知設定画面" />

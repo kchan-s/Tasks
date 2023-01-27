@@ -70,8 +70,10 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
         val lm = LocationManager()
         if (locationName != "" && locationAddress != "") {
-            val coordinate = doGeoCoding(address)
             val l = lm.create()
+            val coordinate: MutableList<Address>
+            if (address != "") coordinate = doGeoCoding(address)
+            else coordinate = doGeoCoding(binding.locationStockRegisterAddressEdit.text.toString())
             l.setName(locationName)
             l.setAddress(locationAddress)
             l.setLongitude(coordinate[0].latitude.toFloat())

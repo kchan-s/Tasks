@@ -24,6 +24,8 @@ class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
 
     val nm = NoteManager()
+    var startDateTime: LocalDateTime? = null
+    var endDateTime: LocalDateTime? = null
     var start = true // falseならend
     var startDateTimeList = mutableListOf<Int>()
     var endDateList = mutableListOf<Int>()
@@ -104,7 +106,7 @@ class TimeActivity: AppCompatActivity(){
             when (item.itemId) {
                 android.R.id.home -> {
                     val receivedNote = nm.getNote()!!
-                    if (!binding.timeSettingSwitch.isChecked) {
+                    if (startDateTime == null && endDateTime == null) {
                         receivedNote.setNoticeShow(null)
                         receivedNote.setNoticeHide(null)
                     } else {
@@ -132,8 +134,7 @@ class TimeActivity: AppCompatActivity(){
                 startDateTimeList.add(1, month+1)
                 startDateTimeList.add(2, day)
                 showTimePickerDialog()
-            }
-            else {
+            } else {
                 // 終了年月日保存処理
                 val startDate = LocalDate.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2])
                 val settingDate = LocalDate.of(year, month+1, day)
@@ -184,19 +185,19 @@ class TimeActivity: AppCompatActivity(){
             if (start) {
                 startDateTimeList.add(3, hour)
                 startDateTimeList.add(4, minute)
-                val startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
-                binding.timeStartText.text = "通知開始時間 : ${startDateTime.format(showFormat)}"
+                startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
+                binding.timeStartText.text = "通知開始時間 : ${startDateTime!!.format(showFormat)}"
                 n.setNoticeShow(startDateTime)
             }
             else {
-                val startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
-                val settingTime = LocalDateTime.of(endDateList[0], endDateList[1], endDateList[2], hour, minute, 0)
-                if (settingTime.isBefore(startDateTime) || settingTime.isEqual(startDateTime)) {
+                startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
+                endDateTime = LocalDateTime.of(endDateList[0], endDateList[1], endDateList[2], hour, minute, 0)
+                if (endDateTime!!.isBefore(startDateTime) || endDateTime!!.isEqual(startDateTime)) {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 } else {
-                    binding.timeEndText.text = "通知終了時間 : ${settingTime.format(showFormat)}"
+                    binding.timeEndText.text = "通知終了時間 : ${endDateTime!!.format(showFormat)}"
 
-                    n.setNoticeHide(settingTime)
+                    n.setNoticeHide(endDateTime)
                 }
             }
         }

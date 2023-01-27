@@ -22,8 +22,8 @@ import java.util.*
 class LocationActivity: AppCompatActivity(){
     private lateinit var binding: LocationActivityBinding
 //    var position = -1 // 初期値
-    val locationData = mutableListOf("未選択", "Mapから選択")
-    val idData = mutableListOf<String>()
+    val locationNameData = mutableListOf("未選択", "Mapから選択")
+    val locationData = mutableListOf<Location>()
     val lm = LocationManager()
     val nm = NoteManager()
     var address = ""
@@ -44,14 +44,14 @@ class LocationActivity: AppCompatActivity(){
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         lm.search("")
-        println(lm.getLocationNumber())
         // よく行く場所に設定してある場所をとってくる
-        for (i in 1 .. lm.getLocationNumber()) {
-            lm.select(i-1)
-            val location = lm.getLocation()!!
+        for (i in 0 until lm.getLocationNumber()) {
+            val copyLocationManager = lm.copy()
+            copyLocationManager.select(i)
+            val location = copyLocationManager.getLocation()!!
             if (location.isPermanent()) {
-                locationData.add(1, location.getName().toString())
-                idData.add(i.toString())
+                locationNameData.add(locationNameData.lastIndex, location.getName().toString())
+                locationData.add(location)
             }
         }
 
@@ -61,17 +61,21 @@ class LocationActivity: AppCompatActivity(){
         val n = nm.getNote()!!
 
         // ドロップダウンリスト関連処理
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, locationData)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, locationNameData)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.locationSettingSpinner.adapter = adapter
         binding.locationSettingSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (pos == locationData.lastIndex) {
+                if (pos == locationNameData.lastIndex) {
                     binding.locationMapButton.isVisible = true
                 } else if (pos != 0) {
-                    val lm = LocationManager()
-                    lm.selectByTempId(idData[pos-1])
-                    n.setNoticeLocation(lm.getLocation())
+                    nm.receive(note)
+                    val n = nm.getNote()!!
+                    n.setNoticeLocation(locationData[pos-1])
+                } else {
+                    nm.receive(note)
+                    val n = nm.getNote()!!
+                    n.setNoticeLocation(null)
                 }
             }
 
@@ -80,10 +84,20 @@ class LocationActivity: AppCompatActivity(){
 
         // 既に場所設定がされている場合の初期設定
         if (n.getNoticeLocation() != null) {
-            val noteLocation = n.getNoticeLocation()
-            for (i in 1 .. locationData.size) {
-                if (noteLocation!!.getName() == locationData[i])
-                    binding.locationSettingSpinner.setSelection(i)
+            val noteLocation = n.getNoticeLocation()!!
+            if (noteLocation.isPermanent()) {
+                for (i in 0 until locationData.size) {
+                    if (locationData[i].getName() == noteLocation.getName()
+                        && locationData[i].getAddress() == noteLocation.getAddress()) {
+                        binding.locationSettingSpinner.setSelection(i+1)
+                    }
+                }
+            } else {
+                binding.locationAddress.isVisible = true
+                binding.locationNameEdit.isVisible = true
+                binding.locationAddress.text = noteLocation.getAddress()
+                binding.locationNameEdit.setText(noteLocation.getName())
+                binding.locationSettingSpinner.setSelection(locationNameData.lastIndex)
             }
         }
 
@@ -125,8 +139,8 @@ class LocationActivity: AppCompatActivity(){
                         location.setLongitude(coordinate[0].longitude.toFloat())
                         n.setNoticeLocation(location)
                     }
-                    finish()
                 }
+                finish()
             }
         }
         return super.onOptionsItemSelected(item)

@@ -58,10 +58,11 @@ class DeleteActivity: AppCompatActivity() {
 
     //複数削除実行モジュール
     private fun deleteButton_onClick() {
-        val deletePosition = DeleteMemoListAdapter.selectedItemPositions.sortedDescending()
-        DeleteMemoListAdapter.selectedItemPositions.clear()
-        for (i in deletePosition) nm.select(i)
-        nm.deleteAll()
+        for (i in 0 until DeleteMemoListAdapter.selectedItem.size) {
+            nm.receive(DeleteMemoListAdapter.selectedItem[i])
+            nm.delete()
+        }
+        DeleteMemoListAdapter.selectedItem.clear()
     }
 
     private fun loadTheme() {
