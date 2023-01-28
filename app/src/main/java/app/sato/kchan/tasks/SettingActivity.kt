@@ -74,7 +74,6 @@ class SettingActivity : AppCompatActivity() {
             return res
 
         }
-        hello()
 
 
         val inputJson = Util.createJson()

@@ -36,10 +36,19 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
     inner class StructureException(message: String) : Exception(message)
     inner class IdentificationException(message: String) : Exception(message)
     private fun valueDecoder(text: List<Char>, index: Int = 0, end: String = ""): Pair<Int, Int> {
+        print("_ ")
         var i:Int = index
         while(text[i] in " \n\t") { i++ }
         when(text[i]) {
-            '"' -> return stringDecoder(text, i)
+            '"' -> {
+                val (index, valueId) = stringDecoder(text, i)
+                i = index + 1
+                while (text[i] in " \n\t") { i++ }
+                if(text[i] in end)
+                    return return Pair(i, valueId)
+                else
+                    throw StructureException("")
+            }
             '[' -> return arrayDecoder(text, i)
             '{' -> return objectDecoder(text, i)
             else -> {
@@ -60,11 +69,12 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
                         value[id] = buff
                     }
                 }
+                return Pair(i, id)
             }
         }
-        return Pair(i, 0)
     }
     private fun stringDecoder(text: List<Char>, index: Int): Pair<Int, Int> {
+        print("string{ ")
         val id:Int = nextC++
         type[id] = "String"
         var i:Int = index + 1
@@ -74,22 +84,27 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             i++
         }
         value[id] = buff
+        print("}string ")
         return Pair(i, id)
     }
     private fun arrayDecoder(text: List<Char>, index: Int): Pair<Int, Int>{
+        print("array{ ")
         val id:Int = nextC++
         type[id] = "Array"
         array[id] = arrayOf()
-        var i:Int = index
+        var i:Int = index + 1
         while(text[i] != ']'){
-            i++
             val (index, valueId) = valueDecoder(text, i, ",]")
             i = index
             array[id]?.plus(valueId)
+            if(text[i] == ']') break
+            i++
         }
+        print("}array ")
         return Pair(i, id)
     }
     private fun objectDecoder(text: List<Char>, index: Int): Pair<Int, Int>{
+        print("object{ ")
         val id: Int = nextC++
         type[id] = "Object"
         structure[id] = mutableMapOf()
@@ -106,38 +121,56 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
                     }
                     i++
                 }
-                '}' -> return Pair(i, id)
-                else -> throw StructureException("")
+                '}' -> break
+                else -> {
+//                    println(" | " + i.toString() + " ??--> " + text[i])
+                    throw StructureException("")
+                }
             }
             while (text[i] in " \n\t") { i++ }
             if (text[i] != ':') throw KeyException("")
+//            print(key + i.toString() + " ")
+//            println(key + " ")
             i++
             while (text[i] in " \n\t") { i++ }
             val (index, valueId) = valueDecoder(text, i, ",}")
+//            print(text[i] + index.toString() + " ")
             i = index
+            print("$id-$valueId")
             structure[id]?.set(key, valueId) ?: throw IdentificationException("")
+            if(text[i] == '}') break
             i++
         }
+        print("}object ")
+        return Pair(i, id)
     }
     fun inJSON(data:String):Boolean{
-        try{
+        println("= = = = =")
+//        try{
             val text = data.toList()
             val (index, valueId) = valueDecoder(text)
             root = valueId
             current = valueId
-        }catch(e:Exception){
-            structure = mutableMapOf(0 to mutableMapOf())
-            type = mutableMapOf()
-            array = mutableMapOf()
-            value = mutableMapOf()
-            root = 0
-            current = 0
-            return false
-        }
+//        }catch(e:Exception){
+//            structure = mutableMapOf(0 to mutableMapOf())
+//            type = mutableMapOf()
+//            array = mutableMapOf()
+//            value = mutableMapOf()
+//            root = 0
+//            current = 0
+//            println("失敗")
+//            return false
+//        }
+        println("")
+        println(structure)
+        println(type)
+        println(value)
+        println(root)
+        println(this.outJSON())
         return true
     }
     private fun valueEncoder(id: Int): String {
-        println("pass value")
+//        println("pass value")
         return when(type[id]) {
             "Value" -> value[id]!!
             "String" -> stringEncoder(id)
@@ -148,12 +181,12 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         }
     }
     private fun stringEncoder(id: Int): String {
-        println("string OK")
+//        println("string OK")
         val my:String = value[id] ?: throw Exception("Unknown Data")
         return "\"" + my.replace("\"", "\\\"") + "\""
     }
     private fun arrayEncoder(id: Int): String {
-        println("array OK")
+//        println("array OK")
         val list = array[id] ?: throw Exception("Unknown Data")
         var buff:Array<String> = arrayOf()
         for(item in list){
@@ -162,7 +195,7 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return "[" + buff.joinToString(",") + "]"
     }
     private fun objectEncoder(id: Int): String {
-        println("object OK")
+//        println("object OK")
         var buff:Array<String> = arrayOf()
         for((key, valueId) in structure[id] ?: throw StructureException("")){
             buff += "\"" + key.replace("\"", "\\\"") + "\"" + ":" + valueEncoder(valueId)
@@ -170,8 +203,8 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return "{" + buff.joinToString(",") + "}"
     }
     fun outJSON():String?{
-        println(type)
-        println(structure)
+//        println(type)
+//        println(structure)
         return try{
             valueEncoder(root)
         }catch(e:Exception){
@@ -223,10 +256,21 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return getType(id)
     }
     fun move(key: String){
-        val id = getId(key)
-        type[id] = "Object"
-        structure[id] = mutableMapOf()
-        structure[current]?.set(key, id)
+        val id:Int
+        if(isData(key)) {
+            id = structure[current]?.get(key) ?: throw Exception("data does not exist")
+            if(type[id] != "Object") {
+                type[id] = "Object"
+                structure[id] = mutableMapOf()
+                structure[current]?.set(key, id)
+                value.remove(id)
+            }
+        }else{
+            id = getId(key)
+            type[id] = "Object"
+            structure[id] = mutableMapOf()
+            structure[current]?.set(key, id)
+        }
         hierarchy += current
         current = id
     }

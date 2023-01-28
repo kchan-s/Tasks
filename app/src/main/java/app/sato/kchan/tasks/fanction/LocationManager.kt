@@ -67,6 +67,49 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
             } while(res.next())
         }
     }
+    fun searchByRadius(latitude:Float, longitude:Float, radius:Int, option:Array<String> = arrayOf()){
+        idList.clear()
+        tempList = mutableMapOf()
+        var filter:Array<Map<String,String?>> = arrayOf()
+        for(ope in option){
+            when(ope) {
+                "PermanentFlagUp" -> {
+                    filter += mutableMapOf(
+                        "compare" to "equation",
+                        "equation" to "status_flag & (1 << 0) = 1"
+                    )
+                }
+            }
+        }
+        val res = DataOperator().selectQuery(
+            table = "place",
+            column = arrayOf("place_id", "service_id"),
+            filter = filter + arrayOf(
+                mutableMapOf(
+                    "column" to radius.toString(),
+                    "value" to "(6371 * acos( cos( radians($latitude) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians($longitude) ) +sin( radians($latitude) ) * sin( radians( latitude ) )))",
+                    "compare" to "Small"
+                ),
+                mutableMapOf(
+                    "compare" to "equation",
+                    "equation" to "status_flag & (1 << 31) = 0"
+                )
+            ),
+            sort = arrayOf(mutableMapOf(
+                "column" to "priority",
+                "type" to "DESC"
+            ))
+        )
+        if(res.isResult()){
+            do{
+                val key = "location_" + nextTempId.toString()
+                val buf = res.getStringMap()
+                tempList[key] = buf.toMutableMap()
+                idList.add(key)
+                nextTempId++
+            } while(res.next())
+        }
+    }
     fun select(index:Int){
         idList = mutableListOf(idList[index])
     }

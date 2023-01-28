@@ -27,7 +27,7 @@ class ConnectionWrapper{
 
     companion object {
         private const val TAG = "MainActivity"
-        private const val BASE_URL = "http://kutse09.hopto.org:50080/"
+        private const val BASE_URL = "http://kutse09.hopto.org:80/"
 
         private var outPut: String = "before"
 
@@ -51,7 +51,7 @@ class ConnectionWrapper{
 
     fun executeServerConnection(input : String){
         outPut = "before"
-        Log.d(TAG, outPut)
+//        Log.d(TAG, outPut)
         val requestBody = requestBodyConverter(input)
         val postAction = service.serverPost(requestBody).clone().execute()
         if(postAction.isSuccessful){
