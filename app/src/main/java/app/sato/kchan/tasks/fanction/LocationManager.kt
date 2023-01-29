@@ -3,6 +3,7 @@ package app.sato.kchan.tasks.fanction
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
+import android.location.Location as androidLocation
 
 /********************
  * 複数のノートにかかわる処理を担当する
@@ -88,7 +89,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
             filter = filter + arrayOf(
                 mutableMapOf(
                     "column" to "(6371 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians($longitude)) + sin(radians($latitude)) * sin(radians(latitude))))",
-                    "value" to radius.toString(),
+                    "value" to (radius/1000).toString(),
                     "compare" to "Small"
                 ),
                 mutableMapOf(
@@ -103,11 +104,17 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
         )
         if(res.isResult()){
             do{
-                val key = "location_" + nextTempId.toString()
-                val buf = res.getStringMap()
-                tempList[key] = buf.toMutableMap()
-                idList.add(key)
-                nextTempId++
+                var distance: FloatArray = floatArrayOf()
+                androidLocation.distanceBetween(
+                    latitude.toDouble(), longitude.toDouble(), res.getDouble("latitude"),
+                    res.getDouble("longitude"), distance)
+                if(radius >= distance[0]) {
+                    val key = "location_" + nextTempId.toString()
+                    val buf = res.getStringMap()
+                    tempList[key] = buf.toMutableMap()
+                    idList.add(key)
+                    nextTempId++
+                }
             } while(res.next())
         }
         point = 0

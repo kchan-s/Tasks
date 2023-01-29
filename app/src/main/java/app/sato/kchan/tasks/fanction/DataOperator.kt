@@ -5,16 +5,18 @@ import android.database.Cursor
 import android.database.Cursor.FIELD_TYPE_NULL
 import app.sato.kchan.tasks.HomeActivity.Companion.context
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.Exception
 
 
-class DataOperator(){
+abstract class DataOperator(){
 
     //<プロパティ>
     val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase
+//    val dbInfo:MyData = dbJSON()
     //<初期化処理>
     init {
 //        database.delete("account", null, null)
@@ -153,6 +155,13 @@ class DataOperator(){
         fun getFloatNulls(column:String):Float?{
             val no: Int = getNumber(column)
             return getFloat(no)
+        }
+        fun getDouble(no:Int = 0):Double{
+            return cursor.getDouble(no)
+        }
+        fun getDouble(column:String):Double{
+            val no: Int = getNumber(column)
+            return getDouble(no)
         }
         fun getBoolean(no:Int = 0):Boolean{
             return cursor.getInt(no) != 0
@@ -369,73 +378,305 @@ class DataOperator(){
         }
         return database.delete(table, sql, vl)
     }
-    fun sync() {
-        var data = MyData()
-        data.setString("type", "Sync")
-        data.move("content")
-        if(true) {
-            val service = data.moveChain("service")
-            service.initArray()
-            val res = DataOperator().selectQuery(
-                table = "service",
-                column = arrayOf(
-                    "create_at",
-                    "service_name",
-                    "type",
-                    "version",
-                    "status_flag",
-                    "name_update_at",
-                    "others_update_at",
-                    "status_update_at",
-                ),
-                pick = mutableMapOf("service_id" to "0")
-            )
-            if(res.setResultTop()) {
-                val record = MyData()
-                record.setDateTime("create_at", res.getDateTime("create_at"))
-                record.setString("service_name", res.getString("service_name"))
-                record.setInt("type", res.getInt("type"))
-                record.setInt("version", res.getInt("version"))
-                record.setInt("status_flag", res.getInt("status_flag"))
-                record.setDateTime("name_update_at", res.getDateTime("name_update_at"))
-                record.setDateTime("others_update_at", res.getDateTime("others_update_at"))
-                record.setDateTime("status_update_at", res.getDateTime("status_update_at"))
-                service.push(record)
-            }
-        }
-        val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
-        println(request)
-        ConnectionWrapper.scope.launch{
-            ConnectionWrapper().executeServerConnection(request)
-            var response = ConnectionWrapper().postOutput()
-            println("受信: " + response)
-            data = MyData()
-            if(data.inJSON(response)){
-                println("解析: " + data.outJSON())
-                val result = data.moveChain("result")
-                if(result.getInt("code") == 0){
-                    val content = result.moveChain("content")
-                    DataOperator().updateQuery(
-                        table = "account",
-                        value = mutableListOf(
-                            "account_id" to content.moveChain("account").moveChain(0).getString("account_id")
-                        )
-                    )
-                }else{
-                    println("サーバー処理解析失敗!!")
-                    println("-> " + data.outJSON())
-                }
-            }else{
-                println("JSON解析失敗!!")
-            }
-        }
-    }
-
-    // fun serverConnect(value:): {
-
-    // }
-
-    // fun analyze():Map{
-
-    // }
+//    fun sync() {
+//        var data = MyData()
+//        data.setString("type", "Sync")
+//        val content = data.moveChain("content")
+//        for(tName in dbInfo.keys()){
+//            val table = content.moveChain(tName)
+//            table.initArray()
+//
+//            val res = DataOperator().selectQuery(
+//                table = "service",
+//                column = arrayOf(
+//                    "create_at",
+//                    "service_name",
+//                    "type",
+//                    "version",
+//                    "status_flag",
+//                    "name_update_at",
+//                    "others_update_at",
+//                    "status_update_at",
+//                ),
+//                pick = mutableMapOf("service_id" to "0")
+//            )
+//            if(res.setResultTop()) {
+//                val record = MyData()
+//                for(cName in dbInfo) {
+//                    record.setDateTime("create_at", res.getDateTime("create_at"))
+//                    record.setString("service_name", res.getString("service_name"))
+//                    record.setInt("type", res.getInt("type"))
+//                    record.setInt("version", res.getInt("version"))
+//                    record.setInt("status_flag", res.getInt("status_flag"))
+//                    record.setDateTime("name_update_at", res.getDateTime("name_update_at"))
+//                    record.setDateTime("others_update_at", res.getDateTime("others_update_at"))
+//                    record.setDateTime("status_update_at", res.getDateTime("status_update_at"))
+//                }
+//                table.push(record)
+//            }
+//        }
+//        val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
+//        println(request)
+//        ConnectionWrapper.scope.launch{
+//            ConnectionWrapper().executeServerConnection(request)
+//            var response = ConnectionWrapper().postOutput()
+//            println("受信: " + response)
+//            data = MyData()
+//            if(data.inJSON(response)){
+//                println("解析: " + data.outJSON())
+//                val result = data.moveChain("result")
+//                if(result.getInt("code") == 0){
+//                    val content = result.moveChain("content")
+//                    DataOperator().updateQuery(
+//                        table = "account",
+//                        value = mutableListOf(
+//                            "account_id" to content.moveChain("account").moveChain(0).getString("account_id")
+//                        )
+//                    )
+//                }else{
+//                    println("サーバー処理解析失敗!!")
+//                    println("-> " + data.outJSON())
+//                }
+//            }else{
+//                println("JSON解析失敗!!")
+//            }
+//        }
+//    }
+//
+//    fun dbJSON():MyData {
+//        val dbInfo = MyData()
+//        dbInfo.inJSON("""
+//{
+//    "setting":{
+//        "color1":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "color2":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "color3":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "auto_delete_period":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "init_show_at":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "init_hide_at":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "status_flag":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "color_update_at":{
+//            "change": false
+//        },
+//        "auto_delete_update_at":{
+//            "change": false
+//        },
+//        "init_show_update_at":{
+//            "change": false
+//        },
+//        "init_hide_update_at":{
+//            "change": false
+//        },
+//        "status_update_at":{
+//            "change": false
+//        }
+//    },
+//    "service":{
+//        "service_id":{
+//            "primary": true,
+//            "change": false
+//        },
+//        "service_name":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "type":{
+//            "change": false
+//        },
+//        "version":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "notification_token":{
+//            "change": false
+//        },
+//        "connect_token":{
+//            "change": false
+//        },
+//        "synchronize_at":{
+//            "change": false
+//        },
+//        "create_at":{
+//            "change": false
+//        },
+//        "status_flag":{
+//            "change": true,
+//            "update": "update_at"
+//        },
+//        "update_at":{
+//            "change": false
+//        }
+//    },
+//    "note":{
+//        "note_id":{
+//            "primary": true,
+//            "change": false
+//        },
+//        "service_id":{
+//            "primary": true,
+//            "change": false
+//        },
+//        "title":{
+//            "change": true,
+//            "update": "title_update_at"
+//        },
+//        "content":{
+//            "change": true,
+//            "update": "content_update_at"
+//        },
+//        "show_at":{
+//            "change": true,
+//            "update": "show_update_at"
+//        },
+//        "hide_at":{
+//            "change": true,
+//            "update": "hide_update_at"
+//        },
+//        "complete_at":{
+//            "change": true,
+//            "update": "complete_update_at"
+//        },
+//        "create_at":{
+//            "change": false
+//        },
+//        "status_flag":{
+//            "change": true,
+//            "update": "status_update_at"
+//        },
+//        "title_update_at":{
+//            "change": false
+//        },
+//        "content_update_at":{
+//            "change": false
+//        },
+//        "show_update_at":{
+//            "change": false
+//        },
+//        "hide_update_at":{
+//            "change": false
+//        },
+//        "complete_update_at":{
+//            "change": false
+//        },
+//        "status_update_at":{
+//            "change": false
+//        }
+//    },
+//    "place":{
+//        "place_id":{
+//            "primary": true,
+//            "change": false
+//        },
+//        "service_id":{
+//            "primary": true,
+//            "change": false
+//        },
+//        "name":{
+//            "change": true,
+//            "update": "name_update_at"
+//        },
+//        "address":{
+//            "change": true,
+//            "update": "address_update_at"
+//        },
+//        "priority":{
+//            "change": true,
+//            "update": "priority_update_at"
+//        },
+//        "create_at":{
+//            "change": false
+//        },
+//        "status_flag":{
+//            "change": true,
+//            "update": "status_update_at"
+//        },
+//        "name_update_at":{
+//            "change": false
+//        },
+//        "address_update_at":{
+//            "change": false
+//        },
+//        "priority_update_at":{
+//            "change": false
+//        },
+//        "status_update_at":{
+//            "change": false
+//        }
+//    },
+//    "notice":{
+//        "notice_id":{
+//            "primary": true,
+//            "change": false
+//        },
+//        "service_id":{
+//            "primary": true,
+//            "change": false
+//        },
+//        "note_id":{
+//            "change": false
+//        },
+//        "note_service_id":{
+//            "change": false
+//        },
+//        "notice_service_id":{
+//            "change": false
+//        },
+//        "show_at":{
+//            "change": true,
+//            "update": "show_update_at"
+//        },
+//        "hide_at":{
+//            "change": true,
+//            "update": "hide_update_at"
+//        },
+//        "place_id":{
+//            "change": true,
+//            "update": "place_update_at"
+//        },
+//        "place_service_id":{
+//            "change": true,
+//            "update": "place_update_at"
+//        },
+//        "status_flag":{
+//            "change": true,
+//            "update": "status_update_at"
+//        },
+//        "show_update_at":{
+//            "change": false
+//        },
+//        "hide_update_at":{
+//            "change": false
+//        },
+//        "place_update_at":{
+//            "change": false
+//        },
+//        "status_update_at":{
+//            "change": false
+//        }
+//    }
+//}
+//        """)
+//        return dbInfo
+//    }
 }
