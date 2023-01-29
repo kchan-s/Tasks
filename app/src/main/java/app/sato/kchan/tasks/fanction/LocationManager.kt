@@ -87,11 +87,11 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
             table = "place",
             column = arrayOf("place_id", "service_id"),
             filter = filter + arrayOf(
-                mutableMapOf(
-                    "column" to "(6371 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians($longitude)) + sin(radians($latitude)) * sin(radians(latitude))))",
-                    "value" to (radius/1000).toString(),
-                    "compare" to "Small"
-                ),
+//                mutableMapOf(
+//                    "column" to "(6371 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians($longitude)) + sin(radians($latitude)) * sin(radians(latitude))))",
+//                    "value" to (radius/1000).toString(),
+//                    "compare" to "Small"
+//                ),
                 mutableMapOf(
                     "compare" to "equation",
                     "equation" to "status_flag & (1 << 31) = 0"
