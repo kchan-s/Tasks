@@ -104,10 +104,9 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
         )
         if(res.isResult()){
             do{
-                var distance: FloatArray = floatArrayOf()
-                androidLocation.distanceBetween(
-                    latitude.toDouble(), longitude.toDouble(), res.getDouble("latitude"),
-                    res.getDouble("longitude"), distance)
+                var distance = FloatArray(1)
+                androidLocation.distanceBetween(latitude.toDouble(), longitude.toDouble(), res.getDouble("latitude"),res.getDouble("longitude"), distance)
+                println("radius: " + distance[0])
                 if(radius >= distance[0]) {
                     val key = "location_" + nextTempId.toString()
                     val buf = res.getStringMap().toMutableMap()
