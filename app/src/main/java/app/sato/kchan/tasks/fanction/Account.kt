@@ -24,8 +24,6 @@ class Account public constructor() {
 //        println("########################################################################################################################################################################################")
 
         if(getId() == "") {
-
-
             //--- 初期化処理 ここから ------------------------------
             val dt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
             if (!DataOperator().selectQuery(

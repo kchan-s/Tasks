@@ -9,10 +9,7 @@ import android.webkit.WebViewClient
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.SettingActivityBinding
-import app.sato.kchan.tasks.fanction.Util
-import app.sato.kchan.tasks.fanction.ConnectionWrapper
-import app.sato.kchan.tasks.fanction.DataOperator
-import app.sato.kchan.tasks.fanction.MyData
+import app.sato.kchan.tasks.fanction.*
 import kotlinx.coroutines.launch
 
 class SettingActivity : AppCompatActivity() {
@@ -66,21 +63,23 @@ class SettingActivity : AppCompatActivity() {
     // カスタマイズ画面に遷移
     private fun customButton_onClick() {
 
-        fun hello():String{
-            var data = MyData()
-            data.setString("type", "Hello")
-            data.move("content")
-            val res: String = data.outJSON() ?: throw Exception("")
-            println(res)
-            return res
-        }
+        DataOperator().sync()
 
+//        var lm = LocationManager()
+//        lm.searchByRadius(33.62070160127752F, 133.72015363525878F,10000000)
 
-        ConnectionWrapper.scope.launch{
-            ConnectionWrapper().executeServerConnection(hello())
-            Log.d("SettingActivity",ConnectionWrapper().postOutput())
-
-        }
+//        fun hello():String{
+//            var data = MyData()
+//            data.setString("type", "Hello")
+//            data.move("content")
+//            val res: String = data.outJSON() ?: throw Exception("")
+//            println(res)
+//            return res
+//        }
+//        ConnectionWrapper.scope.launch{
+//            ConnectionWrapper().executeServerConnection(hello())
+//            Log.d("SettingActivity",ConnectionWrapper().postOutput())
+//        }
 
 //        intent.setClass(this, CustomActivity::class.java)
 //        startActivity(intent)
