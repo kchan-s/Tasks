@@ -87,8 +87,8 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
             column = arrayOf("place_id", "service_id"),
             filter = filter + arrayOf(
                 mutableMapOf(
-                    "column" to radius.toString(),
-                    "value" to "(6371 * acos( cos( radians($latitude) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians($longitude) ) +sin( radians($latitude) ) * sin( radians( latitude ) )))",
+                    "column" to "(6371 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians($longitude)) + sin(radians($latitude)) * sin(radians(latitude))))",
+                    "value" to radius.toString(),
                     "compare" to "Small"
                 ),
                 mutableMapOf(

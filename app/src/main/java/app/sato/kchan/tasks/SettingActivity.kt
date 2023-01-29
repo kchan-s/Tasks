@@ -76,38 +76,10 @@ class SettingActivity : AppCompatActivity() {
         }
 
 
-        val inputJson = Util.createJson()
-
         ConnectionWrapper.scope.launch{
             ConnectionWrapper().executeServerConnection(hello())
             Log.d("SettingActivity",ConnectionWrapper().postOutput())
 
-            DataOperator().deleteQuery("service")
-            DataOperator().deleteQuery("setting")
-            DataOperator().deleteQuery("account")
-            var res = DataOperator().selectQuery(
-                table = "account",
-                column = arrayOf(
-                    "account_id",
-                    "connect_token",
-                )
-            )
-            println("===============================  account ->>" + res.getAllString())
-            res = DataOperator().selectQuery(
-                table = "service",
-                column = arrayOf(
-                    "service_id",
-                    "create_at",
-                    "service_name",
-                    "type",
-                    "version",
-                    "status_flag",
-                    "name_update_at",
-                    "others_update_at",
-                    "status_update_at",
-                )
-            )
-            println("===============================  service ->>" + res.getAllString())
         }
 
 //        intent.setClass(this, CustomActivity::class.java)

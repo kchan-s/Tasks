@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.Cursor.FIELD_TYPE_NULL
 import app.sato.kchan.tasks.HomeActivity.Companion.context
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.Exception
@@ -369,7 +370,65 @@ class DataOperator(){
         return database.delete(table, sql, vl)
     }
     fun sync() {
-
+        var data = MyData()
+        data.setString("type", "Sync")
+        data.move("content")
+        if(true) {
+            val service = data.moveChain("service")
+            service.initArray()
+            val res = DataOperator().selectQuery(
+                table = "service",
+                column = arrayOf(
+                    "create_at",
+                    "service_name",
+                    "type",
+                    "version",
+                    "status_flag",
+                    "name_update_at",
+                    "others_update_at",
+                    "status_update_at",
+                ),
+                pick = mutableMapOf("service_id" to "0")
+            )
+            if(res.setResultTop()) {
+                val record = MyData()
+                record.setDateTime("create_at", res.getDateTime("create_at"))
+                record.setString("service_name", res.getString("service_name"))
+                record.setInt("type", res.getInt("type"))
+                record.setInt("version", res.getInt("version"))
+                record.setInt("status_flag", res.getInt("status_flag"))
+                record.setDateTime("name_update_at", res.getDateTime("name_update_at"))
+                record.setDateTime("others_update_at", res.getDateTime("others_update_at"))
+                record.setDateTime("status_update_at", res.getDateTime("status_update_at"))
+                service.push(record)
+            }
+        }
+        val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
+        println(request)
+        ConnectionWrapper.scope.launch{
+            ConnectionWrapper().executeServerConnection(request)
+            var response = ConnectionWrapper().postOutput()
+            println("受信: " + response)
+            data = MyData()
+            if(data.inJSON(response)){
+                println("解析: " + data.outJSON())
+                val result = data.moveChain("result")
+                if(result.getInt("code") == 0){
+                    val content = result.moveChain("content")
+                    DataOperator().updateQuery(
+                        table = "account",
+                        value = mutableListOf(
+                            "account_id" to content.moveChain("account").moveChain(0).getString("account_id")
+                        )
+                    )
+                }else{
+                    println("サーバー処理解析失敗!!")
+                    println("-> " + data.outJSON())
+                }
+            }else{
+                println("JSON解析失敗!!")
+            }
+        }
     }
 
     // fun serverConnect(value:): {

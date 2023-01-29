@@ -23,60 +23,68 @@ class Account public constructor() {
 //        println("########################################################################################################################################################################################")
 //        println("########################################################################################################################################################################################")
 
-        if(getId() == ""){
-            //val range = (0..255)
-            //var token = ByteArray(64)
-            //for(i in 0..63)
-            //    token[i] = range.random().toByte()
-            // //String(token)
+        if(getId() == "") {
 
-            var buff:Array<Char> = arrayOf()
-            val chars = "!#\$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
-            for(i in 0..63)
-                buff += chars[Random.nextInt(chars.length)]
-            val token = buff.toString()
 
+            //--- 初期化処理 ここから ------------------------------
             val dt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
-            DataOperator().insertQuery(
-                table = "account",
-                value = mutableMapOf(
-                    "password_flag" to "false",
-                    "connect_token" to token
+            if (!DataOperator().selectQuery(
+                    table = "account",
+                    column = arrayOf("account_id")
+                ).setResultTop()) {
+                var buff: Array<Char> = arrayOf()
+                val chars = "!#\$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+                for (i in 0..63)
+                    buff += chars[Random.nextInt(chars.length)]
+                val token = buff.toString()
+                DataOperator().insertQuery(
+                    table = "account",
+                    value = mutableMapOf(
+                        "password_flag" to "false",
+                        "connect_token" to token
+                    )
                 )
-            )
-            DataOperator().insertQuery(
-                table = "setting",
-                value = mutableMapOf(
-                    "color1" to "0",
-                    "color2" to "0",
-                    "color3" to "0",
-                    "status_flag" to "0",
-                    "color_update_at" to dt,
-                    "auto_delete_update_at" to dt,
-                    "init_show_update_at" to dt,
-                    "init_hide_update_at" to dt,
-                    "status_update_at" to dt
+            }
+            if (!DataOperator().selectQuery(
+                    table = "setting",
+                    column = arrayOf("status_flag")
+                ).setResultTop()) {
+                DataOperator().insertQuery(
+                    table = "setting",
+                    value = mutableMapOf(
+                        "color1" to "0",
+                        "color2" to "0",
+                        "color3" to "0",
+                        "status_flag" to "0",
+                        "color_update_at" to dt,
+                        "auto_delete_update_at" to dt,
+                        "init_show_update_at" to dt,
+                        "init_hide_update_at" to dt,
+                        "status_update_at" to dt
+                    )
                 )
-            )
-//            DataOperator().selectQuery(
-//                table = "service",
-//                column = arrayOf("service_id"),
-//                pick = mutableMapOf("service_id" to "0")
-//            )
-            DataOperator().insertQuery(
+            }
+            if (!DataOperator().selectQuery(
                 table = "service",
-                value = mutableMapOf(
-                    "service_id" to "0",
-                    "create_at" to dt,
-                    "service_name" to "Android",
-                    "type" to "1",
-                    "version" to "1",
-                    "status_flag" to "0",
-                    "name_update_at" to dt,
-                    "others_update_at" to dt,
-                    "status_update_at" to dt,
+                column = arrayOf("service_id"),
+                pick = mutableMapOf("service_id" to "0")
+                ).setResultTop()){
+                DataOperator().insertQuery(
+                    table = "service",
+                    value = mutableMapOf(
+                        "service_id" to "0",
+                        "create_at" to dt,
+                        "service_name" to "Android",
+                        "type" to "1",
+                        "version" to "1",
+                        "status_flag" to "0",
+                        "name_update_at" to dt,
+                        "others_update_at" to dt,
+                        "status_update_at" to dt,
+                    )
                 )
-            )
+            }
+            //--- 初期化処理 ここまで ------------------------------
 
 
             var data = MyData()
@@ -210,7 +218,7 @@ class Account public constructor() {
     }
     fun setPassword(password:String):Boolean{
         var data = MyData()
-        data.setString("type","")
+        data.setString("type","SetPass")
         data.move("")
         return false
     }
