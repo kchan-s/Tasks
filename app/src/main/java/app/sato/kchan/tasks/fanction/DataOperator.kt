@@ -219,6 +219,15 @@ class DataOperator(){
             }
             return array
         }
+        fun getAllString():String{
+            var text = ""
+            if(setResultTop()){
+                do {
+                    text += getStringMap().toString()
+                } while(next())
+            }
+            return text
+        }
     }
     fun updateQuery(table:String, value: MutableList<Pair<String, String?>>, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf()):Int {
         var vl = arrayOf<String?>()
@@ -357,7 +366,7 @@ class DataOperator(){
             }
             c++
         }
-        return database.delete("service", sql, vl)
+        return database.delete(table, sql, vl)
     }
     fun sync() {
 

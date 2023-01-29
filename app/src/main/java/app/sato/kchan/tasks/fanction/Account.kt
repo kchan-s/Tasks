@@ -20,6 +20,8 @@ class Account public constructor() {
 
     //<初期化処理>
     init {
+//        println("########################################################################################################################################################################################")
+//        println("########################################################################################################################################################################################")
 
         if(getId() == ""){
             //val range = (0..255)
@@ -27,8 +29,6 @@ class Account public constructor() {
             //for(i in 0..63)
             //    token[i] = range.random().toByte()
             // //String(token)
-
-
 
             var buff:Array<Char> = arrayOf()
             val chars = "!#\$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
@@ -58,6 +58,11 @@ class Account public constructor() {
                     "status_update_at" to dt
                 )
             )
+//            DataOperator().selectQuery(
+//                table = "service",
+//                column = arrayOf("service_id"),
+//                pick = mutableMapOf("service_id" to "0")
+//            )
             DataOperator().insertQuery(
                 table = "service",
                 value = mutableMapOf(
@@ -72,6 +77,7 @@ class Account public constructor() {
                     "status_update_at" to dt,
                 )
             )
+
 
             var data = MyData()
             data.setString("type", "New")
@@ -157,7 +163,7 @@ class Account public constructor() {
             ConnectionWrapper.scope.launch{
                 ConnectionWrapper().executeServerConnection(request)
                 var response = ConnectionWrapper().postOutput()
-                println(response)
+                println("受信: " + response)
                 data = MyData()
                 if(data.inJSON(response)){
                     println("解析: " + data.outJSON())
@@ -170,6 +176,7 @@ class Account public constructor() {
                                 "account_id" to content.moveChain("account").moveChain(0).getString("account_id")
                             )
                         )
+//                        println(content.moveChain("account").moveChain(0).getString("account_id"))
                     }else{
                         println("サーバー処理解析失敗!!")
                         println("-> " + data.outJSON())

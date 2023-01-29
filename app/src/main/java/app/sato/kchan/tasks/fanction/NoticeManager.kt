@@ -166,23 +166,17 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
         val pick = getPick() ?: return null
         return Notice(pick)
     }
-    fun getNote(): Array<Note> {
+    fun getNote(): Note? {
         val res = DataOperator().selectQuery(
             table = "note",
             column = arrayOf("note_id", "service_id"),
-            pick = getPick() ?: return arrayOf(),
+            pick = getPick() ?: return null,
             sort = arrayOf(mutableMapOf(
                 "column" to "create_at",
                 "type" to "ASC"
             ))
         )
-        var note:Array<Note> = arrayOf()
-        if(res.setResultTop()){
-            do{
-                note += Note(res.getStringMap().toMutableMap())
-            } while(res.next())
-        }
-        return note
+        return Note(res.getStringMap().toMutableMap())
     }
     fun getTempId():String{
         return idList[point]

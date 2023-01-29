@@ -51,23 +51,40 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             '"' -> {
                 val (index, valueId) = stringDecoder(text, i)
                 i = index + 1
-                while (text[i] in " \n\t") { i++ }
-                if(text[i] in end)
+                while (i < text.size && text[i] in " \n\t") i++
+                if(i == text.size || text[i] in end)
                     return return Pair(i, valueId)
                 else
                     throw StructureException("")
             }
-            '[' -> return arrayDecoder(text, i)
-            '{' -> return objectDecoder(text, i)
+            '[' -> {
+                val (index, valueId) = arrayDecoder(text, i)
+                i = index + 1
+                while (i < text.size && text[i] in " \n\t") i++
+                if(i == text.size || text[i] in end)
+                    return return Pair(i, valueId)
+                else
+                    throw StructureException("")
+            }
+            '{' -> {
+                val (index, valueId) = objectDecoder(text, i)
+                i = index + 1
+                while (i < text.size && text[i] in " \n\t") i++
+                if(i == text.size || text[i] in end)
+                    return return Pair(i, valueId)
+                else
+                    println(text[i])
+                    throw StructureException("")
+            }
             else -> {
                 val id:Int = nextC++
                 var buff:String = ""
-                while(text[i] !in end && text[i] !in " \n\t") {
+                while(i < text.size && text[i] !in end && text[i] !in " \n\t") {
                     buff += text[i]
                     i++
                 }
-                while(text[i] in " \n\t") { i++ }
-                if(text[i] !in end) throw StructureException("")
+                while(i < text.size && text[i] in " \n\t") i++
+                if(i > text.size || text[i] !in end) throw StructureException("")
                 when(buff) {
                     "null" -> {
                         type[id] = "Null"
@@ -101,7 +118,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         while(text[i] != ']'){
             val (index, valueId) = valueDecoder(text, i, ",]")
             i = index
-            array[id]?.plus(valueId)
+            array[id]?.add(valueId)
             if(text[i] == ']') break
             i++
         }
@@ -126,6 +143,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
                 }
                 '}' -> break
                 else -> {
+                    println(text[i] + " " + i.toString())
                     throw StructureException("")
                 }
             }
@@ -147,6 +165,11 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             val (index, valueId) = valueDecoder(text)
             root = valueId
             current = valueId
+            println(structure)
+            println(type)
+            println(array)
+            println(value)
+            return true
         }catch(e:Exception){
             structure = mutableMapOf(0 to mutableMapOf())
             type = mutableMapOf()
@@ -156,7 +179,6 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             current = 0
             return false
         }
-        return true
     }
     private fun valueEncoder(id: Int): String {
         return when(type[id]) {
@@ -188,17 +210,11 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         return "{" + buff.joinToString(",") + "}"
     }
     fun outJSON():String?{
-        println(structure)
-        println(array)
-        println(type)
-        println(value)
-//        try{
-            val text = valueEncoder(root)
-            println(text)
-            return text
-//        }catch(e:Exception){
-//            return null
-//        }
+        try{
+            return valueEncoder(root)
+        }catch(e:Exception){
+            return null
+        }
     }
     fun showJSON(): String{
         return outJSON() ?: return "??"
@@ -228,7 +244,6 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         return key in (structure[current] ?: throw Exception("data does not exist"))
     }
     fun isData(index:Int): Boolean{
-        println(array[current])
         return index < (array[current]?.size ?: throw Exception("data does not exist"))
     }
     private fun getId(key:String): Int {
@@ -242,8 +257,8 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         }
     }
     private fun getId(index:Int): Int {
-        return if (isData(index)){
-            array[current]!![index]
+        if (isData(index)){
+            return array[current]!![index]
         }else{
             throw Exception("Index exceeds array range")
         }
