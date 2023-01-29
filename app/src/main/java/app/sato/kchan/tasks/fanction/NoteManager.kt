@@ -54,18 +54,22 @@ class NoteManager public constructor(il : MutableList<String> = mutableListOf(),
                 nextTempId++
             } while(res.next())
         }
+        point = 0
     }
     fun select(index:Int){
         idList = mutableListOf(idList[index])
+        point = 0
     }
     fun selectByTempId(tempId:String){
         idList = mutableListOf(tempId)
+        point = 0
     }
     fun addSelectByTempId(tempId:String){
         idList.add(tempId)
     }
     fun deselection(){
         idList.clear()
+        point = 0
     }
     fun getNoteNumber():Int{
         return idList.size

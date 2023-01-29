@@ -9,26 +9,35 @@ import java.time.format.DateTimeFormatter
  *
  * クラス名: MyData
  ********************/
-class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf(0 to mutableMapOf()), t:MutableMap<Int,String> = mutableMapOf(0 to "Object"), a:MutableMap<Int, Array<Int>> = mutableMapOf(), v:MutableMap<Int,String> = mutableMapOf(), r: Int = 0, h:MutableList<Int> = mutableListOf(), c: Int = 0) {
+class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mutableListOf()) {
     //<プロパティ>
-    private var structure:MutableMap<Int, MutableMap<String, Int>>
-    private var type:MutableMap<Int, String>
-    private var array:MutableMap<Int, Array<Int>>
-    private var value:MutableMap<Int, String>
-    private var nextC:Int = 1
-    private var root:Int = 0
-    private var current:Int = 0
+    private var root:Int
+    private var current:Int
     private var hierarchy: MutableList<Int>
+    private companion object {
+        var structure:MutableMap<Int, MutableMap<String, Int>> = mutableMapOf(0 to mutableMapOf())
+        var type:MutableMap<Int, String> = mutableMapOf(0 to "Object")
+        var array:MutableMap<Int, MutableList<Int>> = mutableMapOf()
+        var value:MutableMap<Int, String> = mutableMapOf()
+        var nextC:Int = 0
+    }
 
     //<初期化処理>
     init {
-        this.structure = s
-        this.type = t
-        this.array = a
-        this.value = v
-        this.root = r
+        if(r == null) {
+            this.root = nextC++
+            this.current = this.root
+            type[this.current] = "Object"
+            structure[this.current] = mutableMapOf()
+        }else{
+            this.root = r
+            if(c == null){
+                this.current = root
+            }else{
+                this.current = c
+            }
+        }
         this.hierarchy = h
-        this.current = c
     }
 
     //<メソッド>
@@ -36,7 +45,6 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
     inner class StructureException(message: String) : Exception(message)
     inner class IdentificationException(message: String) : Exception(message)
     private fun valueDecoder(text: List<Char>, index: Int = 0, end: String = ""): Pair<Int, Int> {
-        print("_ ")
         var i:Int = index
         while(text[i] in " \n\t") { i++ }
         when(text[i]) {
@@ -74,7 +82,6 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         }
     }
     private fun stringDecoder(text: List<Char>, index: Int): Pair<Int, Int> {
-        print("string{ ")
         val id:Int = nextC++
         type[id] = "String"
         var i:Int = index + 1
@@ -84,14 +91,12 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             i++
         }
         value[id] = buff
-        print("}string ")
         return Pair(i, id)
     }
     private fun arrayDecoder(text: List<Char>, index: Int): Pair<Int, Int>{
-        print("array{ ")
         val id:Int = nextC++
         type[id] = "Array"
-        array[id] = arrayOf()
+        array[id] = mutableListOf()
         var i:Int = index + 1
         while(text[i] != ']'){
             val (index, valueId) = valueDecoder(text, i, ",]")
@@ -100,11 +105,9 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             if(text[i] == ']') break
             i++
         }
-        print("}array ")
         return Pair(i, id)
     }
     private fun objectDecoder(text: List<Char>, index: Int): Pair<Int, Int>{
-        print("object{ ")
         val id: Int = nextC++
         type[id] = "Object"
         structure[id] = mutableMapOf()
@@ -123,54 +126,39 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
                 }
                 '}' -> break
                 else -> {
-//                    println(" | " + i.toString() + " ??--> " + text[i])
                     throw StructureException("")
                 }
             }
             while (text[i] in " \n\t") { i++ }
             if (text[i] != ':') throw KeyException("")
-//            print(key + i.toString() + " ")
-//            println(key + " ")
             i++
             while (text[i] in " \n\t") { i++ }
             val (index, valueId) = valueDecoder(text, i, ",}")
-//            print(text[i] + index.toString() + " ")
             i = index
-            print("$id-$valueId")
             structure[id]?.set(key, valueId) ?: throw IdentificationException("")
             if(text[i] == '}') break
             i++
         }
-        print("}object ")
         return Pair(i, id)
     }
     fun inJSON(data:String):Boolean{
-        println("= = = = =")
-//        try{
+        try{
             val text = data.toList()
             val (index, valueId) = valueDecoder(text)
             root = valueId
             current = valueId
-//        }catch(e:Exception){
-//            structure = mutableMapOf(0 to mutableMapOf())
-//            type = mutableMapOf()
-//            array = mutableMapOf()
-//            value = mutableMapOf()
-//            root = 0
-//            current = 0
-//            println("失敗")
-//            return false
-//        }
-        println("")
-        println(structure)
-        println(type)
-        println(value)
-        println(root)
-        println(this.outJSON())
+        }catch(e:Exception){
+            structure = mutableMapOf(0 to mutableMapOf())
+            type = mutableMapOf()
+            array = mutableMapOf()
+            value = mutableMapOf()
+            root = 0
+            current = 0
+            return false
+        }
         return true
     }
     private fun valueEncoder(id: Int): String {
-//        println("pass value")
         return when(type[id]) {
             "Value" -> value[id]!!
             "String" -> stringEncoder(id)
@@ -181,12 +169,10 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         }
     }
     private fun stringEncoder(id: Int): String {
-//        println("string OK")
         val my:String = value[id] ?: throw Exception("Unknown Data")
         return "\"" + my.replace("\"", "\\\"") + "\""
     }
     private fun arrayEncoder(id: Int): String {
-//        println("array OK")
         val list = array[id] ?: throw Exception("Unknown Data")
         var buff:Array<String> = arrayOf()
         for(item in list){
@@ -195,7 +181,6 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return "[" + buff.joinToString(",") + "]"
     }
     private fun objectEncoder(id: Int): String {
-//        println("object OK")
         var buff:Array<String> = arrayOf()
         for((key, valueId) in structure[id] ?: throw StructureException("")){
             buff += "\"" + key.replace("\"", "\\\"") + "\"" + ":" + valueEncoder(valueId)
@@ -203,13 +188,17 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         return "{" + buff.joinToString(",") + "}"
     }
     fun outJSON():String?{
-//        println(type)
-//        println(structure)
-        return try{
-            valueEncoder(root)
-        }catch(e:Exception){
-            null
-        }
+        println(structure)
+        println(array)
+        println(type)
+        println(value)
+//        try{
+            val text = valueEncoder(root)
+            println(text)
+            return text
+//        }catch(e:Exception){
+//            return null
+//        }
     }
     fun showJSON(): String{
         return outJSON() ?: return "??"
@@ -238,6 +227,10 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
     fun isData(key:String): Boolean{
         return key in (structure[current] ?: throw Exception("data does not exist"))
     }
+    fun isData(index:Int): Boolean{
+        println(array[current])
+        return index < (array[current]?.size ?: throw Exception("data does not exist"))
+    }
     private fun getId(key:String): Int {
         return if (isData(key)){
             structure[current]!![key] ?: throw Exception("data does not exist")
@@ -248,6 +241,13 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             id
         }
     }
+    private fun getId(index:Int): Int {
+        return if (isData(index)){
+            array[current]!![index]
+        }else{
+            throw Exception("Index exceeds array range")
+        }
+    }
     private fun getType(id: Int): String{
         return type[id] ?: throw Exception("can't get type")
     }
@@ -255,25 +255,32 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         val id = getId(key)
         return getType(id)
     }
-    fun move(key: String){
-        val id:Int
-        if(isData(key)) {
-            id = structure[current]?.get(key) ?: throw Exception("data does not exist")
-            if(type[id] != "Object") {
-                type[id] = "Object"
-                structure[id] = mutableMapOf()
-                structure[current]?.set(key, id)
-                value.remove(id)
-            }
-        }else{
-            id = getId(key)
-            type[id] = "Object"
-            structure[id] = mutableMapOf()
-            structure[current]?.set(key, id)
-        }
-        hierarchy += current
-        current = id
+    fun initArray(){
+        array[current] = mutableListOf()
+        type[current] = "Array"
+        structure.remove(current)
+        value.remove(current)
     }
+    fun initObject(){
+        structure[current] = mutableMapOf()
+        type[current] = "Object"
+        array.remove(current)
+        value.remove(current)
+    }
+//    fun move(key: String){
+//        if(type[current] == "Object"){
+//            val id = structure[current]?.get(key) ?: throw Exception("data does not exist")
+//            hierarchy += current
+//            current = id
+//        }
+//    }
+//    fun move(index: Int){
+//        if(type[current] == "Array"){
+//            val id = array[current]!![index]
+//            hierarchy += current
+//            current = id
+//        }
+//    }
     fun moves(vararg keys: String){
         for(key in keys){
             move(key)
@@ -287,6 +294,11 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         myData.move(key)
         return myData
     }
+    fun moveChain(index: Int): MyData{
+        val myData = this.copy()
+        myData.move(index)
+        return myData
+    }
     fun movesChain(vararg keys: String): MyData{
         val myData = this.copy()
         myData.moves(*keys)
@@ -297,13 +309,44 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         myData.moveRoot()
         return myData
     }
-    fun back(){
-        if(hierarchy.size > 0) {
-            current = hierarchy.last()
-            hierarchy.removeLast()
-        }else{
-            current = root
+    fun move(key: String){
+        val id:Int
+        if(key in structure[current]!!){
+            id = structure[current]?.get(key) ?: throw Exception("data does not exist")
+            if (type[id] != "Object" && type[id] != "Array") {
+                type[id] = "Object"
+                structure[id] = mutableMapOf()
+                array.remove(id)
+                value.remove(id)
+            }
+        }else {
+            id = nextC++
+            type[id] = "Object"
+            structure[id] = mutableMapOf()
         }
+        structure[current]?.set(key, id)
+        hierarchy += current
+        current = id
+    }
+    fun move(index: Int){
+        if(type[current] != "Array") {
+            array[current] = mutableListOf()
+            type[current] = "Array"
+            value.remove(current)
+        }
+        val id = getId(index)
+        if(type[id] != "Object") {
+            structure[id] = mutableMapOf()
+            type[id] = "Object"
+            array.remove(id)
+            value.remove(id)
+        }
+        hierarchy += current
+        current = id
+    }
+    fun back(){
+        current = hierarchy.last()
+        hierarchy.removeLast()
     }
     fun backChain(): MyData{
         val myData = this.copy()
@@ -323,6 +366,26 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
     }
     fun getString(key:String): String{
         val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id] ?: throw throw Exception("data does not exist")
+            }
+            "Value" -> {
+                return value[id].toString()
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun getString(index:Int): String {
+        val id = getId(index)
         when(type[id]){
             "Null" -> {
                 throw Exception("Null in non-nullable type")
@@ -361,6 +424,26 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             }
         }
     }
+    fun getStringOrNull(index:Int): String? {
+        val id = getId(index)
+        when(type[id]){
+            "Null" -> {
+                return null
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id] ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id].toString()
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
     fun setString(key:String, v: String?){
         val id = getId(key)
         if(v == null)
@@ -370,8 +453,47 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             value[id] = v
         }
     }
+    fun setString(index:Int, v: String?){
+        val id = getId(index)
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "String"
+            value[id] = v
+        }
+    }
+    fun push(v: String?){
+        val id = nextC++
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "String"
+            value[id] = v
+        }
+        array[current]?.add(id)
+    }
     fun getInt(key:String): Int{
         val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toInt() ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id]?.toInt() ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun getInt(index:Int): Int{
+        val id = getId(index)
         when(type[id]){
             "Null" -> {
                 throw Exception("Null in non-nullable type")
@@ -410,6 +532,26 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             }
         }
     }
+    fun getIntOrNull(index:Int): Int? {
+        val id = getId(index)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toInt()
+            }
+            "Value" -> {
+                return value[id]?.toInt()
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
     fun setInt(key:String, v: Int?){
         val id = getId(key)
         if(v == null)
@@ -418,6 +560,25 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
             type[id] = "Value"
             value[id] = v.toString()
         }
+    }
+    fun setInt(index:Int, v: Int?){
+        val id = getId(index)
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "Value"
+            value[id] = v.toString()
+        }
+    }
+    fun push(v: Int?){
+        val id = nextC++
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "Value"
+            value[id] = v.toString()
+        }
+        array[current]?.add(id)
     }
     fun getDateTime(key:String): LocalDateTime{
         val id = getId(key)
@@ -429,10 +590,30 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
                 throw Exception("is in object form")
             }
             "String" -> {
-                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
             }
             "Value" -> {
-                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun getDateTime(index:Int): LocalDateTime{
+        val id = getId(index)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
             }
             else -> {
                 throw Exception("There is no process corresponding to the type.")
@@ -449,10 +630,30 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
                 throw Exception("is in object form")
             }
             "String" -> {
-                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
             }
             "Value" -> {
-                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd, hh:mm:ss")) ?: throw Exception("Null in non-nullable type")
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun getDateTimeOrNull(index:Int): LocalDateTime? {
+        val id = getId(index)
+        when(type[id]){
+            "Null" -> {
+                return null
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return LocalDateTime.parse(value[id], DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS")) ?: throw Exception("Null in non-nullable type")
             }
             else -> {
                 throw Exception("There is no process corresponding to the type.")
@@ -464,13 +665,42 @@ class MyData constructor(s:MutableMap<Int,MutableMap<String,Int>> = mutableMapOf
         if(v == null)
             type[id] = "Null"
         else{
-            type[id] = "Value"
-            value[id] = v.toString()
+            type[id] = "String"
+            value[id] = v.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"))
         }
     }
-
+    fun setDateTime(index:Int, v: LocalDateTime?){
+        val id = getId(index)
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "String"
+            value[id] = v.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"))
+        }
+    }
+    fun push(v: LocalDateTime?){
+        if(type[current] == "Array"){
+            val id = nextC++
+            if(v == null)
+                type[id] = "Null"
+            else{
+                type[id] = "String"
+                value[id] = v.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"))
+            }
+            array[current]?.add(id)
+        }else{
+            throw Exception("current is not an array")
+        }
+    }
+    fun push(myData: MyData){
+        if(type[current] == "Array"){
+            array[current]?.add(myData.root)
+        }else{
+            throw Exception("current is not an array")
+        }
+    }
     fun copy(): MyData{
-        return MyData(structure,type,array,value,root,hierarchy,current)
+        return MyData(root,current,hierarchy)
     }
 }
 

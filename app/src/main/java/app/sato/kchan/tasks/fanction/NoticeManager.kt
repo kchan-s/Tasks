@@ -59,6 +59,7 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
                 nextTempId++
             } while(res.next())
         }
+        point = 0
     }
     fun searchByServiceId(serviceId: Int){
         idList.clear()
@@ -90,18 +91,60 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
                 nextTempId++
             } while(res.next())
         }
+        point = 0
+    }
+    fun searchByLocation(location:Location){
+        idList.clear()
+        tempList = mutableMapOf()
+        val locationPick = location.getPick()
+        val res = DataOperator().selectQuery(
+            table = "notice",
+            column = arrayOf("notice_id", "service_id"),
+            filter = arrayOf(
+                mutableMapOf(
+                    "column" to "place_id",
+                    "value" to locationPick["place_id"],
+                    "compare" to "Equal"
+                ),
+                mutableMapOf(
+                    "column" to "place_service_id",
+                    "value" to locationPick["service_id"],
+                    "compare" to "Equal"
+                ),
+                mutableMapOf(
+                    "compare" to "equation",
+                    "equation" to "status_flag & ~(1 << 31) = 0"
+                )
+            ),
+            sort = arrayOf(mutableMapOf(
+                "column" to "create_at",
+                "type" to "ASC"
+            ))
+        )
+        if(res.isResult()){
+            do{
+                val key = "notice_" + nextTempId.toString()
+                tempList[key] = res.getStringMap().toMutableMap()
+                idList.add(key)
+                nextTempId++
+            } while(res.next())
+        }
+        point = 0
     }
     fun select(index:Int){
         idList = mutableListOf(idList[index])
+        point = 0
     }
     fun selectByTempId(tempId:String){
         idList = mutableListOf(tempId)
+        point = 0
     }
     fun addSelectByTempId(tempId:String){
         idList.add(tempId)
     }
     fun deselection(){
         idList.clear()
+        point = 0
     }
     fun getNoticeNumber():Int{
         return idList.size
@@ -122,6 +165,24 @@ class NoticeManager public constructor(il : MutableList<String> = mutableListOf(
     fun getNotice(): Notice? {
         val pick = getPick() ?: return null
         return Notice(pick)
+    }
+    fun getNote(): Array<Note> {
+        val res = DataOperator().selectQuery(
+            table = "note",
+            column = arrayOf("note_id", "service_id"),
+            pick = getPick() ?: return arrayOf(),
+            sort = arrayOf(mutableMapOf(
+                "column" to "create_at",
+                "type" to "ASC"
+            ))
+        )
+        var note:Array<Note> = arrayOf()
+        if(res.setResultTop()){
+            do{
+                note += Note(res.getStringMap().toMutableMap())
+            } while(res.next())
+        }
+        return note
     }
     fun getTempId():String{
         return idList[point]

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.SettingActivityBinding
 import app.sato.kchan.tasks.fanction.Util
 import app.sato.kchan.tasks.fanction.ConnectionWrapper
+import app.sato.kchan.tasks.fanction.DataOperator
 import app.sato.kchan.tasks.fanction.MyData
 import kotlinx.coroutines.launch
 
@@ -72,6 +73,10 @@ class SettingActivity : AppCompatActivity() {
             val res: String = data.outJSON() ?: throw Exception("")
             println(res)
             return res
+
+            DataOperator().deleteQuery("account")
+            DataOperator().deleteQuery("setting")
+            DataOperator().deleteQuery("service")
 
         }
 

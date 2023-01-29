@@ -66,6 +66,7 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 nextTempId++
             } while(res.next())
         }
+        point = 0
     }
     fun searchByRadius(latitude:Float, longitude:Float, radius:Int, option:Array<String> = arrayOf()){
         idList.clear()
@@ -109,15 +110,19 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                 nextTempId++
             } while(res.next())
         }
+        point = 0
     }
     fun select(index:Int){
         idList = mutableListOf(idList[index])
+        point = 0
     }
     fun selectByTempId(tempId:String){
         idList.add(tempId)
+        point = 0
     }
     fun deselection(){
         idList.clear()
+        point = 0
     }
 
     fun getLocationNumber():Int {

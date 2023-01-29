@@ -15,7 +15,11 @@ class DataOperator(){
     val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase
     //<初期化処理>
-    init {}
+    init {
+//        database.delete("account", null, null)
+//        database.delete("setting", null, null)
+//        database.delete("service", null, null)
+    }
     //<メソッド>
     fun insertQuery(table:String, value:Map<String,String?>) {
         val values = ContentValues()
@@ -156,12 +160,12 @@ class DataOperator(){
             val no: Int = getNumber(column)
             return getBoolean(no)
         }
-        fun getBlob(no:Int = 0): ByteArray? {
+        fun getByte(no:Int = 0): ByteArray? {
             return cursor.getBlob(no)
         }
-        fun getBlob(column:String): ByteArray? {
+        fun getByte(column:String): ByteArray? {
             val no: Int = getNumber(column)
-            return getBlob(no)
+            return getByte(no)
         }
         fun getDateTime(no:Int = 0): LocalDateTime? {
             val dt = cursor.getString(no) ?: return null
@@ -314,6 +318,46 @@ class DataOperator(){
 //        }
 //        database.execSQL(sql, vl)
 //        return 0
+    }
+    fun deleteQuery(table:String, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf()):Int {
+        var vl = arrayOf<String?>()
+        var sql = ""
+        var c = 0
+        for ((k, v) in pick) {
+            if(c > 0)
+                sql += " AND "
+            sql += k + " = ?"
+            vl += v
+            c++
+        }
+        for (fil in filter) {
+            if(c > 0)
+                sql += " AND "
+            when(fil["compare"]) {
+                "Big" -> {
+                    sql += fil["column"] + " > ?"
+                    vl += fil["value"].toString()
+                }
+                "Small" -> {
+                    sql += fil["column"] + " < ?"
+                    vl += fil["value"].toString()
+                }
+                "Equal" -> {
+                    sql += fil["column"] + " = ?"
+                    vl += fil["value"].toString()
+                }
+                "Like" -> {
+                    sql += fil["column"] + " LIKE ?"
+                    vl += fil["value"].toString()
+                }
+                "Equation" -> {
+                    sql += fil["equation"]
+                }
+                else -> throw Exception("そんな比較演算子使えない!! " + fil["compare"])
+            }
+            c++
+        }
+        return database.delete("service", sql, vl)
     }
     fun sync() {
 
