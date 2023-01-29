@@ -110,8 +110,10 @@ class LocationManager public constructor(il : MutableList<String> = mutableListO
                     res.getDouble("longitude"), distance)
                 if(radius >= distance[0]) {
                     val key = "location_" + nextTempId.toString()
-                    val buf = res.getStringMap()
-                    tempList[key] = buf.toMutableMap()
+                    val buf = res.getStringMap().toMutableMap()
+                    buf.remove("latitude")
+                    buf.remove("longitude")
+                    tempList[key] = buf
                     idList.add(key)
                     nextTempId++
                 }
