@@ -60,6 +60,9 @@ class DeleteActivity: AppCompatActivity() {
     private fun deleteButton_onClick() {
         for (i in 0 until DeleteMemoListAdapter.selectedItem.size) {
             nm.receive(DeleteMemoListAdapter.selectedItem[i])
+            val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
+            val cancelUuid = sharedPreferences.getInt(nm.send(), -1)
+            if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
             nm.delete()
         }
         DeleteMemoListAdapter.selectedItem.clear()

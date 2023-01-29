@@ -18,7 +18,6 @@ import java.util.*
 class AlarmNotification : BroadcastReceiver() {
     // データを受信した
     override fun onReceive(context: Context, intent: Intent) {
-        println("receive!!!")
         val id = intent.getIntExtra("id", 0)
         val deleteTime = intent.getLongExtra("deleteTime", 0)
 
@@ -30,14 +29,14 @@ class AlarmNotification : BroadcastReceiver() {
             context, id, mainIntent,
             0
         )
-        val channelId = "TaSks"
+        val channelId = "notice"
         // app name
         val title = intent.getStringExtra("title")
         val message = intent.getStringExtra("content")
 
         // Notification　Channel 設定
         val channel = NotificationChannel(
-            channelId, title,
+            channelId, "通知",
             NotificationManager.IMPORTANCE_DEFAULT
         )
         val notificationManager =

@@ -23,6 +23,9 @@ class HomeActivity : AppCompatActivity() {
         loadTheme()
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        val foregroundServiceIntent = Intent(this, ForegroundNotificationService::class.java)
+        this.startForegroundService(foregroundServiceIntent)
+
         // 以下リストの設定
         val recyclerView = binding.homeList
         recyclerView.adapter = adapter

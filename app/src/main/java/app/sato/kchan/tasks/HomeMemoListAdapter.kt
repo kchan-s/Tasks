@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -46,6 +47,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+
         val note: Note
 
         if (!search)  {
@@ -80,16 +82,32 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val completeNoteManager = nm.copy()
         completeNoteManager.select(position)
         val note = completeNoteManager.getNote()!!
+        val sharedPreferences = HomeActivity.context.getSharedPreferences("app_notification_id",
+            AppCompatActivity.MODE_PRIVATE
+        )
         if (note.isComplete()) {
             note.setUncomplete()
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
             viewHolder.checkBox.setBackgroundColor(Color.WHITE)
             viewHolder.list.setBackgroundColor(Color.WHITE)
+            if (note.getNoticeShow() != null) {
+                val editor = sharedPreferences.edit()
+                val uuid = UUID.randomUUID().hashCode()
+                editor.putInt(nm.send(), uuid)
+                editor.commit()
+                ForegroundNotificationService().setAlarm(
+                    HomeActivity.context,
+                    note,
+                    uuid
+                )
+            }
         } else {
             note.setComplete()
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
             viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
             viewHolder.list.setBackgroundColor(Color.LTGRAY)
+            val cancelUuid = sharedPreferences.getInt(nm.send(), -1)
+            if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(HomeActivity.context, cancelUuid)
         }
     }
 

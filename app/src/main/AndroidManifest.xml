@@ -92,6 +92,9 @@
             android:name=".AlarmNotification"
             android:process=":remote" >
         </receiver>
+
+        <service android:name=".ForegroundNotificationService"
+            android:foregroundServiceType="location"/>
     </application>
 
 </manifest>
