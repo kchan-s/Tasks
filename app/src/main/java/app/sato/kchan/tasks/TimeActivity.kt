@@ -23,13 +23,13 @@ import java.util.*
 class TimeActivity: AppCompatActivity(){
     private lateinit var binding: TimeActivityBinding
 
-    val nm = NoteManager()
+    val noteManager = NoteManager()
     var startDateTime: LocalDateTime? = null
     var endDateTime: LocalDateTime? = null
     var start = true // falseならend
     var startDateTimeList = mutableListOf<Int>()
     var endDateList = mutableListOf<Int>()
-    var note = ""
+    var received = ""
 
     // 画面生成
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,9 +37,9 @@ class TimeActivity: AppCompatActivity(){
         loadTheme()
         binding = TimeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        note = intent.getStringExtra("note").toString()
-        nm.receive(note)
-        val receivedNote = nm.getNote()!!
+        received = intent.getStringExtra("received").toString()
+        noteManager.receive(received)
+        val receivedNote = noteManager.getNote()!!
 
         val startTime = receivedNote.getNoticeShow()
         if (startTime != null) {
@@ -105,23 +105,23 @@ class TimeActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
             when (item.itemId) {
                 android.R.id.home -> {
-                    val receivedNote = nm.getNote()!!
+                    val note = noteManager.getNote()!!
                     if (startDateTime == null && endDateTime == null) {
-                        receivedNote.setNoticeShow(null)
-                        receivedNote.setNoticeHide(null)
+                        note.setNoticeShow(null)
+                        note.setNoticeHide(null)
                     } else {
                         val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-                        val cancelUuid = sharedPreferences.getInt(nm.send(), -1)
+                        val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
                         if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
 
-                        if (!receivedNote.isComplete()) {
+                        if (!note.isComplete()) {
                             val editor = sharedPreferences.edit()
                             val uuid = UUID.randomUUID().hashCode()
-                            editor.putInt(nm.send(), uuid)
+                            editor.putInt(noteManager.send(), uuid)
                             editor.commit()
                             ForegroundNotificationService().setAlarm(
                                 applicationContext,
-                                receivedNote,
+                                note,
                                 uuid
                             )
                         }
@@ -194,7 +194,7 @@ class TimeActivity: AppCompatActivity(){
             calendar.set(Calendar.HOUR_OF_DAY, hour)
             calendar.set(Calendar.MINUTE, minute)
             val showFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-            val n = nm.getNote()!!
+            val n = noteManager.getNote()!!
 
             if (start) {
                 startDateTimeList.add(3, hour)

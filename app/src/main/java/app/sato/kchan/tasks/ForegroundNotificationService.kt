@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.ACTION_SEND
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -19,19 +20,36 @@ import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.schedule
 
+
 class ForegroundNotificationService : Service() , LocationListener{
     lateinit var context: Context
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
+    override fun onStartCommand(intent: Intent?, flag: Int, startId: Int): Int {
+        super.onStartCommand(intent, flag, startId)
 
         context = applicationContext
         val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val foregroundNotificationChannel =
             NotificationChannel("foregroundService", "TaSks", NotificationManager.IMPORTANCE_MIN)
         manager.createNotificationChannel(foregroundNotificationChannel)
+
+        val sendIntent = Intent(this, LocationBroadcastReceiver::class.java).apply {
+            action = ACTION_SEND
+        }
+
+        val mainIntent = Intent(context, HomeActivity::class.java).apply() {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent =
+            PendingIntent.getActivity(context, 0, mainIntent, 0)
+
+        val sendPendingIntent = PendingIntent.getBroadcast(this, 0, sendIntent, 0)
         val foregroundNotification = Notification.Builder(this, "foregroundService")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("TaSks")
+            .setContentText("位置情報取得・同期実行中…")
+            .setContentIntent(pendingIntent)
+            .addAction(R.drawable.ic_launcher_foreground, "位置情報取得・同期実行を停止する", sendPendingIntent)
             .build()
 
         startForeground(1, foregroundNotification)
@@ -179,13 +197,15 @@ class ForegroundNotificationService : Service() , LocationListener{
         locationManager.searchByRadius(
             location.latitude.toFloat(),
             location.longitude.toFloat(),
-            1
+            1000
         )
+        println("o")
 
         if (locationManager.isLocation()) {
             println("a")
             println(locationManager.getLocation()!!.getName())
             noticeManager.searchByLocation(locationManager.getLocation()!!)
+            println(noticeManager.getNoticeNumber())
             if (noticeManager.getNoticeNumber() != 0) {
                 println("u")
                 val note = noticeManager.getNote()!!
@@ -208,7 +228,7 @@ class ForegroundNotificationService : Service() , LocationListener{
                 notificationManager.createNotificationChannel(channel)
 
                 //通知オブジェクトの作成
-                var builder = NotificationCompat.Builder(context, channelId)
+                val builder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
                     .setContentTitle(note.getTitle())
                     .setContentText(note.getContent())

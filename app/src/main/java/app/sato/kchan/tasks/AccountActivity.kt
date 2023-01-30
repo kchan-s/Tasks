@@ -20,12 +20,12 @@ class AccountActivity: AppCompatActivity(){
 
         // アカウント切り替えボタンを押した時の処理
         binding.accountChangeButton.setOnClickListener {
-            accountChangeButton_onClick()
+            accountChangeButtonOnClick()
         }
 
         // パスワード設定ボタンを押した時の処理
         binding.accountPasswordSettingButton.setOnClickListener {
-            passwordButton_onClick()
+            passwordButtonOnClick()
         }
 
         val toolbar = binding.accountToolbar
@@ -38,31 +38,29 @@ class AccountActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                // 応急処置 もっといい方法があるかも？
                 val intent = Intent(this, HomeActivity::class.java)
                 startActivity(intent)
-//                finish()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    //画面遷移　ログインへ
-    private fun accountChangeButton_onClick() {
-        val login = Intent(this, LoginActivity::class.java)
-        startActivity(login)
+    //　ログイン画面遷移
+    private fun accountChangeButtonOnClick() {
+        val loginIntent = Intent(this, LoginActivity::class.java)
+        startActivity(loginIntent)
     }
 
-    //画面遷移　パスワード　設定OR初期設定
-    private fun passwordButton_onClick() {
-        val aPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
-        val passwordInitialize = aPreferences.getBoolean("passwordInitialize", true)
-        if (passwordInitialize) {
-            val passIni = Intent(this, PasswordInitializeActivity::class.java)
-            startActivity(passIni)
+    //　パスワード初期設定・変更画面遷移
+    private fun passwordButtonOnClick() {
+        val passwordInitializeSharedPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
+        val isPasswordInitialized = passwordInitializeSharedPreferences.getBoolean("passwordInitialize", true)
+        if (isPasswordInitialized) {
+            val passwordInitializeIntent = Intent(this, PasswordInitializeActivity::class.java)
+            startActivity(passwordInitializeIntent)
         } else {
-            val passCha = Intent(this, PasswordChangeActivity::class.java)
-            startActivity(passCha)
+            val passwordChangeIntent = Intent(this, PasswordChangeActivity::class.java)
+            startActivity(passwordChangeIntent)
         }
     }
 

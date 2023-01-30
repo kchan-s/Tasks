@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 
 class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHolder>() {
 
-    val nm = NoteManager()
+    val noteManager = NoteManager()
     
     companion object {
         val selectedItem = mutableListOf<String>()
@@ -24,7 +24,7 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         val titleText: TextView = view.findViewById(R.id.delete_list_title_text)
         val noticeText: TextView = view.findViewById(R.id.delete_list_notice_text)
         val locationText: TextView = view.findViewById(R.id.delete_list_location_text)
-        val memo: LinearLayout = view.findViewById(R.id.delete_memo)
+        val memoList: LinearLayout = view.findViewById(R.id.delete_memo)
         val lockImage: ImageView = view.findViewById(R.id.delete_list_lock_image)
     }
 
@@ -35,35 +35,35 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        nm.select(position)
-        val n = nm.getNote()!!
-        viewHolder.titleText.text = n.getTitle()
+        noteManager.select(position)
+        val note = noteManager.getNote()!!
+        viewHolder.titleText.text = note.getTitle()
 
-        val startTime = n.getNoticeShow()
-        val stopTime = n.getNoticeHide()
-        val location = n.getNoticeLocation()
-        val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+        val startTime = note.getNoticeShow()
+        val stopTime = note.getNoticeHide()
+        val location = note.getNoticeLocation()
+        val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
-        if (startTime != null && stopTime != null) viewHolder.noticeText.text = "${startTime.format(f)} 〜 ${stopTime.format(f)}"
-        else if (startTime != null) viewHolder.noticeText.text = startTime.format(f)
+        if (startTime != null && stopTime != null) viewHolder.noticeText.text = "${startTime.format(dateTimeFormat)} 〜 ${stopTime.format(dateTimeFormat)}"
+        else if (startTime != null) viewHolder.noticeText.text = startTime.format(dateTimeFormat)
 
         if (location != null) viewHolder.locationText.text = location.getName()
 
-        if (n.isLock()) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
+        if (note.isLock()) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_open_24)
 
         viewHolder.itemView.setOnClickListener { v ->
             val touchPosition = viewHolder.adapterPosition
-            val deleteNoteManager = nm.copy()
+            val deleteNoteManager = noteManager.copy()
             deleteNoteManager.select(touchPosition)
 
             v.setOnClickListener {
                 if (!deleteNoteManager.getNote()!!.isLock()) {
                     if (isSelectedItem(deleteNoteManager.send())) {
-                        viewHolder.memo.setBackgroundColor(Color.WHITE)
+                        viewHolder.memoList.setBackgroundColor(Color.WHITE)
                         removeSelectedItem(deleteNoteManager.send())
                     } else {
-                        viewHolder.memo.setBackgroundColor(Color.LTGRAY)
+                        viewHolder.memoList.setBackgroundColor(Color.LTGRAY)
                         addSelectedItem(deleteNoteManager.send())
                     }
                 }
@@ -72,8 +72,8 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     override fun getItemCount(): Int {
-        nm.search("")
-        return nm.getNoteNumber()
+        noteManager.search("")
+        return noteManager.getNoteNumber()
     }
 
     //指定されたPositionのアイテムが選択済みか確認する

@@ -13,21 +13,21 @@ class EditActivity : AppCompatActivity() {
         var new = false
     }
     private lateinit var binding: EditActivityBinding
-    val nm = NoteManager()
-    var note = ""
+    val noteManager = NoteManager()
+    var received = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = EditActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        note = intent.getStringExtra("note").toString()
+        received = intent.getStringExtra("received").toString()
 
         if (!new) {
-            nm.receive(note)
-            val n = nm.getNote()!!
-            binding.editTitleEdit.setText(n.getTitle())
-            binding.editMemoEdit.setText(n.getContent())
+            noteManager.receive(received)
+            val receivedNote = noteManager.getNote()!!
+            binding.editTitleEdit.setText(receivedNote.getTitle())
+            binding.editMemoEdit.setText(receivedNote.getContent())
         }
 
         val toolbar = binding.editToolbar
@@ -50,26 +50,26 @@ class EditActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_delete -> {
                 //削除押下
-                deleteButton_onClick()
+                deleteButtonOnClick()
             }
             R.id.menu_time -> {
                 //時間通知押下
-                noticeButton_onClick()
+                noticeButtonOnClick()
             }
             R.id.menu_spot -> {
                 //場所通知押下
-                locationButton_onClick()
+                locationButtonOnClick()
             }
             android.R.id.home -> {
                 if (new && binding.editTitleEdit.text.toString() != "") {
-                    val note = nm.create()
-                    note.setTitle(binding.editTitleEdit.text.toString())
-                    note.setContent(binding.editMemoEdit.text.toString())
-                    note.setNoticeShow(null)
-                    note.setNoticeHide(null)
-                    note.setNoticeLocation(null)
+                    val newNote = noteManager.create()
+                    newNote.setTitle(binding.editTitleEdit.text.toString())
+                    newNote.setContent(binding.editMemoEdit.text.toString())
+                    newNote.setNoticeShow(null)
+                    newNote.setNoticeHide(null)
+                    newNote.setNoticeLocation(null)
                 } else if (!new) {
-                    val note = nm.getNote()!!
+                    val note = noteManager.getNote()!!
                     note.setTitle(binding.editTitleEdit.text.toString())
                     note.setContent(binding.editMemoEdit.text.toString())
                 }
@@ -80,26 +80,26 @@ class EditActivity : AppCompatActivity() {
     }
 
     //削除
-    private fun deleteButton_onClick() {
-        val note = nm.getNote()!!
+    private fun deleteButtonOnClick() {
+        val note = noteManager.getNote()!!
         val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-        val cancelUuid = sharedPreferences.getInt(nm.send(), -1)
+        val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
         if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
         note.delete()
         finish()
     }
 
     //画面遷移　時間通知
-    private fun noticeButton_onClick() {
+    private fun noticeButtonOnClick() {
         intent = Intent(this, TimeActivity::class.java)
-        intent.putExtra("note", note)
+        intent.putExtra("received", received)
         startActivity(intent)
     }
 
     //画面遷移　場所通知
-    private fun locationButton_onClick() {
+    private fun locationButtonOnClick() {
         intent = Intent(this, LocationActivity::class.java)
-        intent.putExtra("note", note)
+        intent.putExtra("received", received)
         startActivity(intent)
     }
 

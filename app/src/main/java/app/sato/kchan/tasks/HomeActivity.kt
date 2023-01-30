@@ -37,34 +37,33 @@ class HomeActivity : AppCompatActivity() {
         // 検索バーの設定
         binding.homeSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText != "") {
+                return if (newText != "") {
                     HomeMemoListAdapter.searchNote.clear()
                     HomeMemoListAdapter().searchRequest(newText)
                     adapter.notifyDataSetChanged()
-                    return false
+                    false
                 } else {
                     HomeMemoListAdapter.search = false
                     adapter.notifyDataSetChanged()
-                    return false
+                    false
                 }
             }
             override fun onQueryTextSubmit(query: String): Boolean { return false }
-//          listUpdate()
         })
 
         // 設定ボタンタップ処理
         binding.homeSettingButton.setOnClickListener {
-            settingButton_onClick()
+            settingButtonOnClick()
         }
 
         // 削除ボタンタップ処理
         binding.homeTrashButton.setOnClickListener {
-            deleteButton_onClick()
+            deleteButtonOnClick()
         }
 
         // 新規作成ボタンタップ処理
         binding.homeCreateMemoButton.setOnClickListener {
-            newButton_onClick()
+            newButtonOnClick()
         }
     }
 
@@ -76,19 +75,19 @@ class HomeActivity : AppCompatActivity() {
     }
 
     //画面遷移　設定へ
-    private fun settingButton_onClick() {
+    private fun settingButtonOnClick() {
         val settingIntent = Intent(this, SettingActivity::class.java)
         startActivity(settingIntent)
     }
 
     //画面遷移　削除へ
-    private fun deleteButton_onClick() {
+    private fun deleteButtonOnClick() {
         val deleteIntent = Intent(this, DeleteActivity::class.java)
         startActivity(deleteIntent)
     }
 
     //新規作成
-    private fun newButton_onClick() {
+    private fun newButtonOnClick() {
         EditActivity.new = true
         val newIntent = Intent(this, EditActivity::class.java)
         startActivity(newIntent)

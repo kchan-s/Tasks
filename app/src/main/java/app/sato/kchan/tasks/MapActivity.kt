@@ -35,10 +35,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var fusedLocationProviderClient : FusedLocationProviderClient
     var locationCallback: LocationCallback? = null
 
-    var note = ""
+    var received = ""
     var first = true
-    var mFirst = true // marker生成が初めてか
-    var newLocation = LatLng(0.0, 0.0) // 登録されているなら読み込み
+    var markerFirst = true // marker生成が初めてか
+    var newLocation = LatLng(0.0, 0.0)
     lateinit var marker: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +46,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         loadTheme()
         binding = MapActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        note = intent.getStringExtra("note").toString()
+        received = intent.getStringExtra("received").toString()
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -65,7 +65,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home -> {
-                if (!mFirst) {
+                if (!markerFirst) {
                     val addressLine =
                         doReverseGeoCoding(newLocation.latitude, newLocation.longitude).get(0)
                             .getAddressLine(0).toString()
@@ -94,9 +94,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         checkPermission()
 
         if (notice) {
-            val nm = NoteManager()
-            nm.receive(note.toString())
-            val n = nm.getNote()!!
+            val noteManager = NoteManager()
+            noteManager.receive(received)
+            val n = noteManager.getNote()!!
             val noteLocation = n.getNoticeLocation()
 
             if (noteLocation != null) {
@@ -105,13 +105,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 marker = mMap.addMarker(
                     MarkerOptions().position(newLocation).title(noteLocation.getAddress())
                 )!!
-                mFirst = false
+                markerFirst = false
             }
         }
 
         mMap.setOnMapLongClickListener { longpushLocation: LatLng ->
-            if (!mFirst) marker.remove()
-            else mFirst = false
+            if (!markerFirst) marker.remove()
+            else markerFirst = false
             newLocation = LatLng(longpushLocation.latitude, longpushLocation.longitude)
             marker = mMap.addMarker(MarkerOptions().position(newLocation).title("" + longpushLocation.latitude + " :" + longpushLocation.longitude))!!
         }
@@ -180,13 +180,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun doGeoCoding(query: String): MutableList<Address> {
-        val gcoder = Geocoder(this, Locale.getDefault())
-        return gcoder.getFromLocationName(query, 1)
+        val gCoder = Geocoder(this, Locale.getDefault())
+        return gCoder.getFromLocationName(query, 1)
     }
 
     private fun doReverseGeoCoding(lat: Double, lng: Double) : MutableList<Address>{
-        val gcoder = Geocoder(this, Locale.getDefault())
-        return gcoder.getFromLocation(lat, lng, 1)
+        val gCoder = Geocoder(this, Locale.getDefault())
+        return gCoder.getFromLocation(lat, lng, 1)
     }
 
     private fun loadTheme() {

@@ -18,15 +18,15 @@ import java.util.*
 class AlarmNotification : BroadcastReceiver() {
     // データを受信した
     override fun onReceive(context: Context, intent: Intent) {
-        val id = intent.getIntExtra("id", 0)
+        val notificationId = intent.getIntExtra("id", 0)
         val deleteTime = intent.getLongExtra("deleteTime", 0)
 
-        val mainIntent = Intent(context, HomeActivity::class.java).apply(){
+        val homeIntent = Intent(context, HomeActivity::class.java).apply(){
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            context, id, mainIntent,
+            context, notificationId, homeIntent,
             0
         )
         val channelId = "notice"
@@ -72,6 +72,6 @@ class AlarmNotification : BroadcastReceiver() {
 
         // 通知
 
-        notificationManagerCompat.notify(id, notification)
+        notificationManagerCompat.notify(notificationId, notification)
     }
 }

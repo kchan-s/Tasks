@@ -51,7 +51,7 @@ class LoginActivity: AppCompatActivity(){
         })
 
         binding.loginDoneButton.setOnClickListener {
-            loginButton_onClick()
+            loginButtonOnClick()
         }
 
         val toolbar = binding.loginToolbar
@@ -71,7 +71,7 @@ class LoginActivity: AppCompatActivity(){
     }
 
     //ログイン
-    private fun loginButton_onClick() {
+    private fun loginButtonOnClick() {
         if (binding.loginIdEdit.text.toString() != "" &&  binding.loginPasswordEdit.text.toString() != "") {
             val login = account.login(binding.loginIdEdit.text.toString(), binding.loginPasswordEdit.text.toString())
             if (login) finish()

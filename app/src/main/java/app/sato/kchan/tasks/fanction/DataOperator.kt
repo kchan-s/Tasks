@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.Exception
 
 
-abstract class DataOperator(){
+class DataOperator(){
 
     //<プロパティ>
     val dbHelper = DBHelper(context, "DB", null, 1);

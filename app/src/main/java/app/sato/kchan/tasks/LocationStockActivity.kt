@@ -1,9 +1,12 @@
 package app.sato.kchan.tasks
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.LocationStockActivityBinding
@@ -28,7 +31,7 @@ class LocationStockActivity: AppCompatActivity(){
 
         // LocationStockRegisterActivityへの遷移
         binding.locationStockRegisterButton.setOnClickListener {
-            createButton_onClick()
+            createButtonOnClick()
         }
 
         val toolbar = binding.locationStockToolbar
@@ -52,9 +55,9 @@ class LocationStockActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-    private fun createButton_onClick() {
-        val intent = Intent(this, LocationStockRegisterActivity::class.java)
-        startActivity(intent)
+    private fun createButtonOnClick() {
+        val locationStockRegisterIntent = Intent(this, LocationStockRegisterActivity::class.java)
+        startActivity(locationStockRegisterIntent)
     }
 
     private fun loadTheme() {

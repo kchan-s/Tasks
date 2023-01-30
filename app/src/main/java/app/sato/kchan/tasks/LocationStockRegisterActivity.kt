@@ -1,6 +1,8 @@
 package app.sato.kchan.tasks
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import app.sato.kchan.tasks.databinding.LocationStockRegisterActivityBinding
 import app.sato.kchan.tasks.fanction.LocationManager
 import java.util.*
@@ -31,11 +34,11 @@ class LocationStockRegisterActivity: AppCompatActivity(){
         binding = LocationStockRegisterActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         binding.locationStockRegisterMapButton.setOnClickListener {
-            mapButton_onClick()
+            mapButtonOnClick()
         }
 
         binding.locationStockRegisterDoneButton.setOnClickListener {
-            registerButton_onClick()
+            registerButtonOnClick()
         }
 
         val toolbar = binding.locationStockRegisterToolbar
@@ -59,26 +62,25 @@ class LocationStockRegisterActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-    private fun mapButton_onClick() {
-        val map = Intent(this, MapActivity::class.java)
-        resultLauncher.launch(map)
+    private fun mapButtonOnClick() {
+        val mapIntent = Intent(this, MapActivity::class.java)
+        resultLauncher.launch(mapIntent)
     }
 
-    private fun registerButton_onClick() {
+    private fun registerButtonOnClick() {
         val locationName = binding.locationStockRegisterNameEdit.text.toString()
         val locationAddress = binding.locationStockRegisterAddressEdit.text.toString()
 
-        val lm = LocationManager()
+        val locationManager = LocationManager()
         if (locationName != "" && locationAddress != "") {
-            val l = lm.create()
-            val coordinate: MutableList<Address>
-            if (address != "") coordinate = doGeoCoding(address)
-            else coordinate = doGeoCoding(binding.locationStockRegisterAddressEdit.text.toString())
-            l.setName(locationName)
-            l.setAddress(locationAddress)
-            l.setLongitude(coordinate[0].latitude.toFloat())
-            l.setLongitude(coordinate[0].longitude.toFloat())
-            l.setPermanent()
+            val location = locationManager.create()
+            val coordinate = if (address != "") doGeoCoding(address)
+            else doGeoCoding(binding.locationStockRegisterAddressEdit.text.toString())
+            location.setName(locationName)
+            location.setAddress(locationAddress)
+            location.setLongitude(coordinate[0].latitude.toFloat())
+            location.setLongitude(coordinate[0].longitude.toFloat())
+            location.setPermanent()
             finish()
         } else {
             Toast.makeText(this, "必要項目を全て埋めてください", Toast.LENGTH_LONG).show()
@@ -86,8 +88,8 @@ class LocationStockRegisterActivity: AppCompatActivity(){
     }
 
     private fun doGeoCoding(query: String): MutableList<Address> {
-        val gcoder = Geocoder(this, Locale.getDefault())
-        return gcoder.getFromLocationName(query, 1)
+        val gCoder = Geocoder(this, Locale.getDefault())
+        return gCoder.getFromLocationName(query, 1)
     }
 
     private fun loadTheme() {

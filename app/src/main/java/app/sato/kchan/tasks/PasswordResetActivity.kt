@@ -23,7 +23,7 @@ class PasswordResetActivity: AppCompatActivity(){
 
         // 設定完了ボタンタップ処理
         binding.passwordResetDoneButton.setOnClickListener {
-            changeButton_onClick()
+            changeButtonOnClick()
         }
 
         binding.passwordResetNewEdit.addTextChangedListener(object: TextWatcher {
@@ -32,12 +32,16 @@ class PasswordResetActivity: AppCompatActivity(){
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (p0.length < 8) {
-                    binding.passwordResetNewLayout.error = "8文字以上入力してください"
-                } else if (p0.length >= 50) {
-                    binding.passwordResetNewLayout.error = "50文字以下で設定してください"
-                } else {
-                    binding.passwordResetNewLayout.error = null
+                when {
+                    p0.length < 8 -> {
+                        binding.passwordResetNewLayout.error = "8文字以上入力してください"
+                    }
+                    p0.length >= 50 -> {
+                        binding.passwordResetNewLayout.error = "50文字以下で設定してください"
+                    }
+                    else -> {
+                        binding.passwordResetNewLayout.error = null
+                    }
                 }
             }
         })
@@ -48,12 +52,16 @@ class PasswordResetActivity: AppCompatActivity(){
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (p0.length < 8) {
-                    binding.passwordResetVerificationLayout.error = "8文字以上入力してください"
-                } else if (p0.length >= 50) {
-                    binding.passwordResetVerificationLayout.error = "50文字以下で設定してください"
-                } else {
-                    binding.passwordResetVerificationLayout.error = null
+                when {
+                    p0.length < 8 -> {
+                        binding.passwordResetVerificationLayout.error = "8文字以上入力してください"
+                    }
+                    p0.length >= 50 -> {
+                        binding.passwordResetVerificationLayout.error = "50文字以下で設定してください"
+                    }
+                    else -> {
+                        binding.passwordResetVerificationLayout.error = null
+                    }
                 }
             }
         })
@@ -74,7 +82,7 @@ class PasswordResetActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-    private fun changeButton_onClick() {
+    private fun changeButtonOnClick() {
         val answer1 = binding.passwordResetAnswer1Edit.text.toString()
         val answer2 = binding.passwordResetAnswer2Edit.text.toString()
         val answer3 = binding.passwordResetAnswer3Edit.text.toString()

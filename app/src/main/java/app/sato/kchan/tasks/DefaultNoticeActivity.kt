@@ -35,7 +35,7 @@ class DefaultNoticeActivity: AppCompatActivity(){
             }
         }
 
-        // 時間設定部分押した時の処理
+        // 押した時の処理
         binding.defaultNoticeStartTime.setOnClickListener {
             start = true
             showTimePickerDialog()

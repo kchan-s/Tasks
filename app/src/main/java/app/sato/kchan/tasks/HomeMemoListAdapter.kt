@@ -22,7 +22,7 @@ import java.util.*
 
 class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
 
-    val nm = NoteManager()
+    val noteManager = NoteManager()
 
     companion object {
         var searchNote = mutableListOf<Note?>()
@@ -47,42 +47,39 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
-        val note: Note
-
-        if (!search)  {
-            nm.select(position)
-            note = nm.getNote()!!
+        val note = if (!search)  {
+            noteManager.select(position)
+            noteManager.getNote()!!
         } else {
-            note = searchNote[position]!!
+            searchNote[position]!!
         }
         dataSet(viewHolder, note)
 
-            viewHolder.itemView.setOnClickListener { v ->
-                var adapterPosition = viewHolder.adapterPosition
+        viewHolder.itemView.setOnClickListener { v ->
+            val adapterPosition = viewHolder.adapterPosition
 
-                // リスト内の完了・未完了のチェックボックスタップ処理
-                viewHolder.checkBox.setOnClickListener {
-                    completeButton_onClick(viewHolder, position)
-                }
-
-                // リスト内のロック部分のタップ処理
-                viewHolder.lockImageView.setOnClickListener {
-                    lockButton_onClick(viewHolder, position)
-                }
-
-                v.setOnClickListener {
-                    taskmemo_onClick(viewHolder, adapterPosition)
-                }
+            // リスト内の完了・未完了のチェックボックスタップ処理
+            viewHolder.checkBox.setOnClickListener {
+                completeButtonOnClick(viewHolder, position)
             }
+
+            // リスト内のロック部分のタップ処理
+            viewHolder.lockImageView.setOnClickListener {
+                lockButtonOnClick(viewHolder, position)
+            }
+
+            v.setOnClickListener {
+                taskmemoOnClick(viewHolder, adapterPosition)
+            }
+        }
     }
 
     //完了・未完了切替モジュール
-    private fun completeButton_onClick(viewHolder: ViewHolder, position: Int) {
-        val completeNoteManager = nm.copy()
+    private fun completeButtonOnClick(viewHolder: ViewHolder, position: Int) {
+        val completeNoteManager = noteManager.copy()
         completeNoteManager.select(position)
         val note = completeNoteManager.getNote()!!
-        val sharedPreferences = HomeActivity.context.getSharedPreferences("app_notification_id",
+        val appNotificationIdSharedPreferences = HomeActivity.context.getSharedPreferences("app_notification_id",
             AppCompatActivity.MODE_PRIVATE
         )
         if (note.isComplete()) {
@@ -91,9 +88,9 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             viewHolder.checkBox.setBackgroundColor(Color.WHITE)
             viewHolder.list.setBackgroundColor(Color.WHITE)
             if (note.getNoticeShow() != null) {
-                val editor = sharedPreferences.edit()
+                val editor = appNotificationIdSharedPreferences.edit()
                 val uuid = UUID.randomUUID().hashCode()
-                editor.putInt(nm.send(), uuid)
+                editor.putInt(noteManager.send(), uuid)
                 editor.commit()
                 ForegroundNotificationService().setAlarm(
                     HomeActivity.context,
@@ -106,14 +103,14 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
             viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
             viewHolder.list.setBackgroundColor(Color.LTGRAY)
-            val cancelUuid = sharedPreferences.getInt(nm.send(), -1)
+            val cancelUuid = appNotificationIdSharedPreferences.getInt(noteManager.send(), -1)
             if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(HomeActivity.context, cancelUuid)
         }
     }
 
     //ロック・未ロック切替モジュール
-    private fun lockButton_onClick(viewHolder: ViewHolder, position: Int) {
-        val lockNoteManager = nm.copy()
+    private fun lockButtonOnClick(viewHolder: ViewHolder, position: Int) {
+        val lockNoteManager = noteManager.copy()
         lockNoteManager.select(position)
         val note = lockNoteManager.getNote()!!
         if (note.isLock()) {
@@ -126,33 +123,32 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     // タスクメモのクリック処理
-    private fun taskmemo_onClick(viewHolder: ViewHolder, position: Int) {
-        val note: String
+    private fun taskmemoOnClick(viewHolder: ViewHolder, position: Int) {
         EditActivity.new = false
-        val intent = Intent(viewHolder.context, EditActivity::class.java)
-        if (!search) {
-            nm.select(position)
-            note = nm.send()
+        val editIntent = Intent(viewHolder.context, EditActivity::class.java)
+        val received = if (!search) {
+            noteManager.select(position)
+            noteManager.send()
         } else {
-            note = searchSendText[position]
+            searchSendText[position]
         }
-        intent.putExtra("note", note)
-        viewHolder.context.startActivity(intent)
+        editIntent.putExtra("received", received)
+        viewHolder.context.startActivity(editIntent)
     }
 
     // リストの初期設定
     private fun dataSet(viewHolder: ViewHolder, note: Note) {
-        if (nm.isNote()) {
+        if (noteManager.isNote()) {
             viewHolder.titleText.setText(note.getTitle())
             val startTime = note.getNoticeShow()
             val stopTime = note.getNoticeHide()
             val location = note.getNoticeLocation()
-            val f = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+            val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
             if (startTime != null && stopTime != null) {
-                viewHolder.noticeText.text = "${startTime.format(f)} 〜 ${stopTime.format(f)}"
+                viewHolder.noticeText.text = "${startTime.format(dateTimeFormat)} 〜 ${stopTime.format(dateTimeFormat)}"
             } else if (startTime != null) {
-                viewHolder.noticeText.text = startTime.format(f)
+                viewHolder.noticeText.text = startTime.format(dateTimeFormat)
             }
             else viewHolder.noticeText.text = ""
 
@@ -175,21 +171,21 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
 
     fun searchRequest(text: String) {
         search = true
-        nm.search(text)
-        val sendText = nm.send()
+        noteManager.search(text)
+        val sendText = noteManager.send()
         searchSendText = sendText.split("|")
-        for (i in 1..nm.getNoteNumber()) {
-            searchNote.add(nm.getNote())
-            nm.next()
+        for (i in 1..noteManager.getNoteNumber()) {
+            searchNote.add(noteManager.getNote())
+            noteManager.next()
         }
     }
 
     override fun getItemCount(): Int {
-        if (!search) {
-            nm.search("")
-            return nm.getNoteNumber()
+        return if (!search) {
+            noteManager.search("")
+            noteManager.getNoteNumber()
         } else {
-            return searchNote.size
+            searchNote.size
         }
     }
 }

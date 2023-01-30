@@ -12,7 +12,7 @@ import app.sato.kchan.tasks.fanction.NoteManager
 
 class DeleteActivity: AppCompatActivity() {
     private lateinit var binding: DeleteActivityBinding
-    val nm = NoteManager()
+    val noteManager = NoteManager()
 
     // 画面作成とか(現状は触らなくていいです)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +46,7 @@ class DeleteActivity: AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.delete_button -> {
-                deleteButton_onClick()
+                deleteButtonOnClick()
                 finish()
             }
             android.R.id.home-> {
@@ -57,13 +57,13 @@ class DeleteActivity: AppCompatActivity() {
     }
 
     //複数削除実行モジュール
-    private fun deleteButton_onClick() {
+    private fun deleteButtonOnClick() {
         for (i in 0 until DeleteMemoListAdapter.selectedItem.size) {
-            nm.receive(DeleteMemoListAdapter.selectedItem[i])
+            noteManager.receive(DeleteMemoListAdapter.selectedItem[i])
             val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-            val cancelUuid = sharedPreferences.getInt(nm.send(), -1)
+            val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
             if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
-            nm.delete()
+            noteManager.delete()
         }
         DeleteMemoListAdapter.selectedItem.clear()
     }

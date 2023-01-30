@@ -30,12 +30,16 @@ class PasswordInitializeActivity: AppCompatActivity(){
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (p0.length < 8) {
-                    binding.passwordInitializeSettingLayout.error = "8文字以上入力してください"
-                } else if (p0.length > 50) {
-                    binding.passwordInitializeSettingLayout.error = "50文字以下で設定してください"
-                } else {
-                    binding.passwordInitializeSettingLayout.error = null
+                when {
+                    p0.length < 8 -> {
+                        binding.passwordInitializeSettingLayout.error = "8文字以上入力してください"
+                    }
+                    p0.length > 50 -> {
+                        binding.passwordInitializeSettingLayout.error = "50文字以下で設定してください"
+                    }
+                    else -> {
+                        binding.passwordInitializeSettingLayout.error = null
+                    }
                 }
             }
         })
@@ -46,19 +50,23 @@ class PasswordInitializeActivity: AppCompatActivity(){
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (p0.length < 8) {
-                    binding.passwordInitializeVerificationLayout.error = "8文字以上入力してください"
-                } else if (p0.length > 50) {
-                    binding.passwordInitializeVerificationLayout.error = "50文字以下で設定してください"
-                } else {
-                    binding.passwordInitializeVerificationLayout.error = null
+                when {
+                    p0.length < 8 -> {
+                        binding.passwordInitializeVerificationLayout.error = "8文字以上入力してください"
+                    }
+                    p0.length > 50 -> {
+                        binding.passwordInitializeVerificationLayout.error = "50文字以下で設定してください"
+                    }
+                    else -> {
+                        binding.passwordInitializeVerificationLayout.error = null
+                    }
                 }
             }
         })
 
         // 設定完了ボタンタップ処理
         binding.passwordInitializeDoneButton.setOnClickListener {
-            changeButton_onClick()
+            changeButtonOnClick()
         }
 
         // ドロップダウンリストの設定
@@ -114,7 +122,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-    private fun changeButton_onClick() {
+    private fun changeButtonOnClick() {
         val question1 = binding.passwordInitializeQuestion1Spinner.selectedItemPosition
         val question2 = binding.passwordInitializeQuestion2Spinner.selectedItemPosition
         val question3 = binding.passwordInitializeQuestion3Spinner.selectedItemPosition

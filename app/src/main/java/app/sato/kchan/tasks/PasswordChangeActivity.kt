@@ -21,12 +21,12 @@ class PasswordChangeActivity: AppCompatActivity(){
 
         // パスワードを忘れた方はこちらボタンタップ処理
         binding.passwordChangeResetButton.setOnClickListener {
-            resetPasswordButton_onClick()
+            resetPasswordButtonOnClick()
         }
 
         // 設定完了ボタンタップ処理
         binding.passwordChangeDoneButton.setOnClickListener {
-            changeButton_onClick()
+            changeButtonOnClick()
         }
 
         binding.passwordChangeNowEdit.addTextChangedListener(object: TextWatcher {
@@ -35,12 +35,16 @@ class PasswordChangeActivity: AppCompatActivity(){
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (p0.length < 8) {
-                    binding.passwordChangeNowLayout.error = "8文字以上入力してください"
-                } else if (p0.length >= 50) {
-                    binding.passwordChangeNowLayout.error = "50文字以下で設定してください"
-                } else {
-                    binding.passwordChangeNowLayout.error = null
+                when {
+                    p0.length < 8 -> {
+                        binding.passwordChangeNowLayout.error = "8文字以上入力してください"
+                    }
+                    p0.length >= 50 -> {
+                        binding.passwordChangeNowLayout.error = "50文字以下で設定してください"
+                    }
+                    else -> {
+                        binding.passwordChangeNowLayout.error = null
+                    }
                 }
             }
         })
@@ -51,12 +55,16 @@ class PasswordChangeActivity: AppCompatActivity(){
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (p0.length < 8) {
-                    binding.passwordChangeNewLayout.error = "8文字以上入力してください"
-                } else if (p0.length > 50) {
-                    binding.passwordChangeNewLayout.error = "50文字以下で設定してください"
-                } else {
-                    binding.passwordChangeNewLayout.error = null
+                when {
+                    p0.length < 8 -> {
+                        binding.passwordChangeNewLayout.error = "8文字以上入力してください"
+                    }
+                    p0.length > 50 -> {
+                        binding.passwordChangeNewLayout.error = "50文字以下で設定してください"
+                    }
+                    else -> {
+                        binding.passwordChangeNewLayout.error = null
+                    }
                 }
             }
         })
@@ -67,12 +75,16 @@ class PasswordChangeActivity: AppCompatActivity(){
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (p0.length < 8) {
-                    binding.passwordChangeVerificationLayout.error = "8文字以上入力してください"
-                } else if (p0.length > 50) {
-                    binding.passwordChangeVerificationLayout.error = "50文字以下で設定してください"
-                } else {
-                    binding.passwordChangeVerificationLayout.error = null
+                when {
+                    p0.length < 8 -> {
+                        binding.passwordChangeVerificationLayout.error = "8文字以上入力してください"
+                    }
+                    p0.length > 50 -> {
+                        binding.passwordChangeVerificationLayout.error = "50文字以下で設定してください"
+                    }
+                    else -> {
+                        binding.passwordChangeVerificationLayout.error = null
+                    }
                 }
             }
         })
@@ -93,19 +105,17 @@ class PasswordChangeActivity: AppCompatActivity(){
         return super.onOptionsItemSelected(item)
     }
 
-    private fun resetPasswordButton_onClick() {
+    private fun resetPasswordButtonOnClick() {
         val reset = Intent(this, PasswordResetActivity::class.java)
         startActivity(reset)
     }
 
-    private fun changeButton_onClick() {
+    private fun changeButtonOnClick() {
         val nowPassword = binding.passwordChangeNowEdit.text.toString()
         val newPassword = binding.passwordChangeNewEdit.text.toString()
         val verification = binding.passwordChangeVerificationEdit.text.toString()
         if (nowPassword.length >= 8 && newPassword.length >= 8 && verification.length >= 8) {
-            // 今のパスワードがあっているか判定が必要
             when {
-                // ↓のnowPasswordは読み込んできたやつにする
                 nowPassword.length > 50 -> {
                     Toast.makeText(this, "現在のパスワードは50文字以下です", Toast.LENGTH_LONG).show()
                 }
