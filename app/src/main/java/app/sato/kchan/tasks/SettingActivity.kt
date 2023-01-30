@@ -35,13 +35,14 @@ class SettingActivity : AppCompatActivity() {
 
         // 遷移先の場合分け
         list.setOnItemClickListener { _, _, position, _ ->
+            val intent = Intent()
             when (position) {
-                0 -> customButtonOnClick()
-                1 -> accountButtonOnClick()
-                2 -> defaultNoticeButtonOnClick()
-                3 -> locationButtonOnClick()
-                4 -> autoDeletionButtonOnClick()
-                5 -> helpButtonOnClick()
+                0 -> customButton_onClick()
+                1 -> accountButton_onClick()
+                2 -> defaultNoticeButton_onClick()
+                3 -> locationButton_onClick()
+                4 -> autoDeletionButton_onClick()
+                5 -> helpButton_onClick()
             }
         }
 
@@ -63,10 +64,10 @@ class SettingActivity : AppCompatActivity() {
 
 
     // カスタマイズ画面に遷移
-    private fun customButtonOnClick() {
+    private fun customButton_onClick() {
 
         fun hello():String{
-            val data = MyData()
+            var data = MyData()
             data.setString("type", "Hello")
             data.move("content")
             val res: String = data.outJSON() ?: throw Exception("")
@@ -78,36 +79,39 @@ class SettingActivity : AppCompatActivity() {
         ConnectionWrapper.scope.launch{
             ConnectionWrapper().executeServerConnection(hello())
             Log.d("SettingActivity",ConnectionWrapper().postOutput())
+
         }
 
+//        intent.setClass(this, CustomActivity::class.java)
+//        startActivity(intent)
     }
 
     // アカウント画面に遷移
-    private fun accountButtonOnClick() {
+    private fun accountButton_onClick() {
         intent.setClass(this, AccountActivity::class.java)
         startActivity(intent)
     }
 
     // 標準通知時間設定画面に遷移
-    private fun defaultNoticeButtonOnClick() {
+    private fun defaultNoticeButton_onClick() {
         intent.setClass(this, DefaultNoticeActivity::class.java)
         startActivity(intent)
     }
 
     // よく行く場所一覧画面に遷移
-    private fun locationButtonOnClick() {
+    private fun locationButton_onClick() {
         intent.setClass(this, LocationStockActivity::class.java)
         startActivity(intent)
     }
 
     // 自動削除設定画面に遷移
-    private fun autoDeletionButtonOnClick() {
+    private fun autoDeletionButton_onClick() {
         intent.setClass(this, AutoDeletionActivity::class.java)
         startActivity(intent)
     }
 
     // ヘルプページに遷移
-    private fun helpButtonOnClick() {
+    private fun helpButton_onClick() {
         val webView = WebView(this)
         webView.webViewClient = WebViewClient()
         webView.getSettings().setJavaScriptEnabled(true) // JavaScriptを有効にする

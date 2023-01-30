@@ -6,6 +6,7 @@ import android.database.Cursor.FIELD_TYPE_NULL
 import app.sato.kchan.tasks.HomeActivity.Companion.context
 import kotlinx.coroutines.launch
 import java.io.File
+import java.lang.String.join
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.Exception
@@ -16,7 +17,7 @@ class DataOperator(){
     //<プロパティ>
     val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase
-//    val dbInfo:MyData = dbJSON()
+    val dbInfo:MyData = dbJSON()
     //<初期化処理>
     init {
 //        database.delete("account", null, null)
@@ -378,305 +379,405 @@ class DataOperator(){
         }
         return database.delete(table, sql, vl)
     }
-//    fun sync() {
-//        var data = MyData()
-//        data.setString("type", "Sync")
-//        val content = data.moveChain("content")
-//        for(tName in dbInfo.keys()){
-//            val table = content.moveChain(tName)
-//            table.initArray()
-//
-//            val res = DataOperator().selectQuery(
-//                table = "service",
-//                column = arrayOf(
-//                    "create_at",
-//                    "service_name",
-//                    "type",
-//                    "version",
-//                    "status_flag",
-//                    "name_update_at",
-//                    "others_update_at",
-//                    "status_update_at",
-//                ),
-//                pick = mutableMapOf("service_id" to "0")
-//            )
-//            if(res.setResultTop()) {
-//                val record = MyData()
-//                for(cName in dbInfo) {
-//                    record.setDateTime("create_at", res.getDateTime("create_at"))
-//                    record.setString("service_name", res.getString("service_name"))
-//                    record.setInt("type", res.getInt("type"))
-//                    record.setInt("version", res.getInt("version"))
-//                    record.setInt("status_flag", res.getInt("status_flag"))
-//                    record.setDateTime("name_update_at", res.getDateTime("name_update_at"))
-//                    record.setDateTime("others_update_at", res.getDateTime("others_update_at"))
-//                    record.setDateTime("status_update_at", res.getDateTime("status_update_at"))
-//                }
-//                table.push(record)
-//            }
-//        }
-//        val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
-//        println(request)
-//        ConnectionWrapper.scope.launch{
-//            ConnectionWrapper().executeServerConnection(request)
-//            var response = ConnectionWrapper().postOutput()
-//            println("受信: " + response)
-//            data = MyData()
-//            if(data.inJSON(response)){
-//                println("解析: " + data.outJSON())
-//                val result = data.moveChain("result")
-//                if(result.getInt("code") == 0){
-//                    val content = result.moveChain("content")
-//                    DataOperator().updateQuery(
-//                        table = "account",
-//                        value = mutableListOf(
-//                            "account_id" to content.moveChain("account").moveChain(0).getString("account_id")
-//                        )
-//                    )
-//                }else{
-//                    println("サーバー処理解析失敗!!")
-//                    println("-> " + data.outJSON())
-//                }
-//            }else{
-//                println("JSON解析失敗!!")
-//            }
-//        }
-//    }
-//
-//    fun dbJSON():MyData {
-//        val dbInfo = MyData()
-//        dbInfo.inJSON("""
-//{
-//    "setting":{
-//        "color1":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "color2":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "color3":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "auto_delete_period":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "init_show_at":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "init_hide_at":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "status_flag":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "color_update_at":{
-//            "change": false
-//        },
-//        "auto_delete_update_at":{
-//            "change": false
-//        },
-//        "init_show_update_at":{
-//            "change": false
-//        },
-//        "init_hide_update_at":{
-//            "change": false
-//        },
-//        "status_update_at":{
-//            "change": false
-//        }
-//    },
-//    "service":{
-//        "service_id":{
-//            "primary": true,
-//            "change": false
-//        },
-//        "service_name":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "type":{
-//            "change": false
-//        },
-//        "version":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "notification_token":{
-//            "change": false
-//        },
-//        "connect_token":{
-//            "change": false
-//        },
-//        "synchronize_at":{
-//            "change": false
-//        },
-//        "create_at":{
-//            "change": false
-//        },
-//        "status_flag":{
-//            "change": true,
-//            "update": "update_at"
-//        },
-//        "update_at":{
-//            "change": false
-//        }
-//    },
-//    "note":{
-//        "note_id":{
-//            "primary": true,
-//            "change": false
-//        },
-//        "service_id":{
-//            "primary": true,
-//            "change": false
-//        },
-//        "title":{
-//            "change": true,
-//            "update": "title_update_at"
-//        },
-//        "content":{
-//            "change": true,
-//            "update": "content_update_at"
-//        },
-//        "show_at":{
-//            "change": true,
-//            "update": "show_update_at"
-//        },
-//        "hide_at":{
-//            "change": true,
-//            "update": "hide_update_at"
-//        },
-//        "complete_at":{
-//            "change": true,
-//            "update": "complete_update_at"
-//        },
-//        "create_at":{
-//            "change": false
-//        },
-//        "status_flag":{
-//            "change": true,
-//            "update": "status_update_at"
-//        },
-//        "title_update_at":{
-//            "change": false
-//        },
-//        "content_update_at":{
-//            "change": false
-//        },
-//        "show_update_at":{
-//            "change": false
-//        },
-//        "hide_update_at":{
-//            "change": false
-//        },
-//        "complete_update_at":{
-//            "change": false
-//        },
-//        "status_update_at":{
-//            "change": false
-//        }
-//    },
-//    "place":{
-//        "place_id":{
-//            "primary": true,
-//            "change": false
-//        },
-//        "service_id":{
-//            "primary": true,
-//            "change": false
-//        },
-//        "name":{
-//            "change": true,
-//            "update": "name_update_at"
-//        },
-//        "address":{
-//            "change": true,
-//            "update": "address_update_at"
-//        },
-//        "priority":{
-//            "change": true,
-//            "update": "priority_update_at"
-//        },
-//        "create_at":{
-//            "change": false
-//        },
-//        "status_flag":{
-//            "change": true,
-//            "update": "status_update_at"
-//        },
-//        "name_update_at":{
-//            "change": false
-//        },
-//        "address_update_at":{
-//            "change": false
-//        },
-//        "priority_update_at":{
-//            "change": false
-//        },
-//        "status_update_at":{
-//            "change": false
-//        }
-//    },
-//    "notice":{
-//        "notice_id":{
-//            "primary": true,
-//            "change": false
-//        },
-//        "service_id":{
-//            "primary": true,
-//            "change": false
-//        },
-//        "note_id":{
-//            "change": false
-//        },
-//        "note_service_id":{
-//            "change": false
-//        },
-//        "notice_service_id":{
-//            "change": false
-//        },
-//        "show_at":{
-//            "change": true,
-//            "update": "show_update_at"
-//        },
-//        "hide_at":{
-//            "change": true,
-//            "update": "hide_update_at"
-//        },
-//        "place_id":{
-//            "change": true,
-//            "update": "place_update_at"
-//        },
-//        "place_service_id":{
-//            "change": true,
-//            "update": "place_update_at"
-//        },
-//        "status_flag":{
-//            "change": true,
-//            "update": "status_update_at"
-//        },
-//        "show_update_at":{
-//            "change": false
-//        },
-//        "hide_update_at":{
-//            "change": false
-//        },
-//        "place_update_at":{
-//            "change": false
-//        },
-//        "status_update_at":{
-//            "change": false
-//        }
-//    }
-//}
-//        """)
-//        return dbInfo
-//    }
+    fun sync() {
+        var data = MyData()
+        data.setString("type", "Sync")
+        val content = data.moveChain("content")
+        var dt: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
+        val res = selectQuery(
+            table = "account",
+            column = arrayOf("account","connect_token","sync_at")
+        )
+        if (res.setResultTop()) {
+            data.setString("account", res.getString("account"))
+            data.setString("token", res.getString("connect_token"))
+            data.setDateTime("dt", LocalDateTime.now())
+            dt = res.getString("sync_at")
+        }
+        for(tName in dbInfo.keys()){
+            val table = content.moveChain(tName)
+            table.initArray()
+            var pickColumn:MutableList<String> = mutableListOf()
+            var itemColumn:MutableList<String> = mutableListOf()
+            for(col in dbInfo.moveChain(tName).keys()) {
+                if(dbInfo.moveChain(tName).moveChain(col).isKey("primary") && dbInfo.moveChain(tName).moveChain(col).getString("primary") == "true"){
+                    itemColumn += col
+                }else{
+                    pickColumn += col
+                }
+            }
+            var pickList: MutableMap<String,MutableMap<String,String>> =  mutableMapOf()
+            var change: MutableMap<String,MyData> = mutableMapOf()
+            for(cName in itemColumn) {
+                val update = dbInfo.moveChain(tName).moveChain(cName).getString("primary")
+                val res = selectQuery(
+                    table = tName,
+                    column = arrayOf(cName).plus(pickColumn),
+                    filter = arrayOf(
+                        mutableMapOf(
+                            "column" to update,
+                            "value" to dt,
+                            "compare" to "Small"
+                        )
+                    )
+                )
+                if (res.setResultTop()) {
+                    do {
+                        var pickStr:String = ""
+                        var piccTemp:MutableMap<String,String> =  mutableMapOf()
+                        for(p in pickColumn) {
+                            piccTemp[p] = res.getString(p)
+                            pickStr += p + ":" + res.getString(p) + ","
+                        }
+                        if(pickStr !in pickList) {
+                            val record = MyData()
+                            record.moveChain("pick").setStringMap(piccTemp)
+                            table.push(record)
+                            pickList[pickStr] = piccTemp
+                        }
+                        change[pickStr]!!.moveChain("item").moveChain(cName).setString("value", res.getString(cName))
+                        change[pickStr]!!.moveChain("item").moveChain(cName).setString("update", res.getString(update))
+                    } while (res.next())
+                }
+            }
+        }
+        val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
+        println("送信: " + request)
+        ConnectionWrapper.scope.launch{
+            ConnectionWrapper().executeServerConnection(request)
+            var response = ConnectionWrapper().postOutput()
+            println("受信: " + response)
+            data = MyData()
+            if(data.inJSON(response)){
+                println("解析: " + data.outJSON())
+                val result = data.moveChain("result")
+                if(result.getInt("code") == 0){
+                    val content = result.moveChain("content")
+                    for(tName in content.keys()){
+                        val record = content.moveChain(tName)
+                        for(cName in record.keys()){
+                            val column = record.moveChain("item").moveChain(cName)
+                            updateQuery(
+                                table = "account",
+                                value = mutableListOf(cName to column.getString("value")),
+                                pick = record.moveChain("pick").getStringMap(),
+                                filter = arrayOf(
+                                    mutableMapOf(
+                                        "column" to dbInfo.moveChain(tName).moveChain(cName).getString("update"),
+                                        "value" to column.getString("update"),
+                                        "compare" to "Small"
+                                    )
+                                )
+                            )
+                        }
+                    }
+
+                }else{
+                    println("サーバー処理解析失敗!!")
+                    println("-> " + data.outJSON())
+                }
+            }else{
+                println("JSON解析失敗!!")
+            }
+        }
+    }
+
+    fun dbJSON():MyData {
+        val dbInfo = MyData()
+        dbInfo.inJSON("""
+{
+    "setting":{
+        "color1":{
+            "type": "Int",
+            "change": true,
+            "update": "update_at"
+        },
+        "color2":{
+            "type": "Int",
+            "change": true,
+            "update": "update_at"
+        },
+        "color3":{
+            "type": "Int",
+            "change": true,
+            "update": "update_at"
+        },
+        "auto_delete_period":{
+            "type": "Int",
+            "change": true,
+            "update": "update_at"
+        },
+        "init_show_at":{
+            "type": "DateTime",
+            "change": true,
+            "update": "update_at"
+        },
+        "init_hide_at":{
+            "type": "DateTime",
+            "change": true,
+            "update": "update_at"
+        },
+        "status_flag":{
+            "type": "Int",
+            "change": true,
+            "update": "update_at"
+        },
+        "color_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "auto_delete_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "init_show_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "init_hide_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "status_update_at":{
+            "type": "DateTime",
+            "change": false
+        }
+    },
+    "service":{
+        "service_id":{
+            "type": "Int",
+            "primary": true,
+            "change": false
+        },
+        "service_name":{
+            "type": "String",
+            "change": true,
+            "update": "update_at"
+        },
+        "type":{
+            "type": "Int",
+            "change": false
+        },
+        "version":{
+            "type": "Int",
+            "change": true,
+            "update": "update_at"
+        },
+        "synchronize_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "create_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "status_flag":{
+            "type": "Int",
+            "change": true,
+            "update": "update_at"
+        },
+        "update_at":{
+            "type": "DateTime",
+            "change": false
+        }
+    },
+    "note":{
+        "note_id":{
+            "type": "Int",
+            "primary": true,
+            "change": false
+        },
+        "service_id":{
+            "type": "Int",
+            "primary": true,
+            "change": false
+        },
+        "title":{
+            "type": "String",
+            "change": true,
+            "update": "title_update_at"
+        },
+        "content":{
+            "type": "String",
+            "change": true,
+            "update": "content_update_at"
+        },
+        "show_at":{
+            "type": "DateTime",
+            "change": true,
+            "update": "show_update_at"
+        },
+        "hide_at":{
+            "type": "DateTime",
+            "change": true,
+            "update": "hide_update_at"
+        },
+        "complete_at":{
+            "type": "DateTime",
+            "change": true,
+            "update": "complete_update_at"
+        },
+        "create_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "status_flag":{
+            "type": "Int",
+            "change": true,
+            "update": "status_update_at"
+        },
+        "title_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "content_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "show_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "hide_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "complete_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "status_update_at":{
+            "type": "DateTime",
+            "change": false
+        }
+    },
+    "place":{
+        "place_id":{
+            "type": "Int",
+            "primary": true,
+            "change": false
+        },
+        "service_id":{
+            "type": "Int",
+            "primary": true,
+            "change": false
+        },
+        "name":{
+            "type": "String",
+            "change": true,
+            "update": "name_update_at"
+        },
+        "address":{
+            "type": "String",
+            "change": true,
+            "update": "address_update_at"
+        },
+        "latitude": {
+            "type": "Int",
+            "update": "address_update_at"
+        },
+        "longitude": {
+            "type": "Int",
+            "update": "address_update_at"
+        },
+        "priority":{
+            "type": "Int",
+            "change": true,
+            "update": "priority_update_at"
+        },
+        "create_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "status_flag":{
+            "type": "Int",
+            "change": true,
+            "update": "status_update_at"
+        },
+        "name_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "address_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "priority_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "status_update_at":{
+            "type": "DateTime",
+            "change": false
+        }
+    },
+    "notice":{
+        "notice_id":{
+            "type": "Int",
+            "primary": true,
+            "change": false
+        },
+        "service_id":{
+            "type": "Int",
+            "primary": true,
+            "change": false
+        },
+        "note_id":{
+            "type": "Int",
+            "change": false
+        },
+        "note_service_id":{
+            "type": "Int",
+            "change": false
+        },
+        "notice_service_id":{
+            "type": "Int",
+            "change": false
+        },
+        "show_at":{
+            "type": "DateTime",
+            "change": true,
+            "update": "show_update_at"
+        },
+        "hide_at":{
+            "type": "DateTime",
+            "change": true,
+            "update": "hide_update_at"
+        },
+        "place_id":{
+            "type": "Int",
+            "change": true,
+            "update": "place_update_at"
+        },
+        "place_service_id":{
+            "type": "Int",
+            "change": true,
+            "update": "place_update_at"
+        },
+        "status_flag":{
+            "type": "Int",
+            "change": true,
+            "update": "status_update_at"
+        },
+        "show_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "hide_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "place_update_at":{
+            "type": "DateTime",
+            "change": false
+        },
+        "status_update_at":{
+            "type": "DateTime",
+            "change": false
+        }
+    }
+}
+        """)
+        return dbInfo
+    }
 }

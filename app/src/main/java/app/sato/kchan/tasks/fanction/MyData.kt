@@ -228,8 +228,8 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         }
         return list
     }
-//  　　  fun values(): Array<String> {
-//        var list:Array<String> = arrayOf()
+//  　fun values(): Array<String> {
+//        var list:Array<MyData> = arrayOf()
 //        if("Object" == type[current]){
 //            for(value in structure[current]?.values ?: return arrayOf()){
 //                list += value
@@ -238,9 +238,18 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
 //        return list
 //    }
 //    fun items(): MutableMap<String,String> {
-//
+//        val list:MutableSet<String> = mutableSetOf()
+//        if("Object" == type[current]){
+//            for(key in structure[current]?.keys ?: return mutableSetOf()){
+//                list.add(key)
+//            }
+//        }
+//        return list
 //    }
     fun isData(key:String): Boolean{
+        return key in (structure[current] ?: throw Exception("data does not exist"))
+    }
+    fun isKey(key:String): Boolean{
         return key in (structure[current] ?: throw Exception("data does not exist"))
     }
     fun isData(index:Int): Boolean{
@@ -712,6 +721,18 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             array[current]?.add(myData.root)
         }else{
             throw Exception("current is not an array")
+        }
+    }
+    fun getStringMap():MutableMap<String,String>{
+        var buff:MutableMap<String,String> = mutableMapOf()
+        for(key in keys()) {
+            buff[key] = getString(key)
+        }
+        return buff
+    }
+    fun setStringMap(map:Map<String,String>){
+        for((k,v) in map) {
+            setString(k, v)
         }
     }
     fun copy(): MyData{

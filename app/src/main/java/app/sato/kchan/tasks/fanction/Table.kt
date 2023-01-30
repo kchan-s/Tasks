@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 
 class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.CursorFactory?, version: Int) : SQLiteOpenHelper(context, databaseName, factory, version) {
     override fun onCreate(database: SQLiteDatabase?) {
-        database?.execSQL("create table if not exists account (account_id TEXT,password_flag INTEGER NOT NULL,secret_question1_item TEXT,secret_question2_item TEXT,secret_question3_item TEXT,connect_token TEXT NOT NULL)"
+        database?.execSQL("create table if not exists account (account_id TEXT,password_flag INTEGER NOT NULL,secret_question1_item TEXT,secret_question2_item TEXT,secret_question3_item TEXT,connect_token TEXT NOT NULL,sync_at TEXT NOT NULL)"
         );
         database?.execSQL("create table if not exists setting (color1 INTEGER NOT NULL,color2 INTEGER NOT NULL,color3 INTEGER NOT NULL,auto_delete_period TEXT,init_show_at TEXT,init_hide_at TEXT,status_flag INTEGER NOT NULL DEFAULT 0,color_update_at TEXT NOT NULL,auto_delete_update_at TEXT NOT NULL,init_show_update_at TEXT NOT NULL,init_hide_update_at TEXT NOT NULL,status_update_at TEXT NOT NULL)"
         );

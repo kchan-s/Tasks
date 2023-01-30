@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.HomeActivityBinding
+import app.sato.kchan.tasks.fanction.Account
+import app.sato.kchan.tasks.fanction.DataOperator
 
 class HomeActivity : AppCompatActivity() {
     companion object {
@@ -15,6 +17,11 @@ class HomeActivity : AppCompatActivity() {
     }
     private lateinit var binding: HomeActivityBinding
     val adapter = HomeMemoListAdapter()
+
+    init {
+        val account: Account = Account()
+//        DataOperator().sync()
+    }
 
     // 画面作成
     override fun onCreate(savedInstanceState: Bundle?) {
