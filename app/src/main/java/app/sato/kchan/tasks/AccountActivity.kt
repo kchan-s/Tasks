@@ -38,7 +38,7 @@ class AccountActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
-                val intent = Intent(this, HomeActivity::class.java)
+                val intent = Intent(this, SettingActivity::class.java)
                 startActivity(intent)
             }
         }

@@ -36,7 +36,6 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val context: Context = view.context
         val titleText: TextView = view.findViewById(R.id.home_list_title_text)
         val noticeText: TextView = view.findViewById(R.id.home_list_notice_text)
-        val textList: LinearLayout = view.findViewById(R.id.home_text_list)
         val locationText: TextView = view.findViewById(R.id.home_list_location_text)
         val lockImageView: ImageView = view.findViewById(R.id.home_list_lock_image)
         val checkBox: ImageView = view.findViewById(R.id.home_list_check_image)
