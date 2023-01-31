@@ -1,12 +1,18 @@
 package app.sato.kchan.tasks
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.HomeActivityBinding
@@ -30,8 +36,30 @@ class HomeActivity : AppCompatActivity() {
 //        val account: Account = Account()
 //        DataOperator().sync()
 
-        val foregroundServiceIntent = Intent(this, ForegroundNotificationService::class.java)
-        this.startForegroundService(foregroundServiceIntent)
+        val connectionManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)
+
+        if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    val foregroundServiceIntent =
+                        Intent(this, ForegroundNotificationService::class.java)
+                    this.startForegroundService(foregroundServiceIntent)
+                } else {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        val foregroundServiceIntent =
+                            Intent(this, ForegroundNotificationService::class.java)
+                        this.startForegroundService(foregroundServiceIntent)
+                    }
+                    Toast.makeText(this, "インターネットに接続していません", Toast.LENGTH_LONG).show()
+                }
+        } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                val foregroundServiceIntent =
+                    Intent(this, ForegroundNotificationService::class.java)
+                this.startForegroundService(foregroundServiceIntent)
+            }
+            Toast.makeText(this, "インターネットに接続していません", Toast.LENGTH_LONG).show()
+        }
 
         // 以下リストの設定
         val recyclerView = binding.homeList

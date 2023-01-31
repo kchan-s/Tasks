@@ -9,9 +9,13 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.IBinder
+import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
@@ -42,15 +46,40 @@ class ForegroundNotificationService : Service() , LocationListener{
         }
         val pendingIntent: PendingIntent =
             PendingIntent.getActivity(context, 0, mainIntent, 0)
-
         val sendPendingIntent = PendingIntent.getBroadcast(this, 0, sendIntent, 0)
-        val foregroundNotification = Notification.Builder(this, "foregroundService")
+
+        val builder = Notification.Builder(this, "foregroundService")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("TaSks")
-            .setContentText("位置情報取得・同期実行中…")
             .setContentIntent(pendingIntent)
-            .addAction(R.drawable.ic_launcher_foreground, "位置情報取得・同期実行を停止する", sendPendingIntent)
-            .build()
+
+
+        val connectionManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)
+
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(
+                    NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    builder.setContentText("位置情報取得・同期実行中…")
+                        .addAction(R.drawable.ic_launcher_foreground, "位置情報取得・同期実行を停止する", sendPendingIntent)
+                } else {
+                    builder.setContentText("同期実行中…")
+                        .addAction(R.drawable.ic_launcher_foreground, "同期実行を停止する", sendPendingIntent)
+                }
+            } else {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    builder.setContentText("位置情報取得中…")
+                        .addAction(R.drawable.ic_launcher_foreground, "位置情報取得を停止する", sendPendingIntent)
+                }
+            }
+        } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                builder.setContentText("位置情報取得中…")
+                    .addAction(R.drawable.ic_launcher_foreground, "位置情報取得を停止する", sendPendingIntent)
+            }
+        }
+        val foregroundNotification = builder.build()
 
         startForeground(1, foregroundNotification)
 

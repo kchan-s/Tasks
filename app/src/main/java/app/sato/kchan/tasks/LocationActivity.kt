@@ -45,7 +45,7 @@ class LocationActivity: AppCompatActivity(){
         loadTheme()
         binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),1)
         }
