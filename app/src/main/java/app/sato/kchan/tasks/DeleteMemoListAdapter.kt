@@ -50,7 +50,13 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         if (startTime != null && stopTime != null) viewHolder.noticeText.text = "${startTime.format(dateTimeFormat)} 〜 ${stopTime.format(dateTimeFormat)}"
         else if (startTime != null) viewHolder.noticeText.text = startTime.format(dateTimeFormat)
 
-        if (location != null) viewHolder.locationText.text = location.getName()
+        if (location != null) {
+            if (location.getName() != null) {
+                viewHolder.locationText.text = location.getName()
+            } else if (location.getAddress() != null) {
+                viewHolder.locationText.text = location.getAddress()
+            }
+        }
 
         if (note.isLock()) viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_24)
         else viewHolder.lockImage.setImageResource(R.drawable.ic_baseline_lock_open_24)

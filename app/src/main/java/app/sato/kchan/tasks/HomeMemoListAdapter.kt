@@ -174,7 +174,13 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             }
             else viewHolder.noticeText.text = ""
 
-            if (location != null) viewHolder.locationText.text = location.getName()
+            if (location != null) {
+                if (location.getName() != null) {
+                    viewHolder.locationText.text = location.getName()
+                } else if (location.getAddress() != null) {
+                    viewHolder.locationText.text = location.getAddress()
+                }
+            }
             else viewHolder.locationText.text = ""
 
             if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
