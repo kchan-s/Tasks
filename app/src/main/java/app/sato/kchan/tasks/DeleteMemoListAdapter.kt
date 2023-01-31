@@ -51,9 +51,9 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
         else if (startTime != null) viewHolder.noticeText.text = startTime.format(dateTimeFormat)
 
         if (location != null) {
-            if (location.getName() != null) {
+            if (location.getName() != "") {
                 viewHolder.locationText.text = location.getName()
-            } else if (location.getAddress() != null) {
+            } else if (location.getAddress() != "") {
                 viewHolder.locationText.text = location.getAddress()
             }
         }

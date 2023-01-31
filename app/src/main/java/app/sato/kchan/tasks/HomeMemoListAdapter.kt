@@ -175,9 +175,9 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             else viewHolder.noticeText.text = ""
 
             if (location != null) {
-                if (location.getName() != null) {
+                if (location.getName() != "") {
                     viewHolder.locationText.text = location.getName()
-                } else if (location.getAddress() != null) {
+                } else if (location.getAddress() != "null") {
                     viewHolder.locationText.text = location.getAddress()
                 }
             }
