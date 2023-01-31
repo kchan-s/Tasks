@@ -34,7 +34,9 @@ class ForegroundNotificationService : Service() , LocationListener{
         context = applicationContext
         val manager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val foregroundNotificationChannel =
-            NotificationChannel("foregroundService", "TaSks", NotificationManager.IMPORTANCE_MIN)
+            NotificationChannel("foregroundService", "TaSks", NotificationManager.IMPORTANCE_MIN).apply {
+                setSound(null, null)
+            }
         manager.createNotificationChannel(foregroundNotificationChannel)
 
         val sendIntent = Intent(this, LocationBroadcastReceiver::class.java).apply {
@@ -249,7 +251,9 @@ class ForegroundNotificationService : Service() , LocationListener{
                         val channel = NotificationChannel(
                             channelId, "通知",
                             NotificationManager.IMPORTANCE_DEFAULT
-                        )
+                        ).apply {
+                            setSound(null, null)
+                        }
 
                         // Register the channel with the system
                         val notificationManager =

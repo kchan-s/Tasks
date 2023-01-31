@@ -38,7 +38,9 @@ class AlarmNotification : BroadcastReceiver() {
         val channel = NotificationChannel(
             channelId, "通知",
             NotificationManager.IMPORTANCE_DEFAULT
-        )
+        ).apply {
+            setSound(null, null)
+        }
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
