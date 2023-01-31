@@ -29,7 +29,7 @@ class Account public constructor() {
         )
         return res.setResultTop()
     }
-    fun isAllocationId():Boolean {
+    fun isId():Boolean {
         val res = DataOperator().selectQuery(
             table = "account",
             column = arrayOf("account_id")
@@ -39,7 +39,7 @@ class Account public constructor() {
                 return true
         return false
     }
-    fun allocationId(): Boolean{
+    fun requestId(stop:Boolean = false): Boolean{
         var data = MyData()
         data.setString("type", "New")
         data.move("content")
@@ -56,6 +56,8 @@ class Account public constructor() {
                 val record = MyData()
                 record.setString("connect_token", res.getString("connect_token"))
                 account.push(record)
+            }else{
+                println("account   データが...")
             }
         }
         if(true) {
@@ -87,6 +89,8 @@ class Account public constructor() {
                 record.setDateTime("init_hide_update_at", res.getDateTime("init_hide_update_at"))
                 record.setDateTime("status_update_at", res.getDateTime("status_update_at"))
                 setting.push(record)
+            }else{
+                println("setting   データが...")
             }
         }
         if(true) {
@@ -117,35 +121,46 @@ class Account public constructor() {
                 record.setDateTime("others_update_at", res.getDateTime("others_update_at"))
                 record.setDateTime("status_update_at", res.getDateTime("status_update_at"))
                 service.push(record)
+            }else{
+                println("service   データが...")
             }
         }
         val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
         println(request)
-        ConnectionWrapper.scope.launch{
-            ConnectionWrapper().executeServerConnection(request)
-            var response = ConnectionWrapper().postOutput()
+        fun func(connect:Connect){
+            var response = connect.getResponse()
             println("受信: " + response)
             data = MyData()
-            if(data.inJSON(response)){
+            if (data.inJSON(response)) {
                 println("解析: " + data.outJSON())
                 val result = data.moveChain("result")
-                if(result.getInt("code") == 0){
+                if (result.getInt("code") == 0) {
                     val content = result.moveChain("content")
                     DataOperator().updateQuery(
                         table = "account",
                         value = mutableListOf(
-                            "account_id" to content.moveChain("account").moveChain(0).getString("account_id")
+                            "account_id" to content.moveChain("account").moveChain(0)
+                                .getString("account_id")
                         )
                     )
-                }else{
+                    DataOperator().sync()
+                } else {
                     println("サーバー処理解析失敗!!")
                     println("-> " + data.outJSON())
                 }
-            }else{
+            } else {
                 println("JSON解析失敗!!")
             }
         }
-        return true
+        val con = Connect()
+        con.setRequest(request)
+        if(!stop) con.callback(::func as (connect:Connect)->Unit)
+        con.send()
+        return if(stop){
+            if(con.waitEnd()) con.isSuccess() else false
+        } else{
+            true
+        }
     }
     fun reset() {
         val dt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
@@ -155,7 +170,8 @@ class Account public constructor() {
                 column = arrayOf("account_id")
             ).setResultTop()) {
             var token = ""
-            val chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ \t\n\r"
+//            val chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ \t\n\r"
+            val chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             for (i in 0..63)
                 token += chars[Random.nextInt(chars.length)]
             DataOperator().insertQuery(

@@ -1,5 +1,6 @@
 package app.sato.kchan.tasks.fanction
 
+import android.util.Log
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -14,18 +15,20 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     private var root:Int
     private var current:Int
     private var hierarchy: MutableList<Int>
+//    private var type:MutableMap<Int, String>
     private companion object {
         var structure:MutableMap<Int, MutableMap<String, Int>> = mutableMapOf()
         var type:MutableMap<Int, String> = mutableMapOf()
         var array:MutableMap<Int, MutableList<Int>> = mutableMapOf()
         var value:MutableMap<Int, String> = mutableMapOf()
+        var use:Int = 0
         var nextC:Int = 0
     }
 
     //<初期化処理>
     init {
         if(r == null) {
-            val id = nextC++
+            val id = newId()
             this.root = id
             this.current = id
             type[id] = "Object"
@@ -38,6 +41,21 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
 
     //<メソッド>
+    private fun newId():Int{
+        var id:Int = 0
+        for(i in 1..Int.MAX_VALUE) {
+            if(nextC >= Int.MAX_VALUE) nextC = 0
+            id = nextC++
+            if(use and (1 shl id) == 0) {
+                use = ( use and (1 shl id) )
+                return id
+            }
+        }
+        throw Exception("最大要素数を超えました。")
+    }
+    private fun delId(id:Int){
+        use = ( use and (1 shl id).inv() )
+    }
     inner class KeyException(message: String) : Exception(message)
     inner class StructureException(message: String) : Exception(message)
     inner class IdentificationException(message: String) : Exception(message)
@@ -69,18 +87,20 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
                 while (i < text.size && text[i] in " \n\t") i++
                 if(i == text.size || text[i] in end)
                     return return Pair(i, valueId)
-                else
-                    throw StructureException("")
+                else {
+                    throw StructureException("Hit: " + text[i])
+                }
             }
             else -> {
-                val id:Int = nextC++
+                val id:Int = newId()
                 var buff:String = ""
                 while(i < text.size && text[i] !in end && text[i] !in " \n\t") {
                     buff += text[i]
                     i++
                 }
                 while(i < text.size && text[i] in " \n\t") i++
-                if(i > text.size || text[i] !in end) throw StructureException("")
+                if(i >= text.size) i--
+                if(text[i] !in end) throw StructureException(i.toString() + "/" + text.size.toString() + "  " + text[i] + "   " + text)
                 when(buff) {
                     "null" -> {
                         type[id] = "Null"
@@ -103,7 +123,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         }
     }
     private fun stringDecoder(text: List<Char>, index: Int): Pair<Int, Int> {
-        val id:Int = nextC++
+        val id:Int = newId()
         type[id] = "String"
         var i:Int = index + 1
         var buff:String = ""
@@ -111,11 +131,11 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             buff += text[i]
             i++
         }
-        value[id] = buff
+        value[id] = buff.replace("\"", "\\\"")
         return Pair(i, id)
     }
     private fun arrayDecoder(text: List<Char>, index: Int): Pair<Int, Int>{
-        val id:Int = nextC++
+        val id:Int = newId()
         type[id] = "Array"
         array[id] = mutableListOf()
         var i:Int = index + 1
@@ -129,7 +149,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         return Pair(i, id)
     }
     private fun objectDecoder(text: List<Char>, index: Int): Pair<Int, Int>{
-        val id: Int = nextC++
+        val id: Int = newId()
         type[id] = "Object"
         structure[id] = mutableMapOf()
         var i:Int = index + 1
@@ -170,12 +190,8 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             current = valueId
             return true
         }catch(e:Exception){
-            structure = mutableMapOf(0 to mutableMapOf())
-            type = mutableMapOf()
-            array = mutableMapOf()
-            value = mutableMapOf()
-            root = 0
-            current = 0
+            Log.w("MyData/inJSON", "解析に失敗しました")
+            Log.d("MyData/inJSON", data.replace("\n"," "))
             return false
         }
     }
@@ -193,7 +209,11 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             "Array" -> arrayEncoder(id)
             "Object" -> objectEncoder(id)
             "Null" -> "null"
-            else -> throw Exception("Unknown Type")
+            else -> {
+                Log.d("MyData/outJSON", "Type: $type")
+                Log.d("MyData/outJSON", "ID:   $id")
+                throw Exception("Unknown Type")
+            }
         }
     }
     private fun stringEncoder(id: Int): String {
@@ -216,23 +236,21 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         return "{" + buff.joinToString(",") + "}"
     }
     fun outJSON():String?{
-        try{
+//        try{
             return valueEncoder(root)
-        }catch(e:Exception){
-            return null
-        }
+//        }catch(e:Exception){
+//            Log.w("MyData/outJSON", "解析に失敗しました")
+//            return null
+//        }
     }
     fun showJSON(): String{
         return outJSON() ?: return "??"
     }
     fun keys(): MutableSet<String> {
-        val list:MutableSet<String> = mutableSetOf()
         if("Object" == type[current]){
-            for(key in structure[current]?.keys ?: return mutableSetOf()){
-                list.add(key)
-            }
+            return structure[current]?.keys ?: mutableSetOf()
         }
-        return list
+        return mutableSetOf()
     }
 //  　fun values(): Array<String> {
 //        var list:Array<MyData> = arrayOf()
@@ -253,10 +271,10 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
 //        return list
 //    }
     fun isData(key:String): Boolean{
-        return key in (structure[current] ?: throw Exception("data does not exist"))
+        return key in (structure[current]?.keys ?: throw Exception("data does not exist"))
     }
     fun isKey(key:String): Boolean{
-        return key in (structure[current] ?: throw Exception("data does not exist"))
+        return key in (structure[current]?.keys ?: throw Exception("data does not exist"))
     }
     fun isData(index:Int): Boolean{
         return index < (array[current]?.size ?: throw Exception("data does not exist"))
@@ -265,7 +283,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         return if (isData(key)){
             structure[current]!![key] ?: throw Exception("data does not exist")
         }else{
-            val id: Int = nextC++
+            val id: Int = newId()
             type[id] = "Null"
             structure[current]!![key] = id
             id
@@ -318,6 +336,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
     fun moveRoot(){
         current = root
+        hierarchy = mutableListOf()
     }
     fun moveChain(key: String): MyData{
         val myData = this.copy()
@@ -340,8 +359,14 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         return myData
     }
     fun move(key: String){
+//        println("~~~~~~~~~~")
+//        println("type:      $type")
+//        println("structure: $structure")
+//        println("value:     $value")
+//        println("root:      $root")
+//        println("current:   $current")
         val id:Int
-        if(key in structure[current]!!){
+        if(key in (structure[current]?.keys ?: throw Exception("current does not exist"))){
             id = structure[current]?.get(key) ?: throw Exception("data does not exist")
             if (type[id] != "Object" && type[id] != "Array") {
                 type[id] = "Object"
@@ -350,7 +375,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
                 value.remove(id)
             }
         }else {
-            id = nextC++
+            id = newId()
             type[id] = "Object"
             structure[id] = mutableMapOf()
         }
@@ -363,6 +388,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             array[current] = mutableListOf()
             type[current] = "Array"
             value.remove(current)
+            structure.remove(current)
         }
         val id = getId(index)
         if(type[id] != "Object") {
@@ -383,12 +409,18 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         myData.back()
         return myData
     }
+    val size:Int get() {
+        if(type[current] == "Array")
+            return array[current]?.size ?: throw Exception("Null in non-nullable type")
+        else
+            throw Exception("Type is not an array")
+    }
     fun delete(key:String){
         if (isData(key)) {
             val id = getId(key)
             if(type[id].toString() in "String,Value") {
-                value.remove(id)
                 type[id] = "Null"
+                value.remove(id)
             }
             structure.remove(id)
             type.remove(current)
@@ -476,27 +508,30 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
     fun setString(key:String, v: String?){
         val id = getId(key)
-        if(v == null)
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "String"
             value[id] = v
         }
     }
     fun setString(index:Int, v: String?){
         val id = getId(index)
-        if(v == null)
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "String"
             value[id] = v
         }
     }
     fun push(v: String?){
-        val id = nextC++
-        if(v == null)
+        val id = newId()
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "String"
             value[id] = v
         }
@@ -584,27 +619,30 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
     fun setInt(key:String, v: Int?){
         val id = getId(key)
-        if(v == null)
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "Value"
             value[id] = v.toString()
         }
     }
     fun setInt(index:Int, v: Int?){
         val id = getId(index)
-        if(v == null)
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "Value"
             value[id] = v.toString()
         }
     }
     fun push(v: Int?){
-        val id = nextC++
-        if(v == null)
+        val id = newId()
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "Value"
             value[id] = v.toString()
         }
@@ -692,27 +730,30 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
     fun setBoolean(key:String, v: Boolean?){
         val id = getId(key)
-        if(v == null)
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "Value"
             value[id] = v.toString()
         }
     }
     fun setBoolean(index:Int, v: Boolean?){
         val id = getId(index)
-        if(v == null)
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "Value"
             value[id] = v.toString()
         }
     }
     fun push(v: Boolean?){
-        val id = nextC++
-        if(v == null)
+        val id = newId()
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "Value"
             value[id] = v.toString()
         }
@@ -800,28 +841,31 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
     fun setDateTime(key:String, v: LocalDateTime?){
         val id = getId(key)
-        if(v == null)
+        if(v == null){
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "String"
             value[id] = v.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"))
         }
     }
     fun setDateTime(index:Int, v: LocalDateTime?){
         val id = getId(index)
-        if(v == null)
+        if(v == null) {
             type[id] = "Null"
-        else{
+            value.remove(id)
+        }else{
             type[id] = "String"
             value[id] = v.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"))
         }
     }
     fun push(v: LocalDateTime?){
         if(type[current] == "Array"){
-            val id = nextC++
-            if(v == null)
+            val id = newId()
+            if(v == null){
                 type[id] = "Null"
-            else{
+                value.remove(id)
+            }else{
                 type[id] = "String"
                 value[id] = v.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"))
             }
@@ -851,6 +895,52 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
     fun copy(): MyData{
         return MyData(root,current,hierarchy)
+    }
+    fun close() {
+        when (type[current]) {
+            "Object" -> {
+                for(key in keys()){
+                    when (type[current]) {
+                        "Object","Array" -> {
+                            moveChain(key).close()
+                        }
+                        else -> {
+                            val id = moveChain(key).getId(key)
+                            type.remove(id)
+                            structure.remove(id)
+                            array.remove(id)
+                            value.remove(id)
+                            delId(id)
+                        }
+                    }
+                }
+            }
+            "Array" -> {
+                for (index in 0..size) {
+                    when (type[index]) {
+                        "Object", "Array" -> {
+                            moveChain(index).close()
+                        }
+                        else -> {
+                            val id = moveChain(index).getId(index)
+                            type.remove(id)
+                            structure.remove(id)
+                            array.remove(id)
+                            value.remove(id)
+                            delId(id)
+                        }
+                    }
+                }
+            }
+        }
+        type.remove(current)
+        structure.remove(current)
+        array.remove(current)
+        value.remove(current)
+        delId(current)
+    }
+    fun closeRoot() {
+        moveRootChain().close()
     }
 }
 

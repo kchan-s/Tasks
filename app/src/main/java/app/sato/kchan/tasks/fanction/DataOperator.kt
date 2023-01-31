@@ -410,7 +410,7 @@ class DataOperator() {
         for ((k, v) in pick) {
             if (c > 0)
                 sql += " AND "
-            sql += k + " = ?"
+            sql += "$k = ?"
             vl += v
             c++
         }
@@ -448,7 +448,7 @@ class DataOperator() {
         for(tName in dbInfo.keys())
             database.delete(tName, null, null)
     }
-    fun sync():Boolean {
+    fun sync(stop:Boolean = false):Boolean {
         if(true) {
             val res = selectQuery(
                 table = "account",
@@ -527,45 +527,55 @@ class DataOperator() {
         }
         val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
         println("送信: " + request)
-        ConnectionWrapper.scope.launch{
-            ConnectionWrapper().executeServerConnection(request)
-            var response = ConnectionWrapper().postOutput()
-            println("受信: " + response)
-            data = MyData()
-            if(data.inJSON(response)){
-                println("解析: " + data.outJSON())
-                val result = data.moveChain("result")
-                if(result.getInt("code") == 0){
-                    val content = result.moveChain("content")
-                    for(tName in content.keys()){
-                        val record = content.moveChain(tName)
-                        for(cName in record.keys()){
-                            val column = record.moveChain("item").moveChain(cName)
-                            updateQuery(
-                                table = "account",
-                                value = mutableListOf(cName to column.getString("value")),
-                                pick = record.moveChain("pick").getStringMap(),
-                                filter = arrayOf(
-                                    mutableMapOf(
-                                        "column" to dbInfo.moveChain(tName).moveChain(cName).getString("update"),
-                                        "value" to column.getString("update"),
-                                        "compare" to "Small"
-                                    )
+        val con = Connect()
+        con.setRequest(request)
+        con.send()
+        con.waitEnd()
+        var response =con.getResponse()
+        println("受信: " + response)
+        data = MyData()
+        if(data.inJSON(response)){
+            println("解析: " + data.outJSON())
+            val result = data.moveChain("result")
+            if(result.getInt("code") == 0){
+                val content = result.moveChain("content")
+                for(tName in content.keys()) {
+                    val record = content.moveChain(tName)
+                    for (cName in record.keys()) {
+                        val column = record.moveChain("item").moveChain(cName)
+                        updateQuery(
+                            table = "account",
+                            value = mutableListOf(cName to column.getString("value")),
+                            pick = record.moveChain("pick").getStringMap(),
+                            filter = arrayOf(
+                                mutableMapOf(
+                                    "column" to dbInfo.moveChain(tName).moveChain(cName)
+                                        .getString("update"),
+                                    "value" to column.getString("update"),
+                                    "compare" to "Small"
                                 )
                             )
-                        }
+                        )
                     }
-
-                }else{
-                    println("サーバー処理解析失敗!!")
-                    println("-> " + data.outJSON())
                 }
             }else{
-                println("JSON解析失敗!!")
+                println("サーバー処理解析失敗!!")
+                println("-> " + data.outJSON())
             }
+        }else{
+            println("JSON解析失敗!!")
         }
         return true
     }
+    fun close() {
+
+    }
+
+
+
+
+
+
 
     fun dbJSON():MyData {
         val dbInfo = MyData()
@@ -607,7 +617,7 @@ class DataOperator() {
             "primary": false,
             "sync": false
         }
-    }
+    },
     "setting":{
         "color1":{
             "type": "Int",
@@ -704,7 +714,7 @@ class DataOperator() {
             "primary": false,
             "sync": true,
             "update": "others_update_at"
-        }
+        },
         "status_flag":{
             "type": "Int",
             "primary": false,
@@ -756,7 +766,7 @@ class DataOperator() {
         "complete_at":{
             "type": "DateTime",
             "primary": false,
-            "sync": true
+            "sync": true,
             "update": "complete_update_at"
         },
         "lock_at":{
@@ -764,7 +774,7 @@ class DataOperator() {
             "primary": false,
             "sync": true,
             "update": "lock_update_at"
-        }
+        },
         "status_flag":{
             "type": "Int",
             "primary": false,
@@ -786,11 +796,11 @@ class DataOperator() {
             "primary": false,
             "sync": false
         },
-        "lock_update_at"{
+        "lock_update_at":{
             "type": "DateTime",
             "primary": false,
             "sync": false
-        }
+        },
         "status_update_at":{
             "type": "DateTime",
             "primary": false,

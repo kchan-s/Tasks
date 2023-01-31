@@ -1,6 +1,7 @@
 package app.sato.kchan.tasks.fanction
 
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class Connect {
     private companion object {
@@ -37,10 +38,9 @@ class Connect {
             }
         }
     }
+
     fun callback(func: (connect:Connect) -> Unit){
-        if(0 < id) {
-            callback[id] = func
-        }
+        callback[id] = func
     }
     fun isEnd(wait:Int = 100):Boolean {
         val info = situation[id] ?: throw Exception("✖✖✖✖✖")
@@ -50,6 +50,13 @@ class Connect {
             Thread.sleep(wait.toLong())
             return false
         }
+    }
+    fun waitEnd(timeOut:Int = 20):Boolean{
+        val endTime = LocalDateTime.now().plusSeconds(timeOut.toLong())
+        do{
+            if(LocalDateTime.now() < endTime) return false
+        } while (isEnd())
+        return true
     }
     fun isSuccess():Boolean {
         val info = situation[id] ?: throw Exception("✖✖✖✖✖")
@@ -65,5 +72,9 @@ class Connect {
         val myData = MyData()
         myData.inJSON(response)
         return myData
+    }
+    fun close() {
+        situation.remove(id)
+        callback.remove(id)
     }
 }
