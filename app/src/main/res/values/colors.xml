@@ -6,8 +6,9 @@
     <color name="dark_pink2">#DCBBC6</color>
     <color name="turquoise">#60B9C5</color>
     <color name="light_turquoise">#97CFD6</color>
-    <color name="dark_turquoise">#FF03DAC5</color>
+    <color name="dark_turquoise">#41CABD</color>
     <color name="dark_turquoise2">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#555555</color>
 </resources>

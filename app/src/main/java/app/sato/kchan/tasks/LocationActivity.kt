@@ -162,6 +162,6 @@ class LocationActivity: AppCompatActivity(){
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
-        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_DayNight))
     }
 }

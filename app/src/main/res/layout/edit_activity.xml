@@ -21,7 +21,8 @@
             android:ems="10"
             android:gravity="center"
             android:hint="タイトルを入力"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:maxLength="120" />
 
     </androidx.appcompat.widget.Toolbar>
 

@@ -78,7 +78,7 @@ class LocationStockRegisterActivity: AppCompatActivity(){
             else doGeoCoding(binding.locationStockRegisterAddressEdit.text.toString())
             location.setName(locationName)
             location.setAddress(locationAddress)
-            location.setLongitude(coordinate[0].latitude.toFloat())
+            location.setLatitude(coordinate[0].latitude.toFloat())
             location.setLongitude(coordinate[0].longitude.toFloat())
             location.setPermanent()
             finish()
@@ -94,6 +94,6 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
-        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_DayNight))
     }
 }

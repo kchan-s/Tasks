@@ -1,6 +1,7 @@
 package app.sato.kchan.tasks
 
 import android.graphics.Color
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.fanction.NoteManager
+import org.w3c.dom.Text
 import java.time.format.DateTimeFormatter
 
 class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHolder>() {
@@ -35,6 +37,7 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        selectedItem.clear()
         noteManager.select(position)
         val note = noteManager.getNote()!!
         viewHolder.titleText.text = note.getTitle()
@@ -60,10 +63,22 @@ class DeleteMemoListAdapter: RecyclerView.Adapter<DeleteMemoListAdapter.ViewHold
             v.setOnClickListener {
                 if (!deleteNoteManager.getNote()!!.isLock()) {
                     if (isSelectedItem(deleteNoteManager.send())) {
-                        viewHolder.memoList.setBackgroundColor(Color.WHITE)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            if (HomeActivity.context.theme.resources.configuration.isNightModeActive) {
+                                viewHolder.memoList.setBackgroundColor(Color.rgb(85, 85, 85))
+                            } else {
+                                viewHolder.memoList.setBackgroundColor(Color.WHITE)
+                            }
+                        }
                         removeSelectedItem(deleteNoteManager.send())
                     } else {
-                        viewHolder.memoList.setBackgroundColor(Color.LTGRAY)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            if (HomeActivity.context.theme.resources.configuration.isNightModeActive) {
+                                viewHolder.memoList.setBackgroundColor(Color.GRAY)
+                            } else {
+                                viewHolder.memoList.setBackgroundColor(Color.LTGRAY)
+                            }
+                        }
                         addSelectedItem(deleteNoteManager.send())
                     }
                 }

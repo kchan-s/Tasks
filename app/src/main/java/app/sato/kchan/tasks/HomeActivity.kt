@@ -2,6 +2,8 @@ package app.sato.kchan.tasks
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
@@ -18,17 +20,15 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomeActivityBinding
     val adapter = HomeMemoListAdapter()
 
-    init {
-        val account: Account = Account()
-//        DataOperator().sync()
-    }
-
     // 画面作成
     override fun onCreate(savedInstanceState: Bundle?) {
         context = applicationContext
         super.onCreate(savedInstanceState)
         loadTheme()
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+
+//        val account: Account = Account()
+//        DataOperator().sync()
 
         val foregroundServiceIntent = Intent(this, ForegroundNotificationService::class.java)
         this.startForegroundService(foregroundServiceIntent)
@@ -40,6 +40,13 @@ class HomeActivity : AppCompatActivity() {
         recyclerView.layoutManager = layoutManager
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         recyclerView.addItemDecoration(itemDecoration)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (context.theme.resources.configuration.isNightModeActive) {
+                binding.homeSettingButton.setBackgroundColor(Color.rgb(85,85, 85))
+                binding.homeTrashButton.setBackgroundColor(Color.rgb(85, 85, 85))
+            }
+        }
 
         // 検索バーの設定
         binding.homeSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -102,6 +109,6 @@ class HomeActivity : AppCompatActivity() {
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
-        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_DayNight))
     }
 }

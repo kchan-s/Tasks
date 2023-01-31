@@ -30,11 +30,11 @@ class Account public constructor() {
                     table = "account",
                     column = arrayOf("account_id")
                 ).setResultTop()) {
-                var buff: Array<Char> = arrayOf()
-                val chars = "!#\$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+                var token = ""
+//                val chars = "!#\$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+                val chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
                 for (i in 0..63)
-                    buff += chars[Random.nextInt(chars.length)]
-                val token = buff.toString()
+                    token += chars[Random.nextInt(chars.length)]
                 DataOperator().insertQuery(
                     table = "account",
                     value = mutableMapOf(

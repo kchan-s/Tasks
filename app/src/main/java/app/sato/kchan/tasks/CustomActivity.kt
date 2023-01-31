@@ -19,7 +19,7 @@ class CustomActivity: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
         val cEditor = cPreferences.edit()
-        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_DayNight))
         binding = CustomActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         binding.customDarkSwitch.setOnCheckedChangeListener { _, isChanged ->
@@ -42,7 +42,7 @@ class CustomActivity: AppCompatActivity(){
         }
 
         binding.turquoiseButton.setOnClickListener {
-            cEditor?.putInt("theme", R.style.Theme_TaSks_Turquoise)
+            cEditor?.putInt("theme", R.style.Theme_TaSks_DayNight)
             cEditor.commit()
             finish()
             startActivity(Intent(this, CustomActivity::class.java))

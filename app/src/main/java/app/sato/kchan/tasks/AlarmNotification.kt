@@ -26,7 +26,7 @@ class AlarmNotification : BroadcastReceiver() {
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            context, notificationId, homeIntent,
+            context, 0, homeIntent,
             0
         )
         val channelId = "notice"

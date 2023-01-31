@@ -1,21 +1,20 @@
 package app.sato.kchan.tasks
 
-import android.app.AlarmManager
-import android.app.PendingIntent
+import android.app.NotificationManager
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import app.sato.kchan.tasks.HomeActivity.Companion.context
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -34,6 +33,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val context: Context = view.context
         val titleText: TextView = view.findViewById(R.id.home_list_title_text)
         val noticeText: TextView = view.findViewById(R.id.home_list_notice_text)
+        val textList: LinearLayout = view.findViewById(R.id.home_text_list)
         val locationText: TextView = view.findViewById(R.id.home_list_location_text)
         val lockImageView: ImageView = view.findViewById(R.id.home_list_lock_image)
         val checkBox: ImageView = view.findViewById(R.id.home_list_check_image)
@@ -85,15 +85,21 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         if (note.isComplete()) {
             note.setUncomplete()
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
-            viewHolder.checkBox.setBackgroundColor(Color.WHITE)
-            viewHolder.list.setBackgroundColor(Color.WHITE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (context.theme.resources.configuration.isNightModeActive) {
+                    viewHolder.list.setBackgroundColor(Color.rgb(85, 85, 85))
+                } else {
+                    viewHolder.checkBox.setBackgroundColor(Color.WHITE)
+                    viewHolder.list.setBackgroundColor(Color.WHITE)
+                }
+            }
             if (note.getNoticeShow() != null) {
                 val editor = appNotificationIdSharedPreferences.edit()
                 val uuid = UUID.randomUUID().hashCode()
                 editor.putInt(noteManager.send(), uuid)
                 editor.commit()
                 ForegroundNotificationService().setAlarm(
-                    HomeActivity.context,
+                    context,
                     note,
                     uuid
                 )
@@ -101,10 +107,24 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         } else {
             note.setComplete()
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
-            viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
-            viewHolder.list.setBackgroundColor(Color.LTGRAY)
-            val cancelUuid = appNotificationIdSharedPreferences.getInt(noteManager.send(), -1)
-            if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(HomeActivity.context, cancelUuid)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (context.theme.resources.configuration.isNightModeActive) {
+                    viewHolder.list.setBackgroundColor(Color.GRAY)
+                } else {
+                    viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
+                    viewHolder.list.setBackgroundColor(Color.LTGRAY)
+                }
+            }
+            val notificationManager =
+                context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.getNotificationChannel("notice")
+            val cancelUuid = appNotificationIdSharedPreferences.getInt(completeNoteManager.send(), -1)
+            println("number" + cancelUuid)
+            println("ooooo" + noteManager.send())
+            if (cancelUuid != -1) {
+                ForegroundNotificationService().cancelAlarm(context, cancelUuid)
+                notificationManager.cancel(cancelUuid)
+            }
         }
     }
 
@@ -159,12 +179,24 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)
             if (note.isComplete()) {
                 viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
-                viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
-                viewHolder.list.setBackgroundColor(Color.LTGRAY)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (context.theme.resources.configuration.isNightModeActive) {
+                        viewHolder.list.setBackgroundColor(Color.GRAY)
+                    } else {
+                        viewHolder.checkBox.setBackgroundColor(Color.LTGRAY)
+                        viewHolder.list.setBackgroundColor(Color.LTGRAY)
+                    }
+                }
             } else {
                 viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
-                viewHolder.checkBox.setBackgroundColor(Color.WHITE)
-                viewHolder.list.setBackgroundColor(Color.WHITE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (context.theme.resources.configuration.isNightModeActive) {
+                        viewHolder.list.setBackgroundColor(Color.rgb(85, 85, 85))
+                    } else {
+                        viewHolder.checkBox.setBackgroundColor(Color.WHITE)
+                        viewHolder.list.setBackgroundColor(Color.WHITE)
+                    }
+                }
             }
         }
     }

@@ -1,10 +1,7 @@
 package app.sato.kchan.tasks
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.DatePickerDialog
-import android.app.PendingIntent
-import android.app.TimePickerDialog
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -106,23 +103,29 @@ class TimeActivity: AppCompatActivity(){
             when (item.itemId) {
                 android.R.id.home -> {
                     val note = noteManager.getNote()!!
+                    val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
+                    val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
                     if (startDateTime == null && endDateTime == null) {
                         note.setNoticeShow(null)
                         note.setNoticeHide(null)
                     } else {
-                        val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-                        val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
-                        if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
-
+                        if (cancelUuid != -1) {
+                            ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
+                            val notificationManager =
+                                HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                            notificationManager.getNotificationChannel("notice")
+                            notificationManager.cancel(cancelUuid)
+                        }
                         if (!note.isComplete()) {
                             val editor = sharedPreferences.edit()
-                            val uuid = UUID.randomUUID().hashCode()
-                            editor.putInt(noteManager.send(), uuid)
+                            println("deleteNumber" + cancelUuid)
+                            println("ooooo" + noteManager.send())
+                            editor.putInt(noteManager.send(), cancelUuid)
                             editor.commit()
                             ForegroundNotificationService().setAlarm(
                                 applicationContext,
                                 note,
-                                uuid
+                                cancelUuid
                             )
                         }
                     }
@@ -194,14 +197,14 @@ class TimeActivity: AppCompatActivity(){
             calendar.set(Calendar.HOUR_OF_DAY, hour)
             calendar.set(Calendar.MINUTE, minute)
             val showFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
-            val n = noteManager.getNote()!!
+            val note = noteManager.getNote()!!
 
             if (start) {
                 startDateTimeList.add(3, hour)
                 startDateTimeList.add(4, minute)
                 startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
                 binding.timeStartText.text = "通知開始時間 : ${startDateTime!!.format(showFormat)}"
-                n.setNoticeShow(startDateTime)
+                note.setNoticeShow(startDateTime)
             }
             else {
                 startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
@@ -210,8 +213,7 @@ class TimeActivity: AppCompatActivity(){
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 } else {
                     binding.timeEndText.text = "通知終了時間 : ${endDateTime!!.format(showFormat)}"
-
-                    n.setNoticeHide(endDateTime)
+                    note.setNoticeHide(endDateTime)
                 }
             }
         }
@@ -249,6 +251,6 @@ class TimeActivity: AppCompatActivity(){
 
     private fun loadTheme() {
         val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
-        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_Turquoise))
+        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_DayNight))
     }
 }

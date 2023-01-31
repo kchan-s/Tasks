@@ -28,7 +28,7 @@ class DataOperator(){
     fun insertQuery(table:String, value:Map<String,String?>) {
         val values = ContentValues()
         for ((k, v) in value) {
-            values.put(k, v)
+            values.put(k, v.toString())
         }
         database.insert(table, null, values)
     }
@@ -386,7 +386,7 @@ class DataOperator(){
         var dt: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
         val res = selectQuery(
             table = "account",
-            column = arrayOf("account","connect_token","sync_at")
+            column = arrayOf("account_id","connect_token","sync_at")
         )
         if (res.setResultTop()) {
             data.setString("account", res.getString("account"))
@@ -563,10 +563,6 @@ class DataOperator(){
             "change": true,
             "update": "update_at"
         },
-        "synchronize_at":{
-            "type": "DateTime",
-            "change": false
-        },
         "create_at":{
             "type": "DateTime",
             "change": false
@@ -575,10 +571,6 @@ class DataOperator(){
             "type": "Int",
             "change": true,
             "update": "update_at"
-        },
-        "update_at":{
-            "type": "DateTime",
-            "change": false
         }
     },
     "note":{

@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TaSks.Turquoise" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.TaSks.DayNight" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/turquoise</item>
         <item name="colorPrimaryVariant">@color/light_turquoise</item>
@@ -19,7 +19,7 @@
         <item name="android:textColorSecondary">#FFFFFF</item>
     </style>
 
-    <style name="Theme.TaSks.Pink" parent="Theme.TaSks.Turquoise">
+    <style name="Theme.TaSks.Pink" parent="Theme.TaSks.DayNight">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/pink</item>
         <item name="colorPrimaryVariant">@color/light_pink</item>
