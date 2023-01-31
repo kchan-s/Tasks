@@ -1,5 +1,8 @@
 package app.sato.kchan.tasks
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -84,7 +87,7 @@ class EditActivity : AppCompatActivity() {
         val note = noteManager.getNote()!!
         val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
         val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
-        if (cancelUuid != -1) ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
+        if (cancelUuid != -1) cancelAlarm(applicationContext, cancelUuid)
         note.delete()
         finish()
     }
@@ -101,6 +104,18 @@ class EditActivity : AppCompatActivity() {
         intent = Intent(this, LocationActivity::class.java)
         intent.putExtra("received", received)
         startActivity(intent)
+    }
+
+    fun cancelAlarm(context: Context, uuid: Int) {
+        val intent = Intent(context, AlarmNotification::class.java)
+        val pending = PendingIntent.getBroadcast(
+            context, uuid, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // アラームを解除する
+        val am = context.getSystemService(ALARM_SERVICE) as AlarmManager
+        am.cancel(pending)
     }
 
     private fun loadTheme() {

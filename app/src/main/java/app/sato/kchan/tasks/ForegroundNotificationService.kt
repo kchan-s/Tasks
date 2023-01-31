@@ -91,40 +91,40 @@ class ForegroundNotificationService : Service() , LocationListener{
         }
 
         // 同期
-        Timer().schedule(0,600000) {
-            val noteManager = NoteManager()
-            val appSharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-            val editor = appSharedPreferences.edit()
-
-            noteManager.search("")
-            for (i in 0 until noteManager.getNoteNumber()) {
-                val copyNoteManager = noteManager.copy()
-                copyNoteManager.select(i)
-
-                var cancelUuid = appSharedPreferences.getInt(copyNoteManager.send(), -1)
-                cancelAlarm(context, cancelUuid)
-                val notificationManager =
-                    HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.getNotificationChannel("notice")
-                notificationManager.cancel(cancelUuid)
-
-                val note = copyNoteManager.getNote()!!
-                if (note.getNoticeShow() != null) {
-                    if (cancelUuid != -1) {
-                        cancelAlarm(context, cancelUuid)
-                    } else {
-                        cancelUuid = UUID.randomUUID().hashCode()
-                        editor.putInt(copyNoteManager.send(), cancelUuid)
-                        editor.apply()
-                    }
-                    setAlarm(context, note, cancelUuid)
-                } else  {
-                    editor.putInt(copyNoteManager.send(), -1)
-                }
-            }
-            editor.commit()
-
-        }
+//        Timer().schedule(0,600000) {
+//            val noteManager = NoteManager()
+//            val appSharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
+//            val editor = appSharedPreferences.edit()
+//
+//            noteManager.search("")
+//            for (i in 0 until noteManager.getNoteNumber()) {
+//                val copyNoteManager = noteManager.copy()
+//                copyNoteManager.select(i)
+//
+//                var cancelUuid = appSharedPreferences.getInt(copyNoteManager.send(), -1)
+//                cancelAlarm(context, cancelUuid)
+//                val notificationManager =
+//                    HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+//                notificationManager.getNotificationChannel("notice")
+//                notificationManager.cancel(cancelUuid)
+//
+//                val note = copyNoteManager.getNote()!!
+//                if (note.getNoticeShow() != null) {
+//                    if (cancelUuid != -1) {
+//                        cancelAlarm(context, cancelUuid)
+//                    } else {
+//                        cancelUuid = UUID.randomUUID().hashCode()
+//                        editor.putInt(copyNoteManager.send(), cancelUuid)
+//                        editor.apply()
+//                    }
+//                    setAlarm(context, note, cancelUuid)
+//                } else  {
+//                    editor.putInt(copyNoteManager.send(), -1)
+//                }
+//            }
+//            editor.commit()
+//
+//        }
         return START_STICKY
     }
 
@@ -217,7 +217,7 @@ class ForegroundNotificationService : Service() , LocationListener{
         // アラームを解除する
         val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
         am.cancel(pending)
-        }
+    }
 
     @Nullable
     override fun onBind(p0: Intent?): IBinder? {
