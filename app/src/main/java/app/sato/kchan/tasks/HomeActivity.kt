@@ -17,7 +17,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.HomeActivityBinding
 import app.sato.kchan.tasks.fanction.Account
+import app.sato.kchan.tasks.fanction.Connect
+import app.sato.kchan.tasks.fanction.ConnectionWrapper
 import app.sato.kchan.tasks.fanction.DataOperator
+import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
     companion object {
@@ -33,8 +36,17 @@ class HomeActivity : AppCompatActivity() {
         loadTheme()
         binding = HomeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
+        //--- 初期化処理 ここから ------------------------------
+//        println(">------")
+//        val con = Connect()
+//        con.setRequest("{\"type\":\"Hello\"}")
+//        println("-->----")
+//        while (!con.isEnd(10)){println("Wait")}
+//        println("------>")
+
 //        val account: Account = Account()
 //        DataOperator().sync()
+        //--- 初期化処理 ここまで ------------------------------
 
         val connectionManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)

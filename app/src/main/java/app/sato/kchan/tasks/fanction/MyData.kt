@@ -15,8 +15,8 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     private var current:Int
     private var hierarchy: MutableList<Int>
     private companion object {
-        var structure:MutableMap<Int, MutableMap<String, Int>> = mutableMapOf(0 to mutableMapOf())
-        var type:MutableMap<Int, String> = mutableMapOf(0 to "Object")
+        var structure:MutableMap<Int, MutableMap<String, Int>> = mutableMapOf()
+        var type:MutableMap<Int, String> = mutableMapOf()
         var array:MutableMap<Int, MutableList<Int>> = mutableMapOf()
         var value:MutableMap<Int, String> = mutableMapOf()
         var nextC:Int = 0
@@ -25,17 +25,14 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     //<初期化処理>
     init {
         if(r == null) {
-            this.root = nextC++
-            this.current = this.root
-            type[this.current] = "Object"
-            structure[this.current] = mutableMapOf()
+            val id = nextC++
+            this.root = id
+            this.current = id
+            type[id] = "Object"
+            structure[id] = mutableMapOf()
         }else{
             this.root = r
-            if(c == null){
-                this.current = root
-            }else{
-                this.current = c
-            }
+            this.current = c ?: r
         }
         this.hierarchy = h
     }
@@ -73,7 +70,6 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
                 if(i == text.size || text[i] in end)
                     return return Pair(i, valueId)
                 else
-                    println(text[i])
                     throw StructureException("")
             }
             else -> {
@@ -88,6 +84,14 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
                 when(buff) {
                     "null" -> {
                         type[id] = "Null"
+                    }
+                    "false" -> {
+                        type[id] = "Value"
+                        value[id] = false.toString()
+                    }
+                    "true" -> {
+                        type[id] = "Value"
+                        value[id] = true.toString()
                     }
                     else -> {
                         type[id] = "Value"
@@ -143,7 +147,6 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
                 }
                 '}' -> break
                 else -> {
-                    println(text[i] + " " + i.toString())
                     throw StructureException("")
                 }
             }
@@ -165,10 +168,6 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             val (index, valueId) = valueDecoder(text)
             root = valueId
             current = valueId
-            println(structure)
-            println(type)
-            println(array)
-            println(value)
             return true
         }catch(e:Exception){
             structure = mutableMapOf(0 to mutableMapOf())
@@ -182,11 +181,18 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
     }
     private fun valueEncoder(id: Int): String {
         return when(type[id]) {
-            "Value" -> value[id]!!
+            "Value" -> {
+                when(value[id]) {
+                    null ->  throw Exception("data does not exist")
+                    "true" -> "true"
+                    "false" -> "false"
+                    else -> value[id] ?: throw Exception("data does not exist")
+                }
+            }
             "String" -> stringEncoder(id)
             "Array" -> arrayEncoder(id)
             "Object" -> objectEncoder(id)
-            "Null" -> "nul"
+            "Null" -> "null"
             else -> throw Exception("Unknown Type")
         }
     }
@@ -398,7 +404,7 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
                 throw Exception("is in object form")
             }
             "String" -> {
-                return value[id] ?: throw throw Exception("data does not exist")
+                return value[id] ?: throw Exception("data does not exist")
             }
             "Value" -> {
                 return value[id].toString()
@@ -595,6 +601,114 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         }
     }
     fun push(v: Int?){
+        val id = nextC++
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "Value"
+            value[id] = v.toString()
+        }
+        array[current]?.add(id)
+    }
+    fun getBoolean(key:String): Boolean{
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun getBoolean(index:Int): Boolean{
+        val id = getId(index)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun getBooleanOrNull(key:String): Boolean? {
+        val id = getId(key)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun getBooleanOrNull(index:Int): Boolean? {
+        val id = getId(index)
+        when(type[id]){
+            "Null" -> {
+                throw Exception("Null in non-nullable type")
+            }
+            "Object" -> {
+                throw Exception("is in object form")
+            }
+            "String" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            "Value" -> {
+                return value[id]?.toBoolean() ?: throw Exception("Null in non-nullable type")
+            }
+            else -> {
+                throw Exception("There is no process corresponding to the type.")
+            }
+        }
+    }
+    fun setBoolean(key:String, v: Boolean?){
+        val id = getId(key)
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "Value"
+            value[id] = v.toString()
+        }
+    }
+    fun setBoolean(index:Int, v: Boolean?){
+        val id = getId(index)
+        if(v == null)
+            type[id] = "Null"
+        else{
+            type[id] = "Value"
+            value[id] = v.toString()
+        }
+    }
+    fun push(v: Boolean?){
         val id = nextC++
         if(v == null)
             type[id] = "Null"
