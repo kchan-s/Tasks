@@ -179,6 +179,20 @@ class Note public constructor(pick:MutableMap<String, String>) {
             pick = pick
         )
     }
+    fun getNoticeBarId(): Int?{
+        return DataOperator().selectQuery(
+            table = "note",
+            column = "notice_bar_id",
+            pick = pick
+        ).getInt()
+    }
+    fun setNoticeBarId(v:Int?){
+        DataOperator().updateQuery(
+            table = "note",
+            value = mutableListOf("notice_bar_id" to v.toString()),
+            pick = pick
+        )
+    }
     fun delete(){
         DataOperator().updateQuery(
             table = "note",
