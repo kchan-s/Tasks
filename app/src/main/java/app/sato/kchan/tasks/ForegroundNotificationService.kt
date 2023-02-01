@@ -17,6 +17,7 @@ import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import app.sato.kchan.tasks.HomeActivity.Companion.context
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
 import app.sato.kchan.tasks.fanction.NoticeManager
@@ -52,35 +53,9 @@ class ForegroundNotificationService : Service() , LocationListener{
 
         val builder = Notification.Builder(this, "foregroundService")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("TaSks")
+            .setContentTitle("起動中…")
             .setContentIntent(pendingIntent)
-
-
-        val connectionManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)
-
-        if (capabilities != null) {
-            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(
-                    NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    builder.setContentText("位置情報取得・同期実行中…")
-                        .addAction(R.drawable.ic_launcher_foreground, "位置情報取得・同期実行を停止する", sendPendingIntent)
-                } else {
-                    builder.setContentText("同期実行中…")
-                        .addAction(R.drawable.ic_launcher_foreground, "同期実行を停止する", sendPendingIntent)
-                }
-            } else {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    builder.setContentText("位置情報取得中…")
-                        .addAction(R.drawable.ic_launcher_foreground, "位置情報取得を停止する", sendPendingIntent)
-                }
-            }
-        } else {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                builder.setContentText("位置情報取得中…")
-                    .addAction(R.drawable.ic_launcher_foreground, "位置情報取得を停止する", sendPendingIntent)
-            }
-        }
+            .addAction(R.drawable.ic_launcher_foreground, "TaSksを停止する", sendPendingIntent)
         val foregroundNotification = builder.build()
 
         startForeground(1, foregroundNotification)
@@ -93,36 +68,23 @@ class ForegroundNotificationService : Service() , LocationListener{
         // 同期
         Timer().schedule(0,600000) {
             val noteManager = NoteManager()
-            val appSharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-            val editor = appSharedPreferences.edit()
 
             noteManager.search("")
             for (i in 0 until noteManager.getNoteNumber()) {
                 val copyNoteManager = noteManager.copy()
                 copyNoteManager.select(i)
 
-                var cancelUuid = appSharedPreferences.getInt(copyNoteManager.send(), -1)
-                cancelAlarm(context, cancelUuid)
                 val notificationManager =
                     HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.getNotificationChannel("notice")
-                notificationManager.cancel(cancelUuid)
+                notificationManager.cancelAll()
 
                 val note = copyNoteManager.getNote()!!
-                if (note.getNoticeShow() != null) {
-                    if (cancelUuid != -1) {
-                        cancelAlarm(context, cancelUuid)
-                    } else {
-                        cancelUuid = UUID.randomUUID().hashCode()
-                        editor.putInt(copyNoteManager.send(), cancelUuid)
-                        editor.apply()
-                    }
-                    setAlarm(context, note, cancelUuid)
-                } else  {
-                    editor.putInt(copyNoteManager.send(), -1)
+                if (note.getNoticeShow() != null && note.getNoticeLocation() == null) {
+                    val uuid = UUID.randomUUID().hashCode()
+                    setAlarm(context, note, uuid)
                 }
             }
-            editor.commit()
 
         }
         return START_STICKY
@@ -175,7 +137,7 @@ class ForegroundNotificationService : Service() , LocationListener{
                         stopCalendar.timeInMillis - startCalendar.timeInMillis
                     )
                 }
-            } else if (start.isAfter(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) {
+            } else {
                 startCalendar = Calendar.getInstance()
                 startCalendar.set(
                     start.year,
@@ -229,6 +191,7 @@ class ForegroundNotificationService : Service() , LocationListener{
         notificationManager.getNotificationChannel("location")
         notificationManager.cancelAll()
 
+        val noticeManager = NoticeManager()
         val locationManager = app.sato.kchan.tasks.fanction.LocationManager()
         locationManager.searchByRadius(
             location.latitude.toFloat(),
@@ -236,17 +199,14 @@ class ForegroundNotificationService : Service() , LocationListener{
             75
         )
         if (locationManager.isLocation()) {
-            val noticeManager = NoticeManager()
-            do {noticeManager.searchByLocation(locationManager.getLocation()!!)
+            do {
+                noticeManager.searchByLocation(locationManager.getLocation()!!)
                 if (noticeManager.getNoticeNumber() != 0) {
                     val note = noticeManager.getNote()!!
-                    if (!note.isComplete()) {
-
+                    if (!note.isComplete() && note.getNoticeShow() == null) {
                         val mainIntent = Intent(context, HomeActivity::class.java).apply() {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         }
-                        val context = applicationContext
-                        val uuid = UUID.randomUUID().hashCode()
 
                         val pendingIntent: PendingIntent =
                             PendingIntent.getActivity(context, 0, mainIntent, 0)
@@ -272,8 +232,15 @@ class ForegroundNotificationService : Service() , LocationListener{
                             .setContentIntent(pendingIntent)
                             .setAutoCancel(true)
 
+                        val notification = builder.build()
+                        notification.flags = Notification.FLAG_NO_CLEAR
+
                         //通知の実施
-                        notificationManager.notify(uuid, builder.build())
+                        val uuid = UUID.randomUUID().hashCode()
+                        notificationManager.notify(uuid, notification)
+                    } else if (!note.isComplete()) {
+                        val uuid = UUID.randomUUID().hashCode()
+                        setAlarm(context, note, uuid)
                     }
                 }
             } while (locationManager.next())
