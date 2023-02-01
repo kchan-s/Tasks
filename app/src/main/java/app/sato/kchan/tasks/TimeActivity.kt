@@ -74,6 +74,8 @@ class TimeActivity: AppCompatActivity(){
                 binding.timeStartSettingButton.isVisible = false
                 binding.timeEndText.isVisible = false
                 binding.timeEndSettingButton.isVisible = false
+                startDateTime = null
+                endDateTime = null
             }
         }
 
@@ -103,30 +105,13 @@ class TimeActivity: AppCompatActivity(){
             when (item.itemId) {
                 android.R.id.home -> {
                     val note = noteManager.getNote()!!
-                    val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-                    val cancelUuid = sharedPreferences.getInt(noteManager.send(), UUID.randomUUID().hashCode())
                     if (startDateTime == null && endDateTime == null) {
                         note.setNoticeShow(null)
                         note.setNoticeHide(null)
-                    } else {
-                        if (cancelUuid != -1) {
-                            ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
-                            val notificationManager =
-                                HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                            notificationManager.getNotificationChannel("notice")
-                            notificationManager.cancel(cancelUuid)
-                        }
-                        if (!note.isComplete()) {
-                            val editor = sharedPreferences.edit()
-                            editor.putInt(noteManager.send(), cancelUuid)
-                            editor.commit()
-                            ForegroundNotificationService().setAlarm(
-                                applicationContext,
-                                note,
-                                cancelUuid
-                            )
-                        }
                     }
+                    val targetIntent = Intent(HomeActivity.context, ForegroundNotificationService::class.java)
+                    HomeActivity.context.stopService(targetIntent)
+                    HomeActivity.context.startForegroundService(targetIntent)
                     finish()
                 }
             }

@@ -70,9 +70,7 @@ class AlarmNotification : BroadcastReceiver() {
         notification.flags = Notification.FLAG_NO_CLEAR
 
         val notificationManagerCompat = NotificationManagerCompat.from(context)
-
         // 通知
-
         notificationManagerCompat.notify(notificationId, notification)
     }
 }

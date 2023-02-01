@@ -86,15 +86,9 @@ class EditActivity : AppCompatActivity() {
     //削除
     private fun deleteButtonOnClick() {
         val note = noteManager.getNote()!!
-        val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-        val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
-        if (cancelUuid != -1) {
-            ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
-            val notificationManager =
-                HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.getNotificationChannel("notice")
-            notificationManager.cancel(cancelUuid)
-        }
+        val targetIntent = Intent(HomeActivity.context, ForegroundNotificationService::class.java)
+        HomeActivity.context.stopService(targetIntent)
+        HomeActivity.context.startForegroundService(targetIntent)
         note.setNoticeLocation(null)
         note.delete()
         finish()

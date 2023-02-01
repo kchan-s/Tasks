@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.DeleteActivityBinding
 import app.sato.kchan.tasks.fanction.NoteManager
+import app.sato.kchan.tasks.fanction.NoticeManager
 
 class DeleteActivity: AppCompatActivity() {
     private lateinit var binding: DeleteActivityBinding
@@ -65,16 +66,15 @@ class DeleteActivity: AppCompatActivity() {
     private fun deleteButtonOnClick() {
         for (i in 0 until DeleteMemoListAdapter.selectedItem.size) {
             noteManager.receive(DeleteMemoListAdapter.selectedItem[i])
-            val sharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-            val cancelUuid = sharedPreferences.getInt(noteManager.send(), -1)
-            if (cancelUuid != -1) {
-                ForegroundNotificationService().cancelAlarm(applicationContext, cancelUuid)
-                val notificationManager =
-                    HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.getNotificationChannel("notice")
-                notificationManager.cancel(cancelUuid)
-            }
             val note = noteManager.getNote()!!
+            val noticeManager = NoticeManager()
+            noticeManager.searchByNote(note)
+
+            val targetIntent = Intent(HomeActivity.context, ForegroundNotificationService::class.java)
+            HomeActivity.context.stopService(targetIntent)
+            HomeActivity.context.startForegroundService(targetIntent)
+            note.setNoticeShow(null)
+            note.setNoticeHide(null)
             note.setNoticeLocation(null)
             noteManager.delete()
         }

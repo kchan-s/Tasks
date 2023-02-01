@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
+import app.sato.kchan.tasks.HomeActivity.Companion.context
 import app.sato.kchan.tasks.databinding.LocationActivityBinding
 import app.sato.kchan.tasks.fanction.Location
 import app.sato.kchan.tasks.fanction.LocationManager
@@ -86,6 +87,9 @@ class LocationActivity: AppCompatActivity(){
                 } else {
                     receivedNote.setNoticeLocation(null)
                 }
+                val targetIntent = Intent(context, ForegroundNotificationService::class.java)
+                context.stopService(targetIntent)
+                context.startForegroundService(targetIntent)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -134,9 +138,13 @@ class LocationActivity: AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             android.R.id.home->{
+                noteManager.receive(received)
+                val note = noteManager.getNote()!!
+                val targetIntent = Intent(context, ForegroundNotificationService::class.java)
+                context.stopService(targetIntent)
+                context.startForegroundService(targetIntent)
+
                 if (address != "") {
-                    noteManager.receive(received)
-                    val note = noteManager.getNote()!!
                     locationManager.search(address)
                     if (locationManager.isLocation()) note.setNoticeLocation(locationManager.getLocation())
                     else {

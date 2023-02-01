@@ -87,9 +87,6 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val noticeManager = NoticeManager()
         noticeManager.searchByNote(note)
 
-        val appNotificationIdSharedPreferences = context.getSharedPreferences("app_notification_id", AppCompatActivity.MODE_PRIVATE)
-        val locationSharedPreferences = context.getSharedPreferences("location_notification_id", AppCompatActivity.MODE_PRIVATE)
-
         if (note.isComplete()) {
             note.setUncomplete()
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
@@ -101,20 +98,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                     viewHolder.list.setBackgroundColor(Color.WHITE)
                 }
             }
-            println("noticeshow" + note.getNoticeShow())
-            if (note.getNoticeShow() != null) {
-                val editor = appNotificationIdSharedPreferences.edit()
-                val uuid = UUID.randomUUID().hashCode()
-                editor.putInt(noteManager.send(), uuid)
-                editor.commit()
-                ForegroundNotificationService().setAlarm(
-                    context,
-                    note,
-                    uuid
-                )
-            }
         } else {
-            note.setComplete()
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_check_circle_24)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (context.theme.resources.configuration.isNightModeActive) {
@@ -124,25 +108,17 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                     viewHolder.list.setBackgroundColor(Color.LTGRAY)
                 }
             }
-            if (note.getNoticeShow() != null) {
-                val notificationManager =
-                    context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.getNotificationChannel("notice")
-                val cancelUuid =
-                    appNotificationIdSharedPreferences.getInt(completeNoteManager.send(), -1)
-                if (cancelUuid != -1) {
-                    ForegroundNotificationService().cancelAlarm(context, cancelUuid)
-                    notificationManager.cancel(cancelUuid)
-                }
-            }
 
-            if (note.getNoticeLocation() != null) {
-                val uuid = locationSharedPreferences.getInt(noticeManager.send(), -1)
-                val notificationManager =
-                    context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.getNotificationChannel("location")
-                notificationManager.cancel(uuid)
-            }
+            val targetIntent = Intent(context, ForegroundNotificationService::class.java)
+            context.stopService(targetIntent)
+            context.startForegroundService(targetIntent)
+
+            note.setComplete()
+            viewHolder.noticeText.text = ""
+            note.setNoticeShow(null)
+            note.setNoticeHide(null)
+            viewHolder.locationText.text = ""
+            note.setNoticeLocation(null)
         }
     }
 
