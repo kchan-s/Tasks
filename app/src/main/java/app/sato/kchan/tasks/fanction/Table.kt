@@ -56,6 +56,7 @@ class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.Cu
                 content TEXT NOT NULL DEFAULT '',
                 complete_at TEXT,
                 lock_at TEXT,
+                notice_bar_id INTEGER,
                 status_flag INTEGER NOT NULL DEFAULT 0,
                 title_update_at TEXT NOT NULL,
                 content_update_at TEXT NOT NULL,
