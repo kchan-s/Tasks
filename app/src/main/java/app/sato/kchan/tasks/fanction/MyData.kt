@@ -416,14 +416,16 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
             throw Exception("Type is not an array")
     }
     fun delete(key:String){
-        if (isData(key)) {
-            val id = getId(key)
-            if(type[id].toString() in "String,Value") {
-                type[id] = "Null"
+        if(type[current] == "Object") {
+            if (isData(key)) {
+                val id = getId(key)
+                structure[current]?.remove(key) ?: return
+                type.remove(id)
+                structure.remove(id)
+                array.remove(id)
                 value.remove(id)
+                delId(id)
             }
-            structure.remove(id)
-            type.remove(current)
         }
     }
     fun getString(key:String): String{
@@ -892,6 +894,8 @@ class MyData constructor(r: Int? = null, c: Int? = null, h:MutableList<Int> = mu
         for((k,v) in map) {
             setString(k, v)
         }
+    }
+    fun setMyData(key:String, myData:MyData){
     }
     fun copy(): MyData{
         return MyData(root,current,hierarchy)

@@ -3,6 +3,7 @@ package app.sato.kchan.tasks.fanction
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.Cursor.FIELD_TYPE_NULL
+import androidx.core.database.getIntOrNull
 import app.sato.kchan.tasks.HomeActivity.Companion.context
 import kotlinx.coroutines.launch
 import java.io.File
@@ -172,6 +173,14 @@ class DataOperator() {
         fun getInt(column: String): Int {
             val no: Int = getNumber(column)
             return getInt(no)
+        }
+        fun getIntNulls(no: Int = 0): Int? {
+            return cursor.getIntOrNull(no)
+        }
+
+        fun getIntNulls(column: String): Int? {
+            val no: Int = getNumber(column)
+            return getIntNulls(no)
         }
 
         fun getFloat(no: Int = 0): Float {
@@ -461,17 +470,20 @@ class DataOperator() {
         var data = MyData()
         data.setString("type", "Sync")
         val content = data.moveChain("content")
-        var dt: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
+        var nowDT: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
+        var syncDT: String = ""
         val res = selectQuery(
             table = "account",
             column = arrayOf("account_id","service_id","connect_token","sync_at")
         )
         if (res.setResultTop()) {
+            syncDT = res.getString("sync_at")
             data.setString("account", res.getString("account_id"))
             data.setString("service", res.getString("service_id"))
             data.setString("token", res.getString("connect_token"))
-            data.setDateTime("dt", LocalDateTime.now())
-            dt = res.getString("sync_at")
+            data.setString("now_at", nowDT)
+            data.setString("sync_at", syncDT)
+
         }
         for(tName in dbInfo.keys()){
             val table = content.moveChain(tName)
@@ -500,8 +512,8 @@ class DataOperator() {
                     filter = arrayOf(
                         mutableMapOf(
                             "column" to update,
-                            "value" to dt,
-                            "compare" to "Small"
+                            "value" to syncDT,
+                            "compare" to "Big"
                         )
                     )
                 )
@@ -525,11 +537,13 @@ class DataOperator() {
                     } while (res.next())
                 }
             }
+            if(table.size == 0) content.delete(tName)
         }
         val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
         println("送信: " + request)
         val con = Connect()
         con.setRequest(request)
+//        data.close()
         con.send()
         if(!con.waitEnd()){
             return false
@@ -779,6 +793,11 @@ class DataOperator() {
             "primary": false,
             "sync": true,
             "update": "lock_update_at"
+        },
+        "notice_bar_id":{
+            "type": "Int",
+            "primary": false,
+            "sync": false
         },
         "status_flag":{
             "type": "Int",

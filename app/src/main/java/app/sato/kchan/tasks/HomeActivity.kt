@@ -53,7 +53,7 @@ class HomeActivity : AppCompatActivity() {
                 }else {
                     DataOperator().deleteAll()
                     account.reset()
-//                    account.requestId()
+                    account.requestId()
                 }
                 //--- 初期化処理 ここまで ------------------------------
             } else {

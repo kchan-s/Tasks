@@ -15,14 +15,8 @@ class AccountActivity: AppCompatActivity(){
     private lateinit var binding: AccountActivityBinding
     val account = Account()
     init {
-//        println(">------")
-//        val con = Connect()
-//        con.setRequest("{\"type\":\"Hello\"}")
-//        println("-->----")
-//        con.send()
-//        println("---->--")
-//        while (!con.isEnd(100)){println("Wait")}
-//        println("------>")
+
+//        if(!account.isId()) account.requestId()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
