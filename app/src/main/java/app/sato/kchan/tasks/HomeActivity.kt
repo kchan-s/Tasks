@@ -49,7 +49,7 @@ class HomeActivity : AppCompatActivity() {
                 //--- 初期化処理 ここから ------------------------------
                 val account = Account()
                 if(account.isId()){
-//                    DataOperator().sync()
+                    DataOperator().sync()
                 }else {
                     DataOperator().deleteAll()
                     account.reset()

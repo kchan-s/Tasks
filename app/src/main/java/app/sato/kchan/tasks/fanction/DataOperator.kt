@@ -485,6 +485,7 @@ class DataOperator() {
             data.setString("sync_at", syncDT)
 
         }
+        var c = 0
         for(tName in dbInfo.keys()){
             val table = content.moveChain(tName)
             table.initArray()
@@ -537,15 +538,19 @@ class DataOperator() {
                     } while (res.next())
                 }
             }
-            if(table.size == 0) content.delete(tName)
+            if(table.size == 0)
+                content.delete(tName)
+            else
+                c++
         }
         val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
         println("送信: " + request)
         val con = Connect()
         con.setRequest(request)
-//        data.close()
+        data.close()
         con.send()
         if(!con.waitEnd()){
+            println("通信タイムアウト")
             return false
         }
         var response =con.getResponse()
