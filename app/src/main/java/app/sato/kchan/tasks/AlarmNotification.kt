@@ -10,9 +10,11 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.schedule
 
 
 class AlarmNotification : BroadcastReceiver() {

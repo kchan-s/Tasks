@@ -1,10 +1,15 @@
 package app.sato.kchan.tasks
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationListener
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -14,11 +19,13 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.LocationActivityBinding
 import app.sato.kchan.tasks.fanction.Location
 import app.sato.kchan.tasks.fanction.LocationManager
 import app.sato.kchan.tasks.fanction.NoteManager
+import app.sato.kchan.tasks.fanction.NoticeManager
 import java.util.*
 
 

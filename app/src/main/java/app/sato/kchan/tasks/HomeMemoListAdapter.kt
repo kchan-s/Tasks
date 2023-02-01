@@ -81,7 +81,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val completeNoteManager = noteManager.copy()
         completeNoteManager.select(position)
         val note = completeNoteManager.getNote()!!
-        val appNotificationIdSharedPreferences = HomeActivity.context.getSharedPreferences("app_notification_id",
+        val appNotificationIdSharedPreferences = context.getSharedPreferences("app_notification_id",
             AppCompatActivity.MODE_PRIVATE
         )
         if (note.isComplete()) {
@@ -100,7 +100,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                 val uuid = UUID.randomUUID().hashCode()
                 editor.putInt(noteManager.send(), uuid)
                 editor.commit()
-                setAlarm(
+                ForegroundNotificationService().setAlarm(
                     context,
                     note,
                     uuid
@@ -124,7 +124,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             println("number" + cancelUuid)
             println("ooooo" + noteManager.send())
             if (cancelUuid != -1) {
-                cancelAlarm(context, cancelUuid)
+                ForegroundNotificationService().cancelAlarm(context, cancelUuid)
                 notificationManager.cancel(cancelUuid)
             }
         }
@@ -218,97 +218,6 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             searchNote.add(noteManager.getNote())
             noteManager.next()
         }
-    }
-
-    fun setAlarm(context: Context, note: Note, uuid: Int) {
-        val intent = Intent(context, AlarmNotification::class.java)
-
-        val start = note.getNoticeShow()!!
-        var startCalendar: Calendar? = null
-        val stop = note.getNoticeHide()
-        val stopCalendar = Calendar.getInstance()
-
-        if (!note.isComplete()) {
-            if (stop != null) {
-                if (start.isAfter(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) {
-                    startCalendar = Calendar.getInstance()
-                    startCalendar.set(
-                        start.year,
-                        start.monthValue - 1,
-                        start.dayOfMonth,
-                        start.hour,
-                        start.minute,
-                        0
-                    )
-                } else if (start.isBefore(LocalDateTime.now())
-                    && (stop.isAfter(LocalDateTime.now()) || stop.isEqual(LocalDateTime.now()))
-                ) {
-                    startCalendar = Calendar.getInstance()
-                    val now = LocalDateTime.now()
-                    startCalendar.set(
-                        now.year,
-                        now.monthValue - 1,
-                        now.dayOfMonth,
-                        now.hour,
-                        now.minute,
-                        now.second
-                    )
-                }
-                if (startCalendar != null) {
-                    stopCalendar.set(
-                        stop.year,
-                        stop.monthValue - 1,
-                        stop.dayOfMonth,
-                        stop.hour,
-                        stop.minute,
-                        0
-                    )
-                    intent.putExtra(
-                        "deleteTime",
-                        stopCalendar.timeInMillis - startCalendar.timeInMillis
-                    )
-                }
-            } else if (start.isAfter(LocalDateTime.now()) || start.isEqual(LocalDateTime.now())) {
-                startCalendar = Calendar.getInstance()
-                startCalendar.set(
-                    start.year,
-                    start.monthValue - 1,
-                    start.dayOfMonth,
-                    start.hour,
-                    start.minute,
-                    0
-                )
-            }
-
-            if (startCalendar != null) {
-                intent.putExtra("id", uuid)
-                intent.putExtra("title", note.getTitle())
-                intent.putExtra("content", note.getContent())
-
-                val pending = PendingIntent.getBroadcast(
-                    context, uuid, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-                // アラームをセットする
-                val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
-                am.setExact(
-                    AlarmManager.RTC_WAKEUP,
-                    startCalendar.getTimeInMillis(), pending
-                )
-            }
-        }
-    }
-
-    fun cancelAlarm(context: Context, uuid: Int) {
-        val intent = Intent(context, AlarmNotification::class.java)
-        val pending = PendingIntent.getBroadcast(
-            context, uuid, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // アラームを解除する
-        val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
-        am.cancel(pending)
     }
 
     override fun getItemCount(): Int {

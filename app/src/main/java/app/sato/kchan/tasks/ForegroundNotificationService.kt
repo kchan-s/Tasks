@@ -11,8 +11,8 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.IBinder
-import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -91,46 +91,45 @@ class ForegroundNotificationService : Service() , LocationListener{
         }
 
         // 同期
-//        Timer().schedule(0,600000) {
-//            val noteManager = NoteManager()
-//            val appSharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
-//            val editor = appSharedPreferences.edit()
-//
-//            noteManager.search("")
-//            for (i in 0 until noteManager.getNoteNumber()) {
-//                val copyNoteManager = noteManager.copy()
-//                copyNoteManager.select(i)
-//
-//                var cancelUuid = appSharedPreferences.getInt(copyNoteManager.send(), -1)
-//                cancelAlarm(context, cancelUuid)
-//                val notificationManager =
-//                    HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-//                notificationManager.getNotificationChannel("notice")
-//                notificationManager.cancel(cancelUuid)
-//
-//                val note = copyNoteManager.getNote()!!
-//                if (note.getNoticeShow() != null) {
-//                    if (cancelUuid != -1) {
-//                        cancelAlarm(context, cancelUuid)
-//                    } else {
-//                        cancelUuid = UUID.randomUUID().hashCode()
-//                        editor.putInt(copyNoteManager.send(), cancelUuid)
-//                        editor.apply()
-//                    }
-//                    setAlarm(context, note, cancelUuid)
-//                } else  {
-//                    editor.putInt(copyNoteManager.send(), -1)
-//                }
-//            }
-//            editor.commit()
-//
-//        }
+        Timer().schedule(0,600000) {
+            val noteManager = NoteManager()
+            val appSharedPreferences = getSharedPreferences("app_notification_id", MODE_PRIVATE)
+            val editor = appSharedPreferences.edit()
+
+            noteManager.search("")
+            for (i in 0 until noteManager.getNoteNumber()) {
+                val copyNoteManager = noteManager.copy()
+                copyNoteManager.select(i)
+
+                var cancelUuid = appSharedPreferences.getInt(copyNoteManager.send(), -1)
+                cancelAlarm(context, cancelUuid)
+                val notificationManager =
+                    HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.getNotificationChannel("notice")
+                notificationManager.cancel(cancelUuid)
+
+                val note = copyNoteManager.getNote()!!
+                if (note.getNoticeShow() != null) {
+                    if (cancelUuid != -1) {
+                        cancelAlarm(context, cancelUuid)
+                    } else {
+                        cancelUuid = UUID.randomUUID().hashCode()
+                        editor.putInt(copyNoteManager.send(), cancelUuid)
+                        editor.apply()
+                    }
+                    setAlarm(context, note, cancelUuid)
+                } else  {
+                    editor.putInt(copyNoteManager.send(), -1)
+                }
+            }
+            editor.commit()
+
+        }
         return START_STICKY
     }
 
     fun setAlarm(context: Context, note: Note, uuid: Int) {
         val intent = Intent(context, AlarmNotification::class.java)
-
         val start = note.getNoticeShow()!!
         var startCalendar: Calendar? = null
         val stop = note.getNoticeHide()
@@ -225,17 +224,20 @@ class ForegroundNotificationService : Service() , LocationListener{
     }
 
     override fun onLocationChanged(location: Location) {
+        val notificationManager =
+            HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.getNotificationChannel("location")
+        notificationManager.cancelAll()
+
         val locationManager = app.sato.kchan.tasks.fanction.LocationManager()
-        val noticeManager = NoticeManager()
         locationManager.searchByRadius(
             location.latitude.toFloat(),
             location.longitude.toFloat(),
             75
         )
-
         if (locationManager.isLocation()) {
-            do {
-                noticeManager.searchByLocation(locationManager.getLocation()!!)
+            val noticeManager = NoticeManager()
+            do {noticeManager.searchByLocation(locationManager.getLocation()!!)
                 if (noticeManager.getNoticeNumber() != 0) {
                     val note = noticeManager.getNote()!!
                     if (!note.isComplete()) {
@@ -245,6 +247,7 @@ class ForegroundNotificationService : Service() , LocationListener{
                         }
                         val context = applicationContext
                         val uuid = UUID.randomUUID().hashCode()
+
                         val pendingIntent: PendingIntent =
                             PendingIntent.getActivity(context, 0, mainIntent, 0)
                         val channelId = "location"
