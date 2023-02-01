@@ -139,8 +139,8 @@ class Account public constructor() {
                     DataOperator().updateQuery(
                         table = "account",
                         value = mutableListOf(
-                            "account_id" to content.moveChain("account").moveChain(0)
-                                .getString("account_id")
+                            "account_id" to content.moveChain("account").moveChain(0).getString("account_id"),
+                            "service_id" to content.moveChain("account").moveChain(0).getString("service_id")
                         )
                     )
                     DataOperator().sync()

@@ -464,10 +464,11 @@ class DataOperator() {
         var dt: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
         val res = selectQuery(
             table = "account",
-            column = arrayOf("account_id","connect_token","sync_at")
+            column = arrayOf("account_id","service_id","connect_token","sync_at")
         )
         if (res.setResultTop()) {
             data.setString("account", res.getString("account_id"))
+            data.setString("service", res.getString("service_id"))
             data.setString("token", res.getString("connect_token"))
             data.setDateTime("dt", LocalDateTime.now())
             dt = res.getString("sync_at")
@@ -530,7 +531,9 @@ class DataOperator() {
         val con = Connect()
         con.setRequest(request)
         con.send()
-        con.waitEnd()
+        if(!con.waitEnd()){
+            return false
+        }
         var response =con.getResponse()
         println("受信: " + response)
         data = MyData()
@@ -558,14 +561,16 @@ class DataOperator() {
                         )
                     }
                 }
+                return true
             }else{
                 println("サーバー処理解析失敗!!")
                 println("-> " + data.outJSON())
+                return false
             }
         }else{
             println("JSON解析失敗!!")
+            return true
         }
-        return true
     }
     fun close() {
 

@@ -22,7 +22,7 @@ class Connect {
     fun send(){
         if(0 < id) {
             val info = situation[id] ?: throw Exception("✖✖✖✖✖")
-            info["status"] = "setting"
+            info["status"] = "connecting"
             val my = this
             ConnectionWrapper.scope.launch {
                 val request = info["request"] ?: ""
@@ -30,8 +30,8 @@ class Connect {
                 if (0 < id) {
                     val info = situation[id] ?: throw Exception("✖✖✖✖✖")
                     info["response"] = ConnectionWrapper().postOutput()
-                    info["status"] = "end"
                     info["result"] = "success"
+                    info["status"] = "end"
                     if (callback.containsKey(id))
                         callback[id]!!(my)
                 }
@@ -64,7 +64,7 @@ class Connect {
     }
     fun getResponse(): String{
         val info = situation[id] ?: throw Exception("✖✖✖✖✖")
-        return info["response"] ?: throw Exception("✖✖✖✖✖")
+        return info["response"] ?: throw Exception("✖✖✖✖✖" + info)
     }
     fun getResponseMyData():MyData {
         val info = situation[id] ?: throw Exception("✖✖✖✖✖")

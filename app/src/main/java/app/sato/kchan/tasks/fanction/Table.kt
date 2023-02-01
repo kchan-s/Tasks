@@ -9,6 +9,7 @@ class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.Cu
         database?.execSQL("""
             create table if not exists account (
                 account_id TEXT,
+                service_id INTEGER,
                 password_flag INTEGER NOT NULL DEFAULT 0,
                 secret_question1_item TEXT,
                 secret_question2_item TEXT,
@@ -45,7 +46,7 @@ class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.Cu
                 others_update_at TEXT NOT NULL,
                 status_update_at TEXT NOT NULL
             )
-            """)
+        """)
         database?.execSQL("""
             create table if not exists note (
                 note_id INTEGER NOT NULL,
@@ -83,7 +84,7 @@ class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.Cu
                 PRIMARY KEY(place_id, service_id),
                 FOREIGN KEY (service_id) REFERENCES service (service_id)
             )
-            """)
+        """)
         database?.execSQL("""
             create table if not exists notice (
                 notice_id INTEGER NOT NULL,
@@ -107,7 +108,7 @@ class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.Cu
                 FOREIGN KEY (target_service_id) REFERENCES service (service_id),
                 FOREIGN KEY (place_id, place_service_id) REFERENCES place (place_id, service_id)
             )
-            """);
+        """);
     }
     override fun onUpgrade(database: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if (oldVersion < newVersion) {
