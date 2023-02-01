@@ -6,10 +6,24 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.AccountActivityBinding
 import app.sato.kchan.tasks.fanction.Account
+import app.sato.kchan.tasks.fanction.Connect
+import app.sato.kchan.tasks.fanction.ConnectionWrapper
+import app.sato.kchan.tasks.fanction.DataOperator
+import kotlinx.coroutines.launch
 
 class AccountActivity: AppCompatActivity(){
     private lateinit var binding: AccountActivityBinding
     val account = Account()
+    init {
+//        println(">------")
+//        val con = Connect()
+//        con.setRequest("{\"type\":\"Hello\"}")
+//        println("-->----")
+//        con.send()
+//        println("---->--")
+//        while (!con.isEnd(100)){println("Wait")}
+//        println("------>")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -12,35 +12,48 @@ import java.time.format.DateTimeFormatter
 import kotlin.Exception
 
 
-class DataOperator(){
+class DataOperator() {
 
     //<プロパティ>
     val dbHelper = DBHelper(context, "DB", null, 1);
     val database = dbHelper.writableDatabase
-    val dbInfo:MyData = dbJSON()
+    val dbInfo: MyData = dbJSON()
+
     //<初期化処理>
     init {
-//        database.delete("account", null, null)
-//        database.delete("setting", null, null)
-//        database.delete("service", null, null)
     }
+
     //<メソッド>
-    fun insertQuery(table:String, value:Map<String,String?>) {
+    fun insertQuery(table: String, value: Map<String, String?>) {
         val values = ContentValues()
         for ((k, v) in value) {
             values.put(k, v.toString())
         }
         database.insert(table, null, values)
     }
-    fun selectQuery(table:String, column:String, pick:Map<String,String?> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf(), sort:Array<Map<String,String?>> = arrayOf()):Res {
+
+    fun selectQuery(
+        table: String,
+        column: String,
+        pick: Map<String, String?> = mutableMapOf(),
+        filter: Array<Map<String, String?>> = arrayOf(),
+        sort: Array<Map<String, String?>> = arrayOf()
+    ): Res {
         return selectQuery(table = table, column = arrayOf(column), pick = pick, filter = filter)
     }
-    fun selectQuery(table:String, column:Array<String>, pick:Map<String,String?> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf(), sort:Array<Map<String,String?>> = arrayOf()):Res {
+
+    fun selectQuery(
+        table: String,
+        column: Array<String>,
+        pick: Map<String, String?> = mutableMapOf(),
+        filter: Array<Map<String, String?>> = arrayOf(),
+        sort: Array<Map<String, String?>> = arrayOf()
+    ): Res {
         var sql = ""
         sql += "SELECT "
         var c = 0
-        for(col in column){
-            if(c > 0)
+        for (col in column) {
+            if (c > 0)
                 sql += ", "
             sql += col + ""
             c++
@@ -49,20 +62,20 @@ class DataOperator(){
         var values = arrayOf<String?>()
         c = 0
         for ((k, v) in pick) {
-            if(c > 0)
-                sql += " AND "
+            sql += if (c > 0)
+                " AND "
             else
-                sql += " WHERE "
-            sql += k + " = ?"
-            values += v
+                " WHERE "
+            sql += "$k = ?"
+            values += v?.replace("\"", "\\\"") ?: v
             c++
         }
         for (fil in filter) {
-            if(c > 0)
+            if (c > 0)
                 sql += " AND "
             else
                 sql += " WHERE "
-            when(fil["compare"]) {
+            when (fil["compare"]) {
                 "Big" -> {
                     sql += fil["column"] + " > ?"
                     values += fil["value"].toString()
@@ -86,107 +99,141 @@ class DataOperator(){
             }
             c++
         }
-        val cursor = if(c == 0){database.rawQuery(sql, null)}else{database.rawQuery(sql, values)}
+        val cursor = if (c == 0) {
+            database.rawQuery(sql, null)
+        } else {
+            database.rawQuery(sql, values)
+        }
         return Res(column, cursor)
     }
-    inner class Res(columns:Array<String>, cursor: Cursor) {
-        private var cursor:Cursor
-        private var columns:Array<String>
+
+    inner class Res(columns: Array<String>, cursor: Cursor) {
+        private var cursor: Cursor
+        private var columns: Array<String>
 
         private val resultFlag: Boolean
+
         init {
-            resultFlag = cursor.moveToFirst()
+            this.resultFlag = cursor.moveToFirst()
             this.columns = columns
             this.cursor = cursor
             setResultTop()
         }
-        private fun getNumber(column:String):Int{
+
+        private fun getNumber(column: String): Int {
             return columns.indexOf(column)
         }
-        fun isResult():Boolean{
-            return resultFlag
+
+        fun isResult(): Boolean {
+            return this.resultFlag
         }
-        fun setResultTop():Boolean{
+
+        fun setResultTop(): Boolean {
             return cursor.moveToFirst()
         }
-        fun next():Boolean{
+
+        fun next(): Boolean {
             cursor.moveToNext()
             return !cursor.isAfterLast
         }
-        fun isNull(no:Int = 0):Boolean{
+
+        fun isNull(no: Int = 0): Boolean {
             return cursor.getType(no) == FIELD_TYPE_NULL
         }
-        fun isNull(column:String):Boolean{
+
+        fun isNull(column: String): Boolean {
             val no: Int = getNumber(column)
             return isNull(no)
         }
-        fun getString(no:Int = 0):String{
+
+        fun getString(no: Int = 0): String {
             return cursor.getString(no) ?: throw Exception("nullだよ")
         }
-        fun getString(column:String):String{
+
+        fun getString(column: String): String {
             val no: Int = getNumber(column)
             return getString(no)
         }
-        fun getStringNulls(no:Int = 0):String?{
-            if(cursor.getType(no) == FIELD_TYPE_NULL) return null
+
+        fun getStringNulls(no: Int = 0): String? {
+            if (cursor.getType(no) == FIELD_TYPE_NULL) return null
             return cursor.getString(no)
         }
-        fun getStringNulls(column:String):String?{
+
+        fun getStringNulls(column: String): String? {
             val no: Int = getNumber(column)
             return getStringNulls(no)
         }
-        fun getInt(no:Int = 0):Int{
+
+        fun getInt(no: Int = 0): Int {
             return cursor.getInt(no)
         }
-        fun getInt(column:String):Int{
+
+        fun getInt(column: String): Int {
             val no: Int = getNumber(column)
             return getInt(no)
         }
-        fun getFloat(no:Int = 0):Float{
+
+        fun getFloat(no: Int = 0): Float {
             return cursor.getFloat(no)
         }
-        fun getFloat(column:String):Float{
+
+        fun getFloat(column: String): Float {
             val no: Int = getNumber(column)
             return getFloat(no)
         }
-        fun getFloatNulls(no:Int = 0):Float?{
-            if(cursor.getType(no) == FIELD_TYPE_NULL) return null
+
+        fun getFloatNulls(no: Int = 0): Float? {
+            if (cursor.getType(no) == FIELD_TYPE_NULL) return null
             return cursor.getFloat(no)
         }
-        fun getFloatNulls(column:String):Float?{
+
+        fun getFloatNulls(column: String): Float? {
             val no: Int = getNumber(column)
             return getFloat(no)
         }
-        fun getDouble(no:Int = 0):Double{
+
+        fun getDouble(no: Int = 0): Double {
             return cursor.getDouble(no)
         }
-        fun getDouble(column:String):Double{
+
+        fun getDouble(column: String): Double {
             val no: Int = getNumber(column)
             return getDouble(no)
         }
-        fun getBoolean(no:Int = 0):Boolean{
+
+        fun getBoolean(no: Int = 0): Boolean {
             return cursor.getInt(no) != 0
         }
-        fun getBoolean(column:String):Boolean{
+
+        fun getBoolean(column: String): Boolean {
             val no: Int = getNumber(column)
             return getBoolean(no)
         }
-        fun getByte(no:Int = 0): ByteArray? {
+
+        fun getByte(no: Int = 0): ByteArray? {
             return cursor.getBlob(no)
         }
-        fun getByte(column:String): ByteArray? {
+
+        fun getByte(column: String): ByteArray? {
             val no: Int = getNumber(column)
             return getByte(no)
         }
-        fun getDateTime(no:Int = 0): LocalDateTime? {
+
+        fun getDateTime(no: Int = 0): LocalDateTime? {
             val dt = cursor.getString(no) ?: return null
-            return LocalDateTime.parse(cursor.getString(no), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            return LocalDateTime.parse(
+                cursor.getString(no),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            )
         }
-        fun getDateTime(column:String): LocalDateTime? {
+
+        fun getDateTime(column: String): LocalDateTime? {
             val no: Int = getNumber(column)
             return getDateTime(no)
         }
-        fun getStringArray(no:Int = 0):Array<String> {
+
+        fun getStringArray(no: Int = 0): Array<String> {
             var array = emptyArray<String>()
             if (setResultTop()) {
                 do {
@@ -195,11 +242,13 @@ class DataOperator(){
             }
             return array
         }
-        fun getStringArray(column:String):Array<String>{
+
+        fun getStringArray(column: String): Array<String> {
             val no: Int = getNumber(column)
             return getStringArray(no)
         }
-        fun getIntArray(no:Int = 0):Array<Int> {
+
+        fun getIntArray(no: Int = 0): Array<Int> {
             var array = emptyArray<Int>()
             if (setResultTop()) {
                 do {
@@ -208,59 +257,69 @@ class DataOperator(){
             }
             return array
         }
-        fun getIntArray(column:String):Array<Int>{
+
+        fun getIntArray(column: String): Array<Int> {
             val no: Int = getNumber(column)
             return getIntArray(no)
         }
-        fun getStringMap():Map<String,String>{
+
+        fun getStringMap(): Map<String, String> {
             val map = mutableMapOf<String, String>()
             var i = 0
-            for(col in columns){
+            for (col in columns) {
                 map[col] = cursor.getString(i)
                 i++
             }
             return map.toMap()
         }
-        fun getMapStringArray():Array<Map<String,String>>{
-            var array: Array<Map<String, String>> = emptyArray<Map<String,String>>()
-            if(setResultTop()){
+
+        fun getMapStringArray(): Array<Map<String, String>> {
+            var array: Array<Map<String, String>> = emptyArray<Map<String, String>>()
+            if (setResultTop()) {
                 do {
                     array += getStringMap()
-                } while(next())
+                } while (next())
             }
             return array
         }
-        fun getAllString():String{
+
+        fun getAllString(): String {
             var text = ""
-            if(setResultTop()){
+            if (setResultTop()) {
                 do {
                     text += getStringMap().toString()
-                } while(next())
+                } while (next())
             }
             return text
         }
     }
-    fun updateQuery(table:String, value: MutableList<Pair<String, String?>>, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf()):Int {
+
+    fun updateQuery(
+        table: String,
+        value: MutableList<Pair<String, String?>>,
+        pick: Map<String, String> = mutableMapOf(),
+        filter: Array<Map<String, String?>> = arrayOf()
+    ): Int {
         var vl = arrayOf<String?>()
         var sql = ""
         var c = 0
 
         val values = ContentValues()
-        for ((k,v) in value){
+        for ((k, v) in value) {
             values.put(k, v)
         }
 
         for ((k, v) in pick) {
-            if(c > 0)
+            if (c > 0)
                 sql += " AND "
             sql += k + " = ?"
             vl += v
             c++
         }
         for (fil in filter) {
-            if(c > 0)
+            if (c > 0)
                 sql += " AND "
-            when(fil["compare"]) {
+            when (fil["compare"]) {
                 "Big" -> {
                     sql += fil["column"] + " > ?"
                     vl += fil["value"].toString()
@@ -285,7 +344,11 @@ class DataOperator(){
             c++
         }
 
-        return if(c == 0){ database.update(table, values, sql, null) }else{ database.update(table, values, sql, vl) }
+        return if (c == 0) {
+            database.update(table, values, sql, null)
+        } else {
+            database.update(table, values, sql, vl)
+        }
 //        var vl = arrayOf<String?>()
 //        var sql = ""
 //        var c = 0
@@ -339,21 +402,22 @@ class DataOperator(){
 //        database.execSQL(sql, vl)
 //        return 0
     }
-    fun deleteQuery(table:String, pick:Map<String,String> = mutableMapOf(), filter:Array<Map<String,String?>> = arrayOf()):Int {
+
+    fun deleteQuery(table: String, pick: Map<String, String> = mutableMapOf(), filter: Array<Map<String, String?>> = arrayOf()): Int {
         var vl = arrayOf<String?>()
         var sql = ""
         var c = 0
         for ((k, v) in pick) {
-            if(c > 0)
+            if (c > 0)
                 sql += " AND "
-            sql += k + " = ?"
+            sql += "$k = ?"
             vl += v
             c++
         }
         for (fil in filter) {
-            if(c > 0)
+            if (c > 0)
                 sql += " AND "
-            when(fil["compare"]) {
+            when (fil["compare"]) {
                 "Big" -> {
                     sql += fil["column"] + " > ?"
                     vl += fil["value"].toString()
@@ -379,7 +443,21 @@ class DataOperator(){
         }
         return database.delete(table, sql, vl)
     }
-    fun sync() {
+
+    fun deleteAll() {
+        for(tName in dbInfo.keys())
+            database.delete(tName, null, null)
+    }
+    fun sync(stop:Boolean = false):Boolean {
+        if(true) {
+            val res = selectQuery(
+                table = "account",
+                column = arrayOf("account_id")
+            )
+            if (res.setResultTop()) {
+                if (res.isNull()) return false
+            }else return false
+        }
         var data = MyData()
         data.setString("type", "Sync")
         val content = data.moveChain("content")
@@ -389,7 +467,7 @@ class DataOperator(){
             column = arrayOf("account_id","connect_token","sync_at")
         )
         if (res.setResultTop()) {
-            data.setString("account", res.getString("account"))
+            data.setString("account", res.getString("account_id"))
             data.setString("token", res.getString("connect_token"))
             data.setDateTime("dt", LocalDateTime.now())
             dt = res.getString("sync_at")
@@ -399,17 +477,22 @@ class DataOperator(){
             table.initArray()
             var pickColumn:MutableList<String> = mutableListOf()
             var itemColumn:MutableList<String> = mutableListOf()
-            for(col in dbInfo.moveChain(tName).keys()) {
-                if(dbInfo.moveChain(tName).moveChain(col).isKey("primary") && dbInfo.moveChain(tName).moveChain(col).getString("primary") == "true"){
-                    itemColumn += col
-                }else{
-                    pickColumn += col
+            for(cName in dbInfo.moveChain(tName).keys()) {
+                val conf = dbInfo.moveChain(tName).moveChain(cName)
+                if(conf.isKey("sync") && conf.getBoolean("sync")) {
+                    if (conf.isKey("primary") && conf.getBoolean("primary"))
+                        itemColumn += cName
+                    else
+                        pickColumn += cName
                 }
             }
             var pickList: MutableMap<String,MutableMap<String,String>> =  mutableMapOf()
             var change: MutableMap<String,MyData> = mutableMapOf()
             for(cName in itemColumn) {
-                val update = dbInfo.moveChain(tName).moveChain(cName).getString("primary")
+                val conf = dbInfo.moveChain(tName).moveChain(cName)
+                if(!conf.isKey("update")) content
+                println("OK?? ----------  " + conf.outJSON())
+                val update = conf.getString("update")
                 val res = selectQuery(
                     table = tName,
                     column = arrayOf(cName).plus(pickColumn),
@@ -424,16 +507,17 @@ class DataOperator(){
                 if (res.setResultTop()) {
                     do {
                         var pickStr:String = ""
-                        var piccTemp:MutableMap<String,String> =  mutableMapOf()
+                        var pickTemp:MutableMap<String,String> =  mutableMapOf()
                         for(p in pickColumn) {
-                            piccTemp[p] = res.getString(p)
+                            pickTemp[p] = res.getString(p)
                             pickStr += p + ":" + res.getString(p) + ","
                         }
                         if(pickStr !in pickList) {
                             val record = MyData()
-                            record.moveChain("pick").setStringMap(piccTemp)
+                            change[pickStr] = record
                             table.push(record)
-                            pickList[pickStr] = piccTemp
+                            record.moveChain("pick").setStringMap(pickTemp)
+                            pickList[pickStr] = pickTemp
                         }
                         change[pickStr]!!.moveChain("item").moveChain(cName).setString("value", res.getString(cName))
                         change[pickStr]!!.moveChain("item").moveChain(cName).setString("update", res.getString(update))
@@ -443,329 +527,435 @@ class DataOperator(){
         }
         val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
         println("送信: " + request)
-        ConnectionWrapper.scope.launch{
-            ConnectionWrapper().executeServerConnection(request)
-            var response = ConnectionWrapper().postOutput()
-            println("受信: " + response)
-            data = MyData()
-            if(data.inJSON(response)){
-                println("解析: " + data.outJSON())
-                val result = data.moveChain("result")
-                if(result.getInt("code") == 0){
-                    val content = result.moveChain("content")
-                    for(tName in content.keys()){
-                        val record = content.moveChain(tName)
-                        for(cName in record.keys()){
-                            val column = record.moveChain("item").moveChain(cName)
-                            updateQuery(
-                                table = "account",
-                                value = mutableListOf(cName to column.getString("value")),
-                                pick = record.moveChain("pick").getStringMap(),
-                                filter = arrayOf(
-                                    mutableMapOf(
-                                        "column" to dbInfo.moveChain(tName).moveChain(cName).getString("update"),
-                                        "value" to column.getString("update"),
-                                        "compare" to "Small"
-                                    )
+        val con = Connect()
+        con.setRequest(request)
+        con.send()
+        con.waitEnd()
+        var response =con.getResponse()
+        println("受信: " + response)
+        data = MyData()
+        if(data.inJSON(response)){
+            println("解析: " + data.outJSON())
+            val result = data.moveChain("result")
+            if(result.getInt("code") == 0){
+                val content = result.moveChain("content")
+                for(tName in content.keys()) {
+                    val record = content.moveChain(tName)
+                    for (cName in record.keys()) {
+                        val column = record.moveChain("item").moveChain(cName)
+                        updateQuery(
+                            table = "account",
+                            value = mutableListOf(cName to column.getString("value")),
+                            pick = record.moveChain("pick").getStringMap(),
+                            filter = arrayOf(
+                                mutableMapOf(
+                                    "column" to dbInfo.moveChain(tName).moveChain(cName)
+                                        .getString("update"),
+                                    "value" to column.getString("update"),
+                                    "compare" to "Small"
                                 )
                             )
-                        }
+                        )
                     }
-
-                }else{
-                    println("サーバー処理解析失敗!!")
-                    println("-> " + data.outJSON())
                 }
             }else{
-                println("JSON解析失敗!!")
+                println("サーバー処理解析失敗!!")
+                println("-> " + data.outJSON())
             }
+        }else{
+            println("JSON解析失敗!!")
         }
+        return true
     }
+    fun close() {
+
+    }
+
+
+
+
+
+
 
     fun dbJSON():MyData {
         val dbInfo = MyData()
         dbInfo.inJSON("""
 {
+    "account":{
+        "account_id":{
+            "type": "String",
+            "primary": false,
+            "sync": false
+        },
+        "password_flag":{
+            "type": "String",
+            "primary": false,
+            "sync": false
+        },
+        "secret_question1_item":{
+            "type": "String",
+            "primary": false,
+            "sync": false
+        },
+        "secret_question2_item":{
+            "type": "String",
+            "primary": false,
+            "sync": false
+        },
+        "secret_question3_item":{
+            "type": "String",
+            "primary": false,
+            "sync": false
+        },
+        "connect_token":{
+            "type": "String",
+            "primary": false,
+            "sync": false
+        },
+        "sync_at":{
+            "type": "String",
+            "primary": false,
+            "sync": false
+        }
+    },
     "setting":{
         "color1":{
             "type": "Int",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "color_update_at"
         },
         "color2":{
             "type": "Int",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "color_update_at"
         },
         "color3":{
             "type": "Int",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "color_update_at"
         },
         "auto_delete_period":{
             "type": "Int",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "auto_delete_update_at"
         },
         "init_show_at":{
             "type": "DateTime",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "init_show_update_at"
         },
         "init_hide_at":{
             "type": "DateTime",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "init_hide_update_at"
         },
         "status_flag":{
             "type": "Int",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "status_update_at"
         },
         "color_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "auto_delete_update_at":{
             "type": "DateTime",
+            "primary": false,
             "change": false
         },
         "init_show_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "init_hide_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "status_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         }
     },
     "service":{
         "service_id":{
             "type": "Int",
-            "primary": true,
-            "change": false
-        },
-        "service_name":{
-            "type": "String",
-            "change": true,
-            "update": "update_at"
-        },
-        "type":{
-            "type": "Int",
-            "change": false
-        },
-        "version":{
-            "type": "Int",
-            "change": true,
-            "update": "update_at"
+            "primary": true
         },
         "create_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
+        },
+        "service_name":{
+            "type": "String",
+            "primary": false,
+            "sync": true,
+            "update": "name_update_at"
+        },
+        "type":{
+            "type": "Int",
+            "primary": false,
+            "sync": true,
+            "update": "others_update_at"
+        },
+        "version":{
+            "type": "Int",
+            "primary": false,
+            "sync": true,
+            "update": "others_update_at"
         },
         "status_flag":{
             "type": "Int",
-            "change": true,
-            "update": "update_at"
+            "primary": false,
+            "sync": true,
+            "update": "status_update_at"
+        },
+        "name_update_at":{
+            "type": "DateTime",
+            "primary": false,
+            "sync": false
+        },
+        "others_update_at":{
+            "type": "DateTime",
+            "primary": false,
+            "sync": false
+        },
+        "status_update_at":{
+            "type": "DateTime",
+            "primary": false,
+            "sync": false
         }
     },
     "note":{
         "note_id":{
             "type": "Int",
-            "primary": true,
-            "change": false
+            "primary": true
         },
         "service_id":{
             "type": "Int",
-            "primary": true,
-            "change": false
+            "primary": true
+        },
+        "create_at":{
+            "type": "DateTime",
+            "primary": false,
+            "sync": false
         },
         "title":{
             "type": "String",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "title_update_at"
         },
         "content":{
             "type": "String",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "content_update_at"
-        },
-        "show_at":{
-            "type": "DateTime",
-            "change": true,
-            "update": "show_update_at"
-        },
-        "hide_at":{
-            "type": "DateTime",
-            "change": true,
-            "update": "hide_update_at"
         },
         "complete_at":{
             "type": "DateTime",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "complete_update_at"
         },
-        "create_at":{
+        "lock_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": true,
+            "update": "lock_update_at"
         },
         "status_flag":{
             "type": "Int",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "status_update_at"
         },
         "title_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "content_update_at":{
             "type": "DateTime",
-            "change": false
-        },
-        "show_update_at":{
-            "type": "DateTime",
-            "change": false
-        },
-        "hide_update_at":{
-            "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "complete_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
+        },
+        "lock_update_at":{
+            "type": "DateTime",
+            "primary": false,
+            "sync": false
         },
         "status_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         }
     },
     "place":{
         "place_id":{
             "type": "Int",
-            "primary": true,
-            "change": false
+            "primary": true
         },
         "service_id":{
             "type": "Int",
-            "primary": true,
-            "change": false
+            "primary": true
+        },
+        "create_at":{
+            "type": "DateTime",
+            "primary": false,
+            "sync": false
         },
         "name":{
             "type": "String",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "name_update_at"
         },
         "address":{
             "type": "String",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "address_update_at"
         },
         "latitude": {
             "type": "Int",
+            "primary": false,
+            "sync": true,
             "update": "address_update_at"
         },
         "longitude": {
             "type": "Int",
+            "primary": false,
+            "sync": true,
             "update": "address_update_at"
         },
         "priority":{
             "type": "Int",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "priority_update_at"
-        },
-        "create_at":{
-            "type": "DateTime",
-            "change": false
         },
         "status_flag":{
             "type": "Int",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "status_update_at"
         },
         "name_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "address_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "priority_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "status_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         }
     },
     "notice":{
         "notice_id":{
             "type": "Int",
-            "primary": true,
-            "change": false
+            "primary": true
         },
         "service_id":{
             "type": "Int",
-            "primary": true,
-            "change": false
+            "primary": true
         },
-        "note_id":{
-            "type": "Int",
-            "change": false
+        "create_at":{
+            "type": "DateTime",
+            "primary": false,
+            "sync": false
         },
-        "note_service_id":{
+        "target_note_id":{
             "type": "Int",
-            "change": false
+            "primary": false,
+            "sync": false
         },
-        "notice_service_id":{
+        "target_note_service_id":{
             "type": "Int",
-            "change": false
+            "primary": false,
+            "sync": false
+        },
+        "target_service_id":{
+            "type": "Int",
+            "primary": false,
+            "sync": false
         },
         "show_at":{
             "type": "DateTime",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "show_update_at"
         },
         "hide_at":{
             "type": "DateTime",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "hide_update_at"
         },
         "place_id":{
             "type": "Int",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "place_update_at"
         },
         "place_service_id":{
             "type": "Int",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "place_update_at"
         },
         "status_flag":{
             "type": "Int",
-            "change": true,
+            "primary": false,
+            "sync": true,
             "update": "status_update_at"
         },
         "show_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "hide_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "place_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         },
         "status_update_at":{
             "type": "DateTime",
-            "change": false
+            "primary": false,
+            "sync": false
         }
     }
 }
