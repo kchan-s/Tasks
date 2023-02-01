@@ -3,6 +3,7 @@ package app.sato.kchan.tasks
 import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
@@ -15,8 +16,10 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.HomeActivity.Companion.context
+import app.sato.kchan.tasks.fanction.LocationManager
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
+import app.sato.kchan.tasks.fanction.NoticeManager
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -81,9 +84,12 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
         val completeNoteManager = noteManager.copy()
         completeNoteManager.select(position)
         val note = completeNoteManager.getNote()!!
-        val appNotificationIdSharedPreferences = context.getSharedPreferences("app_notification_id",
-            AppCompatActivity.MODE_PRIVATE
-        )
+        val noticeManager = NoticeManager()
+        noticeManager.searchByNote(note)
+
+        val appNotificationIdSharedPreferences = context.getSharedPreferences("app_notification_id", AppCompatActivity.MODE_PRIVATE)
+        val locationSharedPreferences = context.getSharedPreferences("location_notification_id", AppCompatActivity.MODE_PRIVATE)
+
         if (note.isComplete()) {
             note.setUncomplete()
             viewHolder.checkBox.setImageResource(R.drawable.ic_baseline_radio_button_unchecked_24)
@@ -95,6 +101,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                     viewHolder.list.setBackgroundColor(Color.WHITE)
                 }
             }
+            println("noticeshow" + note.getNoticeShow())
             if (note.getNoticeShow() != null) {
                 val editor = appNotificationIdSharedPreferences.edit()
                 val uuid = UUID.randomUUID().hashCode()
@@ -117,15 +124,24 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                     viewHolder.list.setBackgroundColor(Color.LTGRAY)
                 }
             }
-            val notificationManager =
-                context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.getNotificationChannel("notice")
-            val cancelUuid = appNotificationIdSharedPreferences.getInt(completeNoteManager.send(), -1)
-            println("number" + cancelUuid)
-            println("ooooo" + noteManager.send())
-            if (cancelUuid != -1) {
-                ForegroundNotificationService().cancelAlarm(context, cancelUuid)
-                notificationManager.cancel(cancelUuid)
+            if (note.getNoticeShow() != null) {
+                val notificationManager =
+                    context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.getNotificationChannel("notice")
+                val cancelUuid =
+                    appNotificationIdSharedPreferences.getInt(completeNoteManager.send(), -1)
+                if (cancelUuid != -1) {
+                    ForegroundNotificationService().cancelAlarm(context, cancelUuid)
+                    notificationManager.cancel(cancelUuid)
+                }
+            }
+
+            if (note.getNoticeLocation() != null) {
+                val uuid = locationSharedPreferences.getInt(noticeManager.send(), -1)
+                val notificationManager =
+                    context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.getNotificationChannel("location")
+                notificationManager.cancel(uuid)
             }
         }
     }

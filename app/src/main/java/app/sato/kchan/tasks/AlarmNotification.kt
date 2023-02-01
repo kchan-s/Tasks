@@ -54,23 +54,20 @@ class AlarmNotification : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
 
-        val notification: Notification
 
         if (deleteTime == 0.toLong()) {
             builder
                 .setAutoCancel(true) // アプリ起動したら消えるか
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-
-            notification = builder.build()
         } else {
             builder
                 .setAutoCancel(false) // アプリ起動したら消えるか
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setTimeoutAfter(deleteTime)
-
-            notification = builder.build()
-            notification.flags = Notification.FLAG_NO_CLEAR
         }
+
+        val notification = builder.build()
+        notification.flags = Notification.FLAG_NO_CLEAR
 
         val notificationManagerCompat = NotificationManagerCompat.from(context)
 
