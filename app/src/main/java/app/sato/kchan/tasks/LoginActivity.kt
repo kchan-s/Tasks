@@ -1,15 +1,15 @@
 package app.sato.kchan.tasks
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.LoginActivityBinding
 import app.sato.kchan.tasks.fanction.Account
-import com.google.android.material.textfield.TextInputLayout
+
 
 class LoginActivity: AppCompatActivity(){
     private lateinit var binding: LoginActivityBinding
@@ -74,8 +74,12 @@ class LoginActivity: AppCompatActivity(){
     private fun loginButtonOnClick() {
         if (binding.loginIdEdit.text.toString() != "" &&  binding.loginPasswordEdit.text.toString() != "") {
             val login = account.login(binding.loginIdEdit.text.toString(), binding.loginPasswordEdit.text.toString())
-            if (login) finish()
-            else Toast.makeText(this, "ログインIDまたはパスワードが間違っています", Toast.LENGTH_LONG).show()
+            if (login){
+                Account().reset()
+                val intent = Intent(this, HomeActivity::class.java)
+                finish()
+                startActivity(intent)
+            }else Toast.makeText(this, "ログインIDまたはパスワードが間違っています", Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
         }

@@ -243,11 +243,55 @@ class Account public constructor() {
         else
             throw Exception("Null Prohibited Value")
     }
-    fun setPassword(password:String):Boolean{
+    fun setPassword(password:String, question1_item:String, question1_value:String, question2_item:String, question2_value:String, question3_item:String, question3_value:String):Boolean{
         var data = MyData()
         data.setString("type","SetPass")
-        data.move("")
-        return false
+        var nowDT: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
+        val res = DataOperator().selectQuery(
+            table = "account",
+            column = arrayOf("account_id","service_id","connect_token","sync_at")
+        )
+        if (!res.setResultTop()) {
+            println("アカウントエラー")
+        }
+        data.setString("account", res.getString("account_id"))
+        data.setString("service", res.getString("service_id"))
+        data.setString("token", res.getString("connect_token"))
+        data.setString("now_at", nowDT)
+        val content = data.moveChain("content")
+        content.setString("question1_item", question1_item)
+        content.setString("question1_value", question1_value)
+        content.setString("question2_item", question2_item)
+        content.setString("question2_value", question2_value)
+        content.setString("question3_item", question3_item)
+        content.setString("question3_value", question3_value)
+        val con = Connect()
+        con.setRequest(data.outJSON() ?: throw Exception(""))
+        con.send()
+        con.waitEnd()
+        if(con.isSuccess()){
+           val  data = MyData()
+            if(data.inJSON(con.getResponse())){
+                println("解析: " + data.outJSON())
+                val result = data.moveChain("result")
+                if(result.getInt("code") == 0) {
+                    DataOperator().updateQuery(
+                        table = "account",
+                        value = mutableListOf(
+                            "password_flag" to true.toString()
+                        )
+                    )
+                    return true
+                }else{
+                    return false
+                }
+            }else{
+                println("解析エラー")
+                return false
+            }
+        }else{
+            return false
+        }
     }
     fun changePassword(oldPassword:String, newPassword:String):Boolean{
         return true
@@ -266,7 +310,60 @@ class Account public constructor() {
             ""
     }
     fun login(accountId:String, password:String):Boolean{
-        return true
+        var data = MyData()
+        data.setString("type", "New")
+        data.move("content")
+        if(true) {
+            val account = data.moveChain("account")
+            account.initArray()
+            val res = DataOperator().selectQuery(
+                table = "account",
+                column = arrayOf(
+                    "connect_token"
+                )
+            )
+            if(res.setResultTop()){
+                val record = MyData()
+                record.setString("connect_token", res.getString("connect_token"))
+                account.push(record)
+            }else{
+                println("account   データが...")
+            }
+        }
+        val request: String = data.outJSON() ?: throw Exception("送信データ出力失敗")
+        println(request)
+        val con = Connect()
+        con.setRequest(request)
+        con.send()
+        con.isSuccess()
+        var response = con.getResponse()
+        con.close()
+        println("受信: " + response)
+        data = MyData()
+        if (data.inJSON(response)) {
+            println("解析: " + data.outJSON())
+            val result = data.moveChain("result")
+            if (result.getInt("code") == 0) {
+                val content = result.moveChain("content")
+                DataOperator().updateQuery(
+                    table = "account",
+                    value = mutableListOf(
+                        "account_id" to content.moveChain("account").moveChain(0).getString("account_id"),
+                        "service_id" to content.moveChain("account").moveChain(0).getString("service_id")
+                    )
+                )
+                DataOperator().sync()
+                return true
+            } else {
+                println("サーバー処理解析失敗!!")
+                println("-> " + data.outJSON())
+                return false
+            }
+        } else {
+            println("JSON解析失敗!!")
+            return false
+        }
+
     }
 
 
