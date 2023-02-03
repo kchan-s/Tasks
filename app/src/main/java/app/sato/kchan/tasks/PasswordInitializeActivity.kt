@@ -18,6 +18,14 @@ import app.sato.kchan.tasks.fanction.Account
 class PasswordInitializeActivity: AppCompatActivity(){
     private lateinit var binding: PasswordInitializeActivityBinding
     val account = Account()
+    val question = listOf("未選択",
+        "はじめて飼ったペットの名前は？",
+        "一番年上のいとこの名前は？",
+        "母親の旧姓は？",
+        "両親が出会った街は？",
+        "卒業した小学校は？",
+        "初めて買ったCDは？",
+        "初めて買った車は？")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,14 +78,6 @@ class PasswordInitializeActivity: AppCompatActivity(){
         }
 
         // ドロップダウンリストの設定
-        val question = listOf("未選択",
-                "はじめて飼ったペットの名前は？",
-                "一番年上のいとこの名前は？",
-                "母親の旧姓は？",
-                "両親が出会った街は？",
-                "卒業した小学校は？",
-                "初めて買ったCDは？",
-                "初めて買った車は？")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, question)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.passwordInitializeQuestion1Spinner.adapter = adapter
@@ -143,7 +143,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
             answer1 != "" && answer2 != "" && answer3 != "" && password.length >= 8 && verification.length >= 8 -> {
                 if (password == verification) {
                     // 保存
-                    account.setPassword(password)
+                    account.setPassword(password, question[question1], answer1, question[question2], answer2, question[question3], answer3)
                     // パスワードが登録完了したことを保存
                     val aPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
                     val aEditor = aPreferences.edit()

@@ -109,9 +109,22 @@ class TimeActivity: AppCompatActivity(){
                         note.setNoticeShow(null)
                         note.setNoticeHide(null)
                     }
-                    val targetIntent = Intent(HomeActivity.context, ForegroundNotificationService::class.java)
-                    HomeActivity.context.stopService(targetIntent)
-                    HomeActivity.context.startForegroundService(targetIntent)
+
+                    val uuid: Int
+                    if (note.getNoticeBarId() == 0) {
+                        uuid = UUID.randomUUID().hashCode()
+                        note.setNoticeBarId(uuid)
+                    } else {
+                        uuid = note.getNoticeBarId()!!
+                    }
+
+                    val notificationManager =
+                        HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    notificationManager.getNotificationChannel("notification")
+                    notificationManager.cancelAll()
+                    ForegroundNotificationService().cancelAlarm(applicationContext, uuid)
+                    ForegroundNotificationService().setAlarm(applicationContext, note, uuid)
+
                     finish()
                 }
             }

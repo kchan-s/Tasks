@@ -85,7 +85,7 @@ class ForegroundNotificationService : Service() , LocationListener{
 
                 val notificationManager =
                     HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.getNotificationChannel("notice")
+                notificationManager.getNotificationChannel("notification")
                 notificationManager.cancelAll()
                 cancelAlarm(context, uuid)
 
@@ -196,7 +196,7 @@ class ForegroundNotificationService : Service() , LocationListener{
     override fun onLocationChanged(location: Location) {
         val notificationManager =
             HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.getNotificationChannel("location")
+        notificationManager.getNotificationChannel("notification")
         notificationManager.cancelAll()
 
         val noticeManager = NoticeManager()
@@ -211,6 +211,13 @@ class ForegroundNotificationService : Service() , LocationListener{
                 noticeManager.searchByLocation(locationManager.getLocation()!!)
                 if (noticeManager.getNoticeNumber() != 0) {
                     val note = noticeManager.getNote()!!
+                    val uuid: Int
+                    if (note.getNoticeBarId() == 0) {
+                        uuid = UUID.randomUUID().hashCode()
+                        note.setNoticeBarId(uuid)
+                    } else {
+                        uuid = note.getNoticeBarId()!!
+                    }
                     if (!note.isComplete() && note.getNoticeShow() == null) {
                         val mainIntent = Intent(context, HomeActivity::class.java).apply() {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -218,7 +225,7 @@ class ForegroundNotificationService : Service() , LocationListener{
 
                         val pendingIntent: PendingIntent =
                             PendingIntent.getActivity(context, 0, mainIntent, 0)
-                        val channelId = "location"
+                        val channelId = "notification"
                         val channel = NotificationChannel(
                             channelId, "通知",
                             NotificationManager.IMPORTANCE_DEFAULT
@@ -226,7 +233,7 @@ class ForegroundNotificationService : Service() , LocationListener{
                             setSound(null, null)
                         }
 
-                        // Register the channel with the system
+//                         Register the channel with the system
                         val notificationManager =
                             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         notificationManager.createNotificationChannel(channel)
@@ -244,10 +251,8 @@ class ForegroundNotificationService : Service() , LocationListener{
                         notification.flags = Notification.FLAG_NO_CLEAR
 
                         //通知の実施
-                        val uuid = UUID.randomUUID().hashCode()
                         notificationManager.notify(uuid, notification)
                     } else if (!note.isComplete()) {
-                        val uuid = UUID.randomUUID().hashCode()
                         setAlarm(context, note, uuid)
                     }
                 }
