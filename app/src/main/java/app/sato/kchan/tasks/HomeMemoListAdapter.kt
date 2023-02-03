@@ -73,8 +73,10 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                 lockButtonOnClick(viewHolder, position)
             }
 
-            v.setOnClickListener {
-                taskmemoOnClick(viewHolder, adapterPosition)
+            if (!note.isComplete()) {
+                v.setOnClickListener {
+                    taskmemoOnClick(viewHolder, adapterPosition)
+                }
             }
         }
     }

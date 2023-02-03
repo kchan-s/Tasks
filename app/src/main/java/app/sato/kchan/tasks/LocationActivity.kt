@@ -84,8 +84,14 @@ class LocationActivity: AppCompatActivity(){
                     binding.locationMapButton.isVisible = true
                 } else if (pos != 0) {
                     receivedNote.setNoticeLocation(locationData[pos-1])
+                    binding.locationMapButton.isVisible = false
+                    binding.locationNameEdit.isVisible = false
+                    binding.locationAddress.isVisible = false
                 } else {
                     receivedNote.setNoticeLocation(null)
+                    binding.locationMapButton.isVisible = false
+                    binding.locationNameEdit.isVisible = false
+                    binding.locationAddress.isVisible = false
                 }
                 val targetIntent = Intent(context, ForegroundNotificationService::class.java)
                 context.stopService(targetIntent)

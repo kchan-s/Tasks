@@ -123,10 +123,6 @@ class TimeActivity: AppCompatActivity(){
         val calendar = Calendar.getInstance()
 
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
-            calendar.set(Calendar.YEAR, year)
-            calendar.set(Calendar.MONTH, month)
-            calendar.set(Calendar.DAY_OF_MONTH, day)
-
             // メモ：monthは0-11なので+1する必要がある
             if (start) {
                 startDateTimeList.clear()
@@ -177,8 +173,6 @@ class TimeActivity: AppCompatActivity(){
         val calendar = Calendar.getInstance()
 
         val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-            calendar.set(Calendar.HOUR_OF_DAY, hour)
-            calendar.set(Calendar.MINUTE, minute)
             val showFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
             val note = noteManager.getNote()!!
 

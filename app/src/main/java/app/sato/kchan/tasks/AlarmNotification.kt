@@ -32,11 +32,10 @@ class AlarmNotification : BroadcastReceiver() {
             0
         )
         val channelId = "notice"
-        // app name
         val title = intent.getStringExtra("title")
         val message = intent.getStringExtra("content")
 
-        // Notification　Channel 設定
+        // 通知チャンネルの設定
         val channel = NotificationChannel(
             channelId, "通知",
             NotificationManager.IMPORTANCE_DEFAULT
@@ -47,6 +46,7 @@ class AlarmNotification : BroadcastReceiver() {
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
+        // 通知の設定
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
@@ -54,14 +54,13 @@ class AlarmNotification : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
 
-
         if (deleteTime == 0.toLong()) {
             builder
-                .setAutoCancel(true) // アプリ起動したら消えるか
+                .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         } else {
             builder
-                .setAutoCancel(false) // アプリ起動したら消えるか
+                .setAutoCancel(false)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setTimeoutAfter(deleteTime)
         }

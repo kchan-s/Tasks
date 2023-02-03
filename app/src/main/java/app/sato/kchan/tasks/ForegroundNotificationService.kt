@@ -74,14 +74,22 @@ class ForegroundNotificationService : Service() , LocationListener{
                 val copyNoteManager = noteManager.copy()
                 copyNoteManager.select(i)
 
+                val note = copyNoteManager.getNote()!!
+                val uuid: Int
+                if (note.getNoticeBarId() == 0) {
+                    uuid = UUID.randomUUID().hashCode()
+                    note.setNoticeBarId(uuid)
+                } else {
+                    uuid = note.getNoticeBarId()!!
+                }
+
                 val notificationManager =
                     HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.getNotificationChannel("notice")
                 notificationManager.cancelAll()
+                cancelAlarm(context, uuid)
 
-                val note = copyNoteManager.getNote()!!
                 if (note.getNoticeShow() != null && note.getNoticeLocation() == null) {
-                    val uuid = UUID.randomUUID().hashCode()
                     setAlarm(context, note, uuid)
                 }
             }

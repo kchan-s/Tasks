@@ -21,7 +21,7 @@ class AccountActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadTheme()
+//        loadTheme()
         binding = AccountActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         binding.loginIdText.text = account.getId()
@@ -72,8 +72,8 @@ class AccountActivity: AppCompatActivity(){
         }
     }
 
-    private fun loadTheme() {
-        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
-        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_DayNight))
-    }
+//    private fun loadTheme() {
+//        val cPreferences = getSharedPreferences("themeData", MODE_PRIVATE)
+//        setTheme(cPreferences.getInt("theme", R.style.Theme_TaSks_DayNight))
+//    }
 }
