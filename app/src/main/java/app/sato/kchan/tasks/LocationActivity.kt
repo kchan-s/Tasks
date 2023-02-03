@@ -1,6 +1,7 @@
 package app.sato.kchan.tasks
 
 import android.Manifest
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -30,7 +31,7 @@ import app.sato.kchan.tasks.fanction.NoticeManager
 import java.util.*
 
 
-class LocationActivity: AppCompatActivity(){
+class LocationActivity: AppCompatActivity(), LocationListener{
     private lateinit var binding: LocationActivityBinding
     val locationNameData = mutableListOf("未選択", "Mapから選択")
     val locationData = mutableListOf<Location>()
@@ -93,9 +94,6 @@ class LocationActivity: AppCompatActivity(){
                     binding.locationNameEdit.isVisible = false
                     binding.locationAddress.isVisible = false
                 }
-                val targetIntent = Intent(context, ForegroundNotificationService::class.java)
-                context.stopService(targetIntent)
-                context.startForegroundService(targetIntent)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -146,9 +144,6 @@ class LocationActivity: AppCompatActivity(){
             android.R.id.home->{
                 noteManager.receive(received)
                 val note = noteManager.getNote()!!
-                val targetIntent = Intent(context, ForegroundNotificationService::class.java)
-                context.stopService(targetIntent)
-                context.startForegroundService(targetIntent)
 
                 if (address != "") {
                     locationManager.search(address)
@@ -163,6 +158,20 @@ class LocationActivity: AppCompatActivity(){
                         note.setNoticeLocation(location)
                     }
                 }
+
+                if (note.getNoticeLocation() != null) {
+                    val locationManager =
+                        this.getSystemService(LOCATION_SERVICE) as android.location.LocationManager
+                    if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        locationManager.requestLocationUpdates(
+                            android.location.LocationManager.GPS_PROVIDER,
+                            1000L,
+                            1F,
+                            this
+                        )
+                    }
+                }
+
                 finish()
             }
         }
@@ -179,6 +188,73 @@ class LocationActivity: AppCompatActivity(){
     private fun doGeoCoding(query: String): MutableList<Address> {
         val gCoder = Geocoder(this, Locale.getDefault())
         return gCoder.getFromLocationName(query, 1)
+    }
+
+    override fun onLocationChanged(location: android.location.Location) {
+        val notificationManager =
+            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.getNotificationChannel("notification")
+        notificationManager.cancelAll()
+
+        val noticeManager = NoticeManager()
+        val locationManager = LocationManager()
+        locationManager.searchByRadius(
+            location.latitude.toFloat(),
+            location.longitude.toFloat(),
+            75
+        )
+        if (locationManager.isLocation()) {
+            do {
+                noticeManager.searchByLocation(locationManager.getLocation()!!)
+                if (noticeManager.getNoticeNumber() != 0) {
+                    val note = noticeManager.getNote()!!
+                    val uuid: Int
+                    if (note.getNoticeBarId() == 0) {
+                        uuid = UUID.randomUUID().hashCode()
+                        note.setNoticeBarId(uuid)
+                    } else {
+                        uuid = note.getNoticeBarId()!!
+                    }
+                    if (!note.isComplete() && note.getNoticeShow() == null) {
+                        val mainIntent = Intent(context, HomeActivity::class.java).apply() {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+
+                        val pendingIntent: PendingIntent =
+                            PendingIntent.getActivity(context, 0, mainIntent, 0)
+                        val channelId = "notification"
+                        val channel = NotificationChannel(
+                            channelId, "通知",
+                            NotificationManager.IMPORTANCE_DEFAULT
+                        ).apply {
+                            setSound(null, null)
+                        }
+
+//                         Register the channel with the system
+                        val notificationManager =
+                            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        notificationManager.createNotificationChannel(channel)
+
+                        //通知オブジェクトの作成
+                        val builder = NotificationCompat.Builder(context, channelId)
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setContentTitle(note.getTitle())
+                            .setContentText(note.getContent())
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true)
+
+                        val notification = builder.build()
+                        notification.flags = Notification.FLAG_NO_CLEAR
+
+                        //通知の実施
+                        notificationManager.notify(uuid, notification)
+                    } else if (!note.isComplete()) {
+                        ForegroundNotificationService().setAlarm(context, note, uuid)
+                    }
+                }
+            } while (locationManager.next())
+        }
     }
 
     private fun loadTheme() {

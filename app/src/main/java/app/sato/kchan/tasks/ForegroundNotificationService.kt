@@ -26,7 +26,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class ForegroundNotificationService : Service() , LocationListener{
+class ForegroundNotificationService : Service(), LocationListener{
     lateinit var context: Context
 
     override fun onStartCommand(intent: Intent?, flag: Int, startId: Int): Int {

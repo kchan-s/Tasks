@@ -108,23 +108,22 @@ class TimeActivity: AppCompatActivity(){
                     if (startDateTime == null && endDateTime == null) {
                         note.setNoticeShow(null)
                         note.setNoticeHide(null)
-                    }
-
-                    val uuid: Int
-                    if (note.getNoticeBarId() == 0) {
-                        uuid = UUID.randomUUID().hashCode()
-                        note.setNoticeBarId(uuid)
                     } else {
-                        uuid = note.getNoticeBarId()!!
+                        val uuid: Int
+                        if (note.getNoticeBarId() == 0) {
+                            uuid = UUID.randomUUID().hashCode()
+                            note.setNoticeBarId(uuid)
+                        } else {
+                            uuid = note.getNoticeBarId()!!
+                        }
+
+                        val notificationManager =
+                            HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                        notificationManager.getNotificationChannel("notification")
+                        notificationManager.cancelAll()
+                        ForegroundNotificationService().cancelAlarm(applicationContext, uuid)
+                        ForegroundNotificationService().setAlarm(applicationContext, note, uuid)
                     }
-
-                    val notificationManager =
-                        HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                    notificationManager.getNotificationChannel("notification")
-                    notificationManager.cancelAll()
-                    ForegroundNotificationService().cancelAlarm(applicationContext, uuid)
-                    ForegroundNotificationService().setAlarm(applicationContext, note, uuid)
-
                     finish()
                 }
             }
