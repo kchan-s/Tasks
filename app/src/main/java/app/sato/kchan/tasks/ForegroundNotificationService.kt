@@ -167,7 +167,8 @@ class ForegroundNotificationService : Service(), LocationListener{
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 // アラームをセットする
-                val am = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+                val am =
+                    context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
                 am.setExact(
                     AlarmManager.RTC_WAKEUP,
                     startCalendar.getTimeInMillis(), pending

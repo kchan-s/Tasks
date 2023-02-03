@@ -1,23 +1,29 @@
 package app.sato.kchan.tasks
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.TimeActivityBinding
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
+import app.sato.kchan.tasks.fanction.NoticeManager
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class TimeActivity: AppCompatActivity(){
+class TimeActivity: AppCompatActivity(), LocationListener{
     private lateinit var binding: TimeActivityBinding
 
     val noteManager = NoteManager()
@@ -105,23 +111,31 @@ class TimeActivity: AppCompatActivity(){
             when (item.itemId) {
                 android.R.id.home -> {
                     val note = noteManager.getNote()!!
+                    val uuid: Int
+                    if (note.getNoticeBarId() == 0) {
+                        uuid = UUID.randomUUID().hashCode()
+                        note.setNoticeBarId(uuid)
+                    } else {
+                        uuid = note.getNoticeBarId()!!
+                    }
+
+                    val notificationManager =
+                        HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    notificationManager.getNotificationChannel("notification")
+                    notificationManager.cancel(uuid)
+                    ForegroundNotificationService().cancelAlarm(applicationContext, uuid)
+
                     if (startDateTime == null && endDateTime == null) {
                         note.setNoticeShow(null)
                         note.setNoticeHide(null)
-                    } else {
-                        val uuid: Int
-                        if (note.getNoticeBarId() == 0) {
-                            uuid = UUID.randomUUID().hashCode()
-                            note.setNoticeBarId(uuid)
-                        } else {
-                            uuid = note.getNoticeBarId()!!
-                        }
+                    }
 
-                        val notificationManager =
-                            HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                        notificationManager.getNotificationChannel("notification")
-                        notificationManager.cancelAll()
-                        ForegroundNotificationService().cancelAlarm(applicationContext, uuid)
+                    if (note.getNoticeLocation() != null) {
+                        val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+                        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 1F, this)
+                        }
+                    } else if (startDateTime != null){
                         ForegroundNotificationService().setAlarm(applicationContext, note, uuid)
                     }
                     finish()
@@ -235,6 +249,73 @@ class TimeActivity: AppCompatActivity(){
                 )
                     .show()
             }
+        }
+    }
+
+    override fun onLocationChanged(location: android.location.Location) {
+        val notificationManager =
+            HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.getNotificationChannel("notification")
+        notificationManager.cancelAll()
+
+        val noticeManager = NoticeManager()
+        val locationManager = app.sato.kchan.tasks.fanction.LocationManager()
+        locationManager.searchByRadius(
+            location.latitude.toFloat(),
+            location.longitude.toFloat(),
+            75
+        )
+        if (locationManager.isLocation()) {
+            do {
+                noticeManager.searchByLocation(locationManager.getLocation()!!)
+                if (noticeManager.getNoticeNumber() != 0) {
+                    val note = noticeManager.getNote()!!
+                    val uuid: Int
+                    if (note.getNoticeBarId() == 0) {
+                        uuid = UUID.randomUUID().hashCode()
+                        note.setNoticeBarId(uuid)
+                    } else {
+                        uuid = note.getNoticeBarId()!!
+                    }
+                    if (!note.isComplete() && note.getNoticeShow() == null) {
+                        val mainIntent = Intent(HomeActivity.context, HomeActivity::class.java).apply() {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+
+                        val pendingIntent: PendingIntent =
+                            PendingIntent.getActivity(HomeActivity.context, 0, mainIntent, 0)
+                        val channelId = "notification"
+                        val channel = NotificationChannel(
+                            channelId, "通知",
+                            NotificationManager.IMPORTANCE_DEFAULT
+                        ).apply {
+                            setSound(null, null)
+                        }
+
+//                         Register the channel with the system
+                        val notificationManager =
+                            HomeActivity.context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        notificationManager.createNotificationChannel(channel)
+
+                        //通知オブジェクトの作成
+                        val builder = NotificationCompat.Builder(HomeActivity.context, channelId)
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setContentTitle(note.getTitle())
+                            .setContentText(note.getContent())
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true)
+
+                        val notification = builder.build()
+                        notification.flags = Notification.FLAG_NO_CLEAR
+
+                        //通知の実施
+                        notificationManager.notify(uuid, notification)
+                    } else if (!note.isComplete()) {
+                        ForegroundNotificationService().setAlarm(HomeActivity.context, note, uuid)
+                    }
+                }
+            } while (locationManager.next())
         }
     }
 
