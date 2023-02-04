@@ -2,18 +2,12 @@ package app.sato.kchan.tasks
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.SettingActivityBinding
-import app.sato.kchan.tasks.fanction.Util
-import app.sato.kchan.tasks.fanction.ConnectionWrapper
-import app.sato.kchan.tasks.fanction.DataOperator
-import app.sato.kchan.tasks.fanction.MyData
-import kotlinx.coroutines.launch
 
 class SettingActivity : AppCompatActivity() {
     private lateinit var binding: SettingActivityBinding
@@ -50,8 +44,8 @@ class SettingActivity : AppCompatActivity() {
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 val homeIntent = Intent(this, HomeActivity::class.java)
                 startActivity(homeIntent)
             }

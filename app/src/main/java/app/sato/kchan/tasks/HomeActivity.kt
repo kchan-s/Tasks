@@ -17,15 +17,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.HomeActivityBinding
 import app.sato.kchan.tasks.fanction.Account
-import app.sato.kchan.tasks.fanction.Connect
-import app.sato.kchan.tasks.fanction.ConnectionWrapper
 import app.sato.kchan.tasks.fanction.DataOperator
-import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
     companion object {
         lateinit var context: Context
     }
+
     private lateinit var binding: HomeActivityBinding
     val adapter = HomeMemoListAdapter()
 
@@ -39,33 +37,48 @@ class HomeActivity : AppCompatActivity() {
         //--- 初期化処理 ここから ------------------------------
         //--- 初期化処理 ここまで ------------------------------
 
-        val connectionManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectionManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)
 
         if (capabilities != null) {
-            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                val foregroundServiceIntent = Intent(this, ForegroundNotificationService::class.java)
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(
+                    NetworkCapabilities.TRANSPORT_CELLULAR
+                )
+            ) {
+                val foregroundServiceIntent =
+                    Intent(this, ForegroundNotificationService::class.java)
                 this.startForegroundService(foregroundServiceIntent)
                 //--- 初期化処理 ここから ------------------------------
                 val account = Account()
-                if(account.isId()){
+                if (account.isId()) {
 //                    DataOperator().sync()
-                }else {
+                } else {
                     DataOperator().deleteAll()
                     account.reset()
                     account.requestId()
                 }
                 //--- 初期化処理 ここまで ------------------------------
             } else {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    val foregroundServiceIntent = Intent(this, ForegroundNotificationService::class.java)
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    val foregroundServiceIntent =
+                        Intent(this, ForegroundNotificationService::class.java)
                     this.startForegroundService(foregroundServiceIntent)
                 }
                 Toast.makeText(this, "インターネットに接続していません", Toast.LENGTH_LONG).show()
             }
         } else {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                val foregroundServiceIntent = Intent(this, ForegroundNotificationService::class.java)
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                val foregroundServiceIntent =
+                    Intent(this, ForegroundNotificationService::class.java)
                 this.startForegroundService(foregroundServiceIntent)
             }
             Toast.makeText(this, "インターネットに接続していません", Toast.LENGTH_LONG).show()
@@ -81,7 +94,7 @@ class HomeActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (context.theme.resources.configuration.isNightModeActive) {
-                binding.homeSettingButton.setBackgroundColor(Color.rgb(85,85, 85))
+                binding.homeSettingButton.setBackgroundColor(Color.rgb(85, 85, 85))
                 binding.homeTrashButton.setBackgroundColor(Color.rgb(85, 85, 85))
             }
         }
@@ -100,7 +113,10 @@ class HomeActivity : AppCompatActivity() {
                     false
                 }
             }
-            override fun onQueryTextSubmit(query: String): Boolean { return false }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
         })
 
         // 設定ボタンタップ処理

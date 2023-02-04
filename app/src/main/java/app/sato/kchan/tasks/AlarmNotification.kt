@@ -7,14 +7,8 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import app.sato.kchan.tasks.fanction.Note
-import app.sato.kchan.tasks.fanction.NoteManager
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.concurrent.schedule
 
 
 class AlarmNotification : BroadcastReceiver() {
@@ -23,13 +17,12 @@ class AlarmNotification : BroadcastReceiver() {
         val notificationId = intent.getIntExtra("id", 0)
         val deleteTime = intent.getLongExtra("deleteTime", 0)
 
-        val homeIntent = Intent(context, HomeActivity::class.java).apply(){
+        val homeIntent = Intent(context, HomeActivity::class.java).apply() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            context, 0, homeIntent,
-            0
+            context, 0, homeIntent, 0
         )
         val channelId = "notice"
         val title = intent.getStringExtra("title")

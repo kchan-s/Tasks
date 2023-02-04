@@ -7,10 +7,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.fanction.LocationManager
 
-class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder>(){
+class LocationStockAdapter : RecyclerView.Adapter<LocationStockAdapter.ViewHolder>() {
     val locationManager = LocationManager()
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val locationText = view.findViewById<TextView>(R.id.location_stock_text)
     }
 
@@ -26,7 +26,7 @@ class LocationStockAdapter: RecyclerView.Adapter<LocationStockAdapter.ViewHolder
         viewHolder.locationText.text = location.getName()
     }
 
-    override fun getItemCount(): Int{
+    override fun getItemCount(): Int {
         locationManager.search("", arrayOf("PermanentFlagUp"))
         return locationManager.getLocationNumber()
     }

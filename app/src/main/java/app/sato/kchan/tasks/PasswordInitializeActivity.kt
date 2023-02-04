@@ -3,7 +3,6 @@ package app.sato.kchan.tasks
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
@@ -11,28 +10,30 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.PasswordInitializeActivityBinding
 import app.sato.kchan.tasks.fanction.Account
 
-class PasswordInitializeActivity: AppCompatActivity(){
+class PasswordInitializeActivity : AppCompatActivity() {
     private lateinit var binding: PasswordInitializeActivityBinding
     val account = Account()
-    val question = listOf("未選択",
+    val question = listOf(
+        "未選択",
         "はじめて飼ったペットの名前は？",
         "一番年上のいとこの名前は？",
         "母親の旧姓は？",
         "両親が出会った街は？",
         "卒業した小学校は？",
         "初めて買ったCDは？",
-        "初めて買った車は？")
+        "初めて買った車は？"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = PasswordInitializeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding = PasswordInitializeActivityBinding.inflate(layoutInflater)
+            .apply { setContentView(this.root) }
 
-        binding.passwordInitializeSettingEdit.addTextChangedListener(object: TextWatcher{
+        binding.passwordInitializeSettingEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -52,7 +53,7 @@ class PasswordInitializeActivity: AppCompatActivity(){
             }
         })
 
-        binding.passwordInitializeVerificationEdit.addTextChangedListener(object: TextWatcher{
+        binding.passwordInitializeVerificationEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -82,29 +83,58 @@ class PasswordInitializeActivity: AppCompatActivity(){
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.passwordInitializeQuestion1Spinner.adapter = adapter
         binding.passwordInitializeQuestion2Spinner.adapter = adapter
-        binding.passwordInitializeQuestion2Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (binding.passwordInitializeQuestion2Spinner.selectedItemPosition != 0 &&
-                    binding.passwordInitializeQuestion2Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
-                    Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
+        binding.passwordInitializeQuestion2Spinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    id: Long
+                ) {
+                    if (binding.passwordInitializeQuestion2Spinner.selectedItemPosition != 0 &&
+                        binding.passwordInitializeQuestion2Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition
+                    ) {
+                        Toast.makeText(
+                            this@PasswordInitializeActivity,
+                            "別の質問を選択してください",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
 
         binding.passwordInitializeQuestion3Spinner.adapter = adapter
-        binding.passwordInitializeQuestion3Spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition != 0 &&
-                    binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition) {
-                    Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
-                } else if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition != 0 &&
-                    binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion2Spinner.selectedItemPosition) {
-                    Toast.makeText(this@PasswordInitializeActivity, "別の質問を選択してください", Toast.LENGTH_LONG).show()
+        binding.passwordInitializeQuestion3Spinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    id: Long
+                ) {
+                    if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition != 0 &&
+                        binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion1Spinner.selectedItemPosition
+                    ) {
+                        Toast.makeText(
+                            this@PasswordInitializeActivity,
+                            "別の質問を選択してください",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else if (binding.passwordInitializeQuestion3Spinner.selectedItemPosition != 0 &&
+                        binding.passwordInitializeQuestion3Spinner.selectedItemPosition == binding.passwordInitializeQuestion2Spinner.selectedItemPosition
+                    ) {
+                        Toast.makeText(
+                            this@PasswordInitializeActivity,
+                            "別の質問を選択してください",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
 
         val toolbar = binding.passwordInitializeToolbar
         setSupportActionBar(toolbar)
@@ -114,8 +144,8 @@ class PasswordInitializeActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }
@@ -143,7 +173,15 @@ class PasswordInitializeActivity: AppCompatActivity(){
             answer1 != "" && answer2 != "" && answer3 != "" && password.length >= 8 && verification.length >= 8 -> {
                 if (password == verification) {
                     // 保存
-                    account.setPassword(password, question[question1], answer1, question[question2], answer2, question[question3], answer3)
+                    account.setPassword(
+                        password,
+                        question[question1],
+                        answer1,
+                        question[question2],
+                        answer2,
+                        question[question3],
+                        answer3
+                    )
                     // パスワードが登録完了したことを保存
                     val aPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
                     val aEditor = aPreferences.edit()

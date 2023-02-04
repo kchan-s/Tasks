@@ -7,13 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.AutoDeletionActivityBinding
 
-class AutoDeletionActivity: AppCompatActivity(){
+class AutoDeletionActivity : AppCompatActivity() {
     private lateinit var binding: AutoDeletionActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = AutoDeletionActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding =
+            AutoDeletionActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // トグルの値読み込みが必要
         binding.autoDeletionSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -28,7 +29,8 @@ class AutoDeletionActivity: AppCompatActivity(){
         }
 
         val data = listOf("1日後", "1週間後", "1ヶ月後")
-        binding.autoDeletionTimingSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, data)
+        binding.autoDeletionTimingSpinner.adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, data)
 
         val toolbar = binding.autoDeletionToolbar
         setSupportActionBar(toolbar)
@@ -38,8 +40,8 @@ class AutoDeletionActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }

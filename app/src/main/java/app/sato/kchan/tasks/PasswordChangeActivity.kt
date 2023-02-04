@@ -10,14 +10,15 @@ import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.PasswordChangeActivityBinding
 import app.sato.kchan.tasks.fanction.Account
 
-class PasswordChangeActivity: AppCompatActivity(){
+class PasswordChangeActivity : AppCompatActivity() {
     private lateinit var binding: PasswordChangeActivityBinding
     val account = Account()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = PasswordChangeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding = PasswordChangeActivityBinding.inflate(layoutInflater)
+            .apply { setContentView(this.root) }
 
         // パスワードを忘れた方はこちらボタンタップ処理
         binding.passwordChangeResetButton.setOnClickListener {
@@ -29,7 +30,7 @@ class PasswordChangeActivity: AppCompatActivity(){
             changeButtonOnClick()
         }
 
-        binding.passwordChangeNowEdit.addTextChangedListener(object: TextWatcher {
+        binding.passwordChangeNowEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -49,7 +50,7 @@ class PasswordChangeActivity: AppCompatActivity(){
             }
         })
 
-        binding.passwordChangeNewEdit.addTextChangedListener(object: TextWatcher {
+        binding.passwordChangeNewEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -69,7 +70,7 @@ class PasswordChangeActivity: AppCompatActivity(){
             }
         })
 
-        binding.passwordChangeVerificationEdit.addTextChangedListener(object: TextWatcher {
+        binding.passwordChangeVerificationEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -97,8 +98,8 @@ class PasswordChangeActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }

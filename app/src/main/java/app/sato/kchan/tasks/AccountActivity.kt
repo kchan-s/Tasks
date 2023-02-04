@@ -6,14 +6,11 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.AccountActivityBinding
 import app.sato.kchan.tasks.fanction.Account
-import app.sato.kchan.tasks.fanction.Connect
-import app.sato.kchan.tasks.fanction.ConnectionWrapper
-import app.sato.kchan.tasks.fanction.DataOperator
-import kotlinx.coroutines.launch
 
-class AccountActivity: AppCompatActivity(){
+class AccountActivity : AppCompatActivity() {
     private lateinit var binding: AccountActivityBinding
     val account = Account()
+
     init {
 
 //        if(!account.isId()) account.requestId()
@@ -44,8 +41,8 @@ class AccountActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 val intent = Intent(this, SettingActivity::class.java)
                 startActivity(intent)
             }
@@ -61,8 +58,10 @@ class AccountActivity: AppCompatActivity(){
 
     //　パスワード初期設定・変更画面遷移
     private fun passwordButtonOnClick() {
-        val passwordInitializeSharedPreferences = getSharedPreferences("passwordInitialize", MODE_PRIVATE)
-        val isPasswordInitialized = passwordInitializeSharedPreferences.getBoolean("passwordInitialize", true)
+        val passwordInitializeSharedPreferences =
+            getSharedPreferences("passwordInitialize", MODE_PRIVATE)
+        val isPasswordInitialized =
+            passwordInitializeSharedPreferences.getBoolean("passwordInitialize", true)
         if (isPasswordInitialized) {
             val passwordInitializeIntent = Intent(this, PasswordInitializeActivity::class.java)
             startActivity(passwordInitializeIntent)

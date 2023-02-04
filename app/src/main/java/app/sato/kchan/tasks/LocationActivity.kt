@@ -31,7 +31,7 @@ import app.sato.kchan.tasks.fanction.NoticeManager
 import java.util.*
 
 
-class LocationActivity: AppCompatActivity(), LocationListener{
+class LocationActivity : AppCompatActivity(), LocationListener {
     private lateinit var binding: LocationActivityBinding
     val locationNameData = mutableListOf("未選択", "Mapから選択")
     val locationData = mutableListOf<Location>()
@@ -52,11 +52,17 @@ class LocationActivity: AppCompatActivity(), LocationListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding =
+            LocationActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),1)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
         }
 
         locationManager.search("")
@@ -79,25 +85,31 @@ class LocationActivity: AppCompatActivity(), LocationListener{
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, locationNameData)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.locationSettingSpinner.adapter = adapter
-        binding.locationSettingSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-                if (pos == locationNameData.lastIndex) {
-                    binding.locationMapButton.isVisible = true
-                } else if (pos != 0) {
-                    receivedNote.setNoticeLocation(locationData[pos-1])
-                    binding.locationMapButton.isVisible = false
-                    binding.locationNameEdit.isVisible = false
-                    binding.locationAddress.isVisible = false
-                } else {
-                    receivedNote.setNoticeLocation(null)
-                    binding.locationMapButton.isVisible = false
-                    binding.locationNameEdit.isVisible = false
-                    binding.locationAddress.isVisible = false
+        binding.locationSettingSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    id: Long
+                ) {
+                    if (pos == locationNameData.lastIndex) {
+                        binding.locationMapButton.isVisible = true
+                    } else if (pos != 0) {
+                        receivedNote.setNoticeLocation(locationData[pos - 1])
+                        binding.locationMapButton.isVisible = false
+                        binding.locationNameEdit.isVisible = false
+                        binding.locationAddress.isVisible = false
+                    } else {
+                        receivedNote.setNoticeLocation(null)
+                        binding.locationMapButton.isVisible = false
+                        binding.locationNameEdit.isVisible = false
+                        binding.locationAddress.isVisible = false
+                    }
                 }
-            }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
 
         // 既に場所設定がされている場合の初期設定
         if (receivedNote.getNoticeLocation() != null) {
@@ -105,8 +117,9 @@ class LocationActivity: AppCompatActivity(), LocationListener{
             if (noteLocation.isPermanent()) {
                 for (i in 0 until locationData.size) {
                     if (locationData[i].getName() == noteLocation.getName()
-                        && locationData[i].getAddress() == noteLocation.getAddress()) {
-                        binding.locationSettingSpinner.setSelection(i+1)
+                        && locationData[i].getAddress() == noteLocation.getAddress()
+                    ) {
+                        binding.locationSettingSpinner.setSelection(i + 1)
                     }
                 }
             } else {
@@ -138,10 +151,10 @@ class LocationActivity: AppCompatActivity(), LocationListener{
         }
     }
 
-     // 戻るボタン
+    // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 noteManager.receive(received)
                 val note = noteManager.getNote()!!
 

@@ -1,31 +1,24 @@
 package app.sato.kchan.tasks
 
-import android.app.AlarmManager
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
 import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.sato.kchan.tasks.HomeActivity.Companion.context
-import app.sato.kchan.tasks.fanction.LocationManager
 import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
 import app.sato.kchan.tasks.fanction.NoticeManager
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
-class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
+class HomeMemoListAdapter : RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>() {
 
     val noteManager = NoteManager()
 
@@ -52,7 +45,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val note = if (!search)  {
+        val note = if (!search) {
             noteManager.select(position)
             noteManager.getNote()!!
         } else {
@@ -162,11 +155,11 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
             val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
             if (startTime != null && stopTime != null) {
-                viewHolder.noticeText.text = "${startTime.format(dateTimeFormat)} 〜 ${stopTime.format(dateTimeFormat)}"
+                viewHolder.noticeText.text =
+                    "${startTime.format(dateTimeFormat)} 〜 ${stopTime.format(dateTimeFormat)}"
             } else if (startTime != null) {
                 viewHolder.noticeText.text = startTime.format(dateTimeFormat)
-            }
-            else viewHolder.noticeText.text = ""
+            } else viewHolder.noticeText.text = ""
 
             if (location != null) {
                 if (location.getName() != "") {
@@ -174,8 +167,7 @@ class HomeMemoListAdapter: RecyclerView.Adapter<HomeMemoListAdapter.ViewHolder>(
                 } else if (location.getAddress() != "null") {
                     viewHolder.locationText.text = location.getAddress()
                 }
-            }
-            else viewHolder.locationText.text = ""
+            } else viewHolder.locationText.text = ""
 
             if (note.isLock()) viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_24)
             else viewHolder.lockImageView.setImageResource(R.drawable.ic_baseline_lock_open_24)

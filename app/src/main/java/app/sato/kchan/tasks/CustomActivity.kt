@@ -10,9 +10,8 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import app.sato.kchan.tasks.databinding.CustomActivityBinding
 
 
-class CustomActivity: AppCompatActivity(){
+class CustomActivity : AppCompatActivity() {
     private lateinit var binding: CustomActivityBinding
-
 
     // 画面作成とか(現状は触らなくていいです)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,8 +56,8 @@ class CustomActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }

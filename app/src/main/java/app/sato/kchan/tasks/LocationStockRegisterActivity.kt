@@ -17,7 +17,7 @@ import app.sato.kchan.tasks.fanction.LocationManager
 import java.util.*
 
 
-class LocationStockRegisterActivity: AppCompatActivity(){
+class LocationStockRegisterActivity : AppCompatActivity() {
     private lateinit var binding: LocationStockRegisterActivityBinding
     var address = ""
     val resultLauncher = registerForActivityResult(
@@ -31,11 +31,17 @@ class LocationStockRegisterActivity: AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = LocationStockRegisterActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding = LocationStockRegisterActivityBinding.inflate(layoutInflater)
+            .apply { setContentView(this.root) }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),1)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
         }
 
         binding.locationStockRegisterMapButton.setOnClickListener {
@@ -59,8 +65,8 @@ class LocationStockRegisterActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }

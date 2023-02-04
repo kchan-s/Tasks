@@ -32,7 +32,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: MapActivityBinding
 
-    lateinit var fusedLocationProviderClient : FusedLocationProviderClient
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     var locationCallback: LocationCallback? = null
 
     var received = ""
@@ -63,7 +63,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             android.R.id.home -> {
                 if (!markerFirst) {
                     val addressLine =
@@ -113,17 +113,25 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             if (!markerFirst) marker.remove()
             else markerFirst = false
             newLocation = LatLng(longpushLocation.latitude, longpushLocation.longitude)
-            marker = mMap.addMarker(MarkerOptions().position(newLocation).title("" + longpushLocation.latitude + " :" + longpushLocation.longitude))!!
+            marker = mMap.addMarker(
+                MarkerOptions().position(newLocation)
+                    .title("" + longpushLocation.latitude + " :" + longpushLocation.longitude)
+            )!!
         }
     }
 
     //パーミッションの状態を確認する
-    private fun checkPermission(){
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED){
+    private fun checkPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
             myLocationEnable()
-        }else{
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),1)
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
         }
     }
 
@@ -134,16 +142,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(this,"許可されました",Toast.LENGTH_SHORT).show()
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "許可されました", Toast.LENGTH_SHORT).show()
             myLocationEnable()
-        }else{
-            Toast.makeText(this,"拒否されました",Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "拒否されました", Toast.LENGTH_SHORT).show()
         }
     }
 
     //自分の位置情報をオンにする
-    private fun myLocationEnable(){
+    private fun myLocationEnable() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -154,13 +162,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         ) {
             //許可されていない
             return
-        }else{
+        } else {
             mMap.isMyLocationEnabled = true
 
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult) {
                     super.onLocationResult(p0)
-                    val currentLatLog = LatLng(p0.lastLocation!!.latitude, p0.lastLocation!!.longitude)
+                    val currentLatLog =
+                        LatLng(p0.lastLocation!!.latitude, p0.lastLocation!!.longitude)
                     if (first) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLatLog))
                         mMap.moveCamera(CameraUpdateFactory.zoomTo(mMap.maxZoomLevel - 5))
@@ -174,8 +183,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 fastestInterval = 0
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             }
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest,
-                locationCallback as LocationCallback,mainLooper)
+            fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback as LocationCallback, mainLooper
+            )
         }
     }
 
@@ -184,7 +195,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         return gCoder.getFromLocationName(query, 1)
     }
 
-    private fun doReverseGeoCoding(lat: Double, lng: Double) : MutableList<Address>{
+    private fun doReverseGeoCoding(lat: Double, lng: Double): MutableList<Address> {
         val gCoder = Geocoder(this, Locale.getDefault())
         return gCoder.getFromLocation(lat, lng, 1)
     }

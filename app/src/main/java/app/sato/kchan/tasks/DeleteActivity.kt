@@ -1,9 +1,5 @@
 package app.sato.kchan.tasks
 
-import android.app.AlarmManager
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -16,7 +12,7 @@ import app.sato.kchan.tasks.databinding.DeleteActivityBinding
 import app.sato.kchan.tasks.fanction.NoteManager
 import app.sato.kchan.tasks.fanction.NoticeManager
 
-class DeleteActivity: AppCompatActivity() {
+class DeleteActivity : AppCompatActivity() {
     private lateinit var binding: DeleteActivityBinding
     val noteManager = NoteManager()
 
@@ -50,12 +46,12 @@ class DeleteActivity: AppCompatActivity() {
 
     // 画面遷移の場合分け
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.delete_button -> {
                 deleteButtonOnClick()
                 finish()
             }
-            android.R.id.home-> {
+            android.R.id.home -> {
                 finish()
             }
         }
@@ -70,7 +66,8 @@ class DeleteActivity: AppCompatActivity() {
             val noticeManager = NoticeManager()
             noticeManager.searchByNote(note)
 
-            val targetIntent = Intent(HomeActivity.context, ForegroundNotificationService::class.java)
+            val targetIntent =
+                Intent(HomeActivity.context, ForegroundNotificationService::class.java)
             HomeActivity.context.stopService(targetIntent)
             HomeActivity.context.startForegroundService(targetIntent)
             note.setNoticeShow(null)

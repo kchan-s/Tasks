@@ -11,7 +11,7 @@ import app.sato.kchan.tasks.databinding.LoginActivityBinding
 import app.sato.kchan.tasks.fanction.Account
 
 
-class LoginActivity: AppCompatActivity(){
+class LoginActivity : AppCompatActivity() {
     private lateinit var binding: LoginActivityBinding
     val account = Account()
 
@@ -20,7 +20,7 @@ class LoginActivity: AppCompatActivity(){
         loadTheme()
         binding = LoginActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
-        binding.loginIdEdit.addTextChangedListener(object: TextWatcher {
+        binding.loginIdEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
@@ -34,7 +34,7 @@ class LoginActivity: AppCompatActivity(){
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
 
-        binding.loginPasswordEdit.addTextChangedListener(object: TextWatcher {
+        binding.loginPasswordEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
@@ -62,8 +62,8 @@ class LoginActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }
@@ -72,14 +72,17 @@ class LoginActivity: AppCompatActivity(){
 
     //ログイン
     private fun loginButtonOnClick() {
-        if (binding.loginIdEdit.text.toString() != "" &&  binding.loginPasswordEdit.text.toString() != "") {
-            val login = account.login(binding.loginIdEdit.text.toString(), binding.loginPasswordEdit.text.toString())
-            if (login){
+        if (binding.loginIdEdit.text.toString() != "" && binding.loginPasswordEdit.text.toString() != "") {
+            val login = account.login(
+                binding.loginIdEdit.text.toString(),
+                binding.loginPasswordEdit.text.toString()
+            )
+            if (login) {
                 Account().reset()
                 val intent = Intent(this, HomeActivity::class.java)
                 finish()
                 startActivity(intent)
-            }else Toast.makeText(this, "ログインIDまたはパスワードが間違っています", Toast.LENGTH_LONG).show()
+            } else Toast.makeText(this, "ログインIDまたはパスワードが間違っています", Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
         }

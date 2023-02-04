@@ -9,14 +9,15 @@ import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.DefaultNoticeActivityBinding
 import java.util.*
 
-class DefaultNoticeActivity: AppCompatActivity(){
+class DefaultNoticeActivity : AppCompatActivity() {
     private lateinit var binding: DefaultNoticeActivityBinding
     var start = true // endならfalse
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = DefaultNoticeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding =
+            DefaultNoticeActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // トグルの値読み込みが必要
         binding.defaultNoticeSwitch.setOnCheckedChangeListener { _, isChenged ->
@@ -54,8 +55,8 @@ class DefaultNoticeActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }
@@ -79,7 +80,13 @@ class DefaultNoticeActivity: AppCompatActivity(){
         }
 
         //タイムピッカーダイアログを生成および設定
-        TimePickerDialog(this, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(this)).show()
+        TimePickerDialog(
+            this,
+            timeSetListener,
+            cal.get(Calendar.HOUR_OF_DAY),
+            cal.get(Calendar.MINUTE),
+            DateFormat.is24HourFormat(this)
+        ).show()
     }
 
 //    //デフォ開始

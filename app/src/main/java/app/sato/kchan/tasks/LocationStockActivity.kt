@@ -1,24 +1,22 @@
 package app.sato.kchan.tasks
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.sato.kchan.tasks.databinding.LocationStockActivityBinding
 
-class LocationStockActivity: AppCompatActivity(){
+class LocationStockActivity : AppCompatActivity() {
     private lateinit var binding: LocationStockActivityBinding
     var adapter = LocationStockAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = LocationStockActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding =
+            LocationStockActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // よく行く場所一覧のリスト設定
         val recyclerView = binding.locationStockList
@@ -47,8 +45,8 @@ class LocationStockActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }

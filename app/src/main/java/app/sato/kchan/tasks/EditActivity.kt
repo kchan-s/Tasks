@@ -1,12 +1,10 @@
 package app.sato.kchan.tasks
 
-import android.app.AlarmManager
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.EditActivityBinding
 import app.sato.kchan.tasks.fanction.NoteManager
@@ -16,6 +14,7 @@ class EditActivity : AppCompatActivity() {
     companion object {
         var new = false
     }
+
     private lateinit var binding: EditActivityBinding
     val noteManager = NoteManager()
     var received = ""

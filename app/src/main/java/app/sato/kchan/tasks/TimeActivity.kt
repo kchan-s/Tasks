@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
 import app.sato.kchan.tasks.databinding.TimeActivityBinding
-import app.sato.kchan.tasks.fanction.Note
 import app.sato.kchan.tasks.fanction.NoteManager
 import app.sato.kchan.tasks.fanction.NoticeManager
 import java.time.LocalDate
@@ -23,7 +22,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class TimeActivity: AppCompatActivity(), LocationListener{
+class TimeActivity : AppCompatActivity(), LocationListener {
     private lateinit var binding: TimeActivityBinding
 
     val noteManager = NoteManager()
@@ -58,10 +57,14 @@ class TimeActivity: AppCompatActivity(), LocationListener{
             startDateTimeList.add(startTime.hour)
             startDateTimeList.add(startTime.minute)
 
-            binding.timeStartText.text = "通知開始時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(receivedNote.getNoticeShow())}"
+            binding.timeStartText.text = "通知開始時間 : ${
+                DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(receivedNote.getNoticeShow())
+            }"
         }
         if (receivedNote.getNoticeHide() != null) {
-            binding.timeEndText.text = "通知終了時間 : ${DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(receivedNote.getNoticeHide())}"
+            binding.timeEndText.text = "通知終了時間 : ${
+                DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(receivedNote.getNoticeHide())
+            }"
         }
 
         binding.timeSettingSwitch.isChecked = receivedNote.getNoticeShow() != null
@@ -93,7 +96,11 @@ class TimeActivity: AppCompatActivity(), LocationListener{
 
         // 通知終了時間設定ボタンタップ処理
         binding.timeEndSettingButton.setOnClickListener {
-            if (receivedNote.getNoticeShow() == null) Toast.makeText(this, "開始時間を設定してください", Toast.LENGTH_LONG).show()
+            if (receivedNote.getNoticeShow() == null) Toast.makeText(
+                this,
+                "開始時間を設定してください",
+                Toast.LENGTH_LONG
+            ).show()
             else {
                 start = false
                 showDatePickerDialog()
@@ -108,39 +115,44 @@ class TimeActivity: AppCompatActivity(), LocationListener{
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            when (item.itemId) {
-                android.R.id.home -> {
-                    val note = noteManager.getNote()!!
-                    val uuid: Int
-                    if (note.getNoticeBarId() == 0) {
-                        uuid = UUID.randomUUID().hashCode()
-                        note.setNoticeBarId(uuid)
-                    } else {
-                        uuid = note.getNoticeBarId()!!
-                    }
-
-                    val notificationManager =
-                        HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                    notificationManager.getNotificationChannel("notification")
-                    notificationManager.cancel(uuid)
-                    ForegroundNotificationService().cancelAlarm(applicationContext, uuid)
-
-                    if (startDateTime == null && endDateTime == null) {
-                        note.setNoticeShow(null)
-                        note.setNoticeHide(null)
-                    }
-
-                    if (note.getNoticeLocation() != null) {
-                        val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
-                        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 1F, this)
-                        }
-                    } else if (startDateTime != null){
-                        ForegroundNotificationService().setAlarm(applicationContext, note, uuid)
-                    }
-                    finish()
+        when (item.itemId) {
+            android.R.id.home -> {
+                val note = noteManager.getNote()!!
+                val uuid: Int
+                if (note.getNoticeBarId() == 0) {
+                    uuid = UUID.randomUUID().hashCode()
+                    note.setNoticeBarId(uuid)
+                } else {
+                    uuid = note.getNoticeBarId()!!
                 }
+
+                val notificationManager =
+                    HomeActivity.context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.getNotificationChannel("notification")
+                notificationManager.cancel(uuid)
+                ForegroundNotificationService().cancelAlarm(applicationContext, uuid)
+
+                if (startDateTime == null && endDateTime == null) {
+                    note.setNoticeShow(null)
+                    note.setNoticeHide(null)
+                }
+
+                if (note.getNoticeLocation() != null) {
+                    val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+                    if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            1000L,
+                            1F,
+                            this
+                        )
+                    }
+                } else if (startDateTime != null) {
+                    ForegroundNotificationService().setAlarm(applicationContext, note, uuid)
+                }
+                finish()
             }
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -153,18 +165,19 @@ class TimeActivity: AppCompatActivity(), LocationListener{
             if (start) {
                 startDateTimeList.clear()
                 startDateTimeList.add(0, year)
-                startDateTimeList.add(1, month+1)
+                startDateTimeList.add(1, month + 1)
                 startDateTimeList.add(2, day)
                 showTimePickerDialog()
             } else {
                 // 終了年月日保存処理
-                val startDate = LocalDate.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2])
-                val settingDate = LocalDate.of(year, month+1, day)
+                val startDate =
+                    LocalDate.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2])
+                val settingDate = LocalDate.of(year, month + 1, day)
                 if (settingDate.isBefore(startDate)) {
                     Toast.makeText(this, "終了日時は開始日時より後に設定してください", Toast.LENGTH_LONG).show()
                 } else {
                     endDateList.add(0, year)
-                    endDateList.add(1, month+1)
+                    endDateList.add(1, month + 1)
                     endDateList.add(2, day)
                     showTimePickerDialog()
                 }
@@ -205,13 +218,33 @@ class TimeActivity: AppCompatActivity(), LocationListener{
             if (start) {
                 startDateTimeList.add(3, hour)
                 startDateTimeList.add(4, minute)
-                startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
+                startDateTime = LocalDateTime.of(
+                    startDateTimeList[0],
+                    startDateTimeList[1],
+                    startDateTimeList[2],
+                    startDateTimeList[3],
+                    startDateTimeList[4],
+                    0
+                )
                 binding.timeStartText.text = "通知開始時間 : ${startDateTime!!.format(showFormat)}"
                 note.setNoticeShow(startDateTime)
-            }
-            else {
-                startDateTime = LocalDateTime.of(startDateTimeList[0], startDateTimeList[1], startDateTimeList[2], startDateTimeList[3], startDateTimeList[4], 0)
-                endDateTime = LocalDateTime.of(endDateList[0], endDateList[1], endDateList[2], hour, minute, 0)
+            } else {
+                startDateTime = LocalDateTime.of(
+                    startDateTimeList[0],
+                    startDateTimeList[1],
+                    startDateTimeList[2],
+                    startDateTimeList[3],
+                    startDateTimeList[4],
+                    0
+                )
+                endDateTime = LocalDateTime.of(
+                    endDateList[0],
+                    endDateList[1],
+                    endDateList[2],
+                    hour,
+                    minute,
+                    0
+                )
                 if (endDateTime!!.isBefore(startDateTime) || endDateTime!!.isEqual(startDateTime)) {
                     Toast.makeText(this, "終了時間は開始時間より後に設定してください", Toast.LENGTH_LONG).show()
                 } else {
@@ -227,10 +260,11 @@ class TimeActivity: AppCompatActivity(), LocationListener{
                 timeSetListener,
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
-                true)
+                true
+            )
                 .show()
         } else {
-            if (startDateTimeList[4]+1 == 60) {
+            if (startDateTimeList[4] + 1 == 60) {
                 TimePickerDialog(
                     this,
                     timeSetListener,
@@ -278,9 +312,11 @@ class TimeActivity: AppCompatActivity(), LocationListener{
                         uuid = note.getNoticeBarId()!!
                     }
                     if (!note.isComplete() && note.getNoticeShow() == null) {
-                        val mainIntent = Intent(HomeActivity.context, HomeActivity::class.java).apply() {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        }
+                        val mainIntent =
+                            Intent(HomeActivity.context, HomeActivity::class.java).apply() {
+                                flags =
+                                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            }
 
                         val pendingIntent: PendingIntent =
                             PendingIntent.getActivity(HomeActivity.context, 0, mainIntent, 0)

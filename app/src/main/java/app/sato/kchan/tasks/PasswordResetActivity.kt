@@ -10,14 +10,15 @@ import androidx.appcompat.app.AppCompatActivity
 import app.sato.kchan.tasks.databinding.PasswordResetActivityBinding
 import app.sato.kchan.tasks.fanction.Account
 
-class PasswordResetActivity: AppCompatActivity(){
+class PasswordResetActivity : AppCompatActivity() {
     private lateinit var binding: PasswordResetActivityBinding
     val account = Account()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadTheme()
-        binding = PasswordResetActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
+        binding =
+            PasswordResetActivityBinding.inflate(layoutInflater).apply { setContentView(this.root) }
 
         // 質問を取得して表示する処理が必要
 
@@ -26,7 +27,7 @@ class PasswordResetActivity: AppCompatActivity(){
             changeButtonOnClick()
         }
 
-        binding.passwordResetNewEdit.addTextChangedListener(object: TextWatcher {
+        binding.passwordResetNewEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -46,7 +47,7 @@ class PasswordResetActivity: AppCompatActivity(){
             }
         })
 
-        binding.passwordResetVerificationEdit.addTextChangedListener(object: TextWatcher {
+        binding.passwordResetVerificationEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -74,8 +75,8 @@ class PasswordResetActivity: AppCompatActivity(){
 
     // 戻るボタン
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home->{
+        when (item.itemId) {
+            android.R.id.home -> {
                 finish()
             }
         }
@@ -105,8 +106,7 @@ class PasswordResetActivity: AppCompatActivity(){
                     Toast.makeText(this, "新たなパスワードが一致しません", Toast.LENGTH_LONG).show()
                 }
             }
-        }
-        else {
+        } else {
             Toast.makeText(this, "必要項目を全て入力してください", Toast.LENGTH_LONG).show()
         }
     }
