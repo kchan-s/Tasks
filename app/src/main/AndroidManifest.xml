@@ -24,10 +24,6 @@
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config">
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBlwj-jPCJjXbJ-T85KzeXAPCZmQNF-Bco" />
-
         <activity
             android:name=".HomeActivity"
             android:exported="true"
